@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="TeleSound" />
+		<Option platforms="Windows;" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug m32">
+				<Option platforms="Windows;" />
+				<Option output="TeleSound_dbg" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".objs_dbg" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectCompilerOptionsRelation="0" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-m32" />
+					<Add directory="../DSPElib/CodeBlocks-m32_TDM_5.1.0/dbg" />
+				</Compiler>
+				<Linker>
+					<Add option="-static-libstdc++" />
+					<Add option="-m32" />
+					<Add directory="../DSPElib/CodeBlocks-m32_TDM_5.1.0/dbg" />
+				</Linker>
+			</Target>
+			<Target title="Release m32 (roboczy)">
+				<Option platforms="Windows;" />
+				<Option output="TeleSound_rls" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".objs_rls" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectCompilerOptionsRelation="0" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-m32" />
+					<Add directory="../DSPElib/CodeBlocks-m32_TDM_5.1.0/rls" />
+				</Compiler>
+				<Linker>
+					<Add option="-O3" />
+					<Add option="-static-libstdc++" />
+					<Add option="-m32" />
+					<Add directory="../DSPElib/CodeBlocks-m32_TDM_5.1.0/rls" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-std=c++0x" />
+			<Add option="-m32" />
+			<Add option="-g" />
+			<Add option="-DWIN32" />
+			<Add option="-DUNICODE" />
+			<Add option="-DFREEGLUT_STATIC" />
+			<Add option="-DNEED_XPARSEGEOMETRY_IMPL" />
+			<Add option="-DXXX_USE_GLC_" />
+			<Add directory="./src/include" />
+			<Add directory="./src_support/include" />
+			<Add directory="../DSPElib/CodeBlocks-m32_TDM_5.1.0/include" />
+			<Add directory="../wxWidgets-3.1.2/include" />
+			<Add directory="../wxWidgets-3.1.2/lib/wx/include/msw-unicode-static-3.1" />
+			<Add directory="../FreeGLUT/include" />
+			<Add directory="../GLC_lib/include/" />
+		</Compiler>
+		<Linker>
+			<Add option="-static-libstdc++" />
+			<Add option="-m32" />
+			<Add library="wx_mswu_stc-3.1" />
+			<Add library="wx_mswu_core-3.1" />
+			<Add library="wx_baseu-3.1" />
+			<Add library="wx_mswu_gl-3.1" />
+			<Add library="wxpng-3.1" />
+			<Add library="wxzlib-3.1" />
+			<Add library="winspool" />
+			<Add library="wxscintilla-3.1" />
+			<Add library="wx_mswu_richtext-3.1" />
+			<Add library="freeglut32_static" />
+			<Add library="opengl32" />
+			<Add library="glu32" />
+			<Add library="uxtheme" />
+			<Add library="uuid" />
+			<Add library="oleacc" />
+			<Add library="ole32" />
+			<Add library="comctl32" />
+			<Add library="shlwapi" />
+			<Add library="oleaut32" />
+			<Add library="version" />
+			<Add library="DSPE" />
+			<Add library="winmm" />
+			<Add directory="../wxWidgets-3.1.2/lib" />
+			<Add directory="../FreeGLUT/lib" />
+		</Linker>
+		<Unit filename="src/Branches.cpp" />
+		<Unit filename="src/IIR_coefs.cpp" />
+		<Unit filename="src/MorseDecoder.cpp" />
+		<Unit filename="src/Processing.cpp" />
+		<Unit filename="src/Vectors.cpp" />
+		<Unit filename="src/include/Branches.h" />
+		<Unit filename="src/include/IIR_coefs.h" />
+		<Unit filename="src/include/Misc.h" />
+		<Unit filename="src/include/MorseDecoder.h" />
+		<Unit filename="src/include/MyGLcanvas.h" />
+		<Unit filename="src/include/Processing.h" />
+		<Unit filename="src/include/Vectors.h" />
+		<Unit filename="src/include/main.h" />
+		<Unit filename="src/include/project_definitions.h" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src_support/BitmapFont.cpp" />
+		<Unit filename="src_support/DSP.cpp" />
+		<Unit filename="src_support/OutlineFont.cpp" />
+		<Unit filename="src_support/include/BitmapFont.h" />
+		<Unit filename="src_support/include/DSP.h" />
+		<Unit filename="src_support/include/F_coefs.h" />
+		<Unit filename="src_support/include/GUIcalls.h" />
+		<Unit filename="src_support/include/OutlineFont.h" />
+		<Unit filename="src_support/include/wxAddons.h" />
+		<Unit filename="src_support/wxAddons.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

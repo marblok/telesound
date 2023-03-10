@@ -1,0 +1,4 @@
+TelesoundMainIcon ICON "../bitmaps/Ikony.ico"
+
+
+#include "wx/msw/wx.rc"

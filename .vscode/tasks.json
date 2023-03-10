@@ -1,0 +1,45 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    // https://code.visualstudio.com/docs/editor/tasks
+    // ${command:cpptools.activeConfigName}
+    "tasks": [
+        {
+            "label": "Build Ex2_task1.cpp",
+            "type": "shell",
+            "command": "make build -f Makefile.main FILE=Ex2_task1 VS_CFG=${command:cpptools.activeConfigName}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "windows": {
+                "options": {
+                    "cwd": "${workspaceFolder}",
+                    "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw64/bin/;${env:PATH}"}
+                }, 
+            },
+            "presentation": {
+                "echo": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Clean Ex2_task1.cpp",
+            "type": "shell",
+            "command": "make clean -f Makefile.main VS_CFG=${command:cpptools.activeConfigName}",
+            "group": "build",
+            "windows": {
+                "options": {
+                    "cwd": "${workspaceFolder}",
+                    "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw64/bin/;${env:PATH}"}
+                }, 
+            },
+            "presentation": {
+                "echo": true
+            },
+            "problemMatcher": "$gcc"
+        }
+
+   ]
+}

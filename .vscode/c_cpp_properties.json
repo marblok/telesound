@@ -1,0 +1,66 @@
+{
+    "configurations": [
+        {
+            "name": "Windows-Release",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../DSPE_lib_minGW/MinGW-W64_8.1.0/include/**"
+            ],
+            "defines": [
+                "WIN32",
+                "__DEBUG__=0"
+            ],
+            "compilerPath": "gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        },
+        {
+            "name": "Linux-Release",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../DSPE_lib_minGW/MinGW-W64_8.1.0/include/**"
+            ],
+            "defines": [
+                "WIN32",
+                "__DEBUG__=0"
+            ],
+            "compilerPath": "gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-x64"
+        },
+        {
+            "name": "Windows-Debug",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../DSPE_lib_minGW/MinGW-W64_8.1.0/include/**"
+            ],
+            "defines": [
+                "WIN32",
+                "__DEBUG__=1"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        },
+        {
+            "name": "Linux-Debug",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../DSPE_lib_minGW/MinGW-W64_8.1.0/include/**"
+            ],
+            "defines": [
+                "WIN32",
+                "__DEBUG__=1"
+            ],
+            "compilerPath": "gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}
