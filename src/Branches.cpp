@@ -112,11 +112,11 @@ bool MyProcessingBranch::ProcessBranch(void)
         { // ask user to close this branch
           wxCommandEvent event( wxEVT_BRANCH_END, ID_BranchEnd );
           event.SetClientData( this );
-          //DSPf_InfoMessage("ProcessBranch", "sending wxEVT_BRANCH_END");
+          //DSP::log << "ProcessBranch"<< DSP::e::LogMode::second << "sending wxEVT_BRANCH_END"<<endl;
           //Parent->AddPendingEvent( event );
           Parent->GetEventHandler()->AddPendingEvent(event);
           //Parent->ProcessEvent( event ); // would block ???
-          //DSPf_InfoMessage("ProcessBranch", "sent wxEVT_BRANCH_END");
+          //DSP::log << "ProcessBranch"<< DSP::e::LogMode::second << "sent wxEVT_BRANCH_END"<<endl;
 
           // main thread will do this
           //DoFinish = true;
@@ -126,7 +126,7 @@ bool MyProcessingBranch::ProcessBranch(void)
       break;
 
     case E_BS_closing:
-      DSPf_InfoMessage("ProcessBranch", "E_BS_closing");
+      DSP::log << "ProcessBranch"<< DSP::e::LogMode::second << "E_BS_closing"<<endl;
       is_running = false;
 
       DoFinish = true;
@@ -206,7 +206,7 @@ void MyProcessingBranch::PostCommandToBranch(T_BranchCommand *new_command_in)
   CS_CommandList.Leave();
   //ParentThread->Resume(); // resume thread operations
 #ifdef __DEBUG__
-  DSPf_InfoMessage("Command Posted");
+  DSP::log << "Command Posted"<<endl;
 #endif
 }
 
@@ -224,7 +224,7 @@ void MyProcessingBranch::ProcessBranchCommandList(void)
     {
       branch_state = E_BS_closing;
 
-      DSPf_InfoMessage("ProcessBranchCommandList", "Closing");
+      DSP::log << "ProcessBranchCommandList"<< DSP::e::LogMode::second << "Closing"<<endl;
       /*! \bug commands queue should be purged
        * so the commands which owned data
        * will be forced to delete then
@@ -242,7 +242,7 @@ void MyProcessingBranch::ProcessBranchCommandList(void)
       case E_BC_userdata:
         ProcessingStack->ProcessUserData(current->command_data->UserData);
 #ifdef __DEBUG__
-  DSPf_InfoMessage("User command Processed");
+  DSP::log << "User command Processed"<<endl;
 #endif
         break;
       case E_BC_continue:
@@ -251,8 +251,7 @@ void MyProcessingBranch::ProcessBranchCommandList(void)
         break;
       default:
         #ifdef __DEBUG__
-          DSPf_ErrorMessage("MyProcessingBranch::ProcessBranchCommandList",
-              "Unsupported branch command");
+          DSP::log << DSP::e::LogMode::Error <<"MyProcessingBranch::ProcessBranchCommandList"<< DSP::e::LogMode::second <<"Unsupported branch command"<<endl;
         #endif
         break;
     }

@@ -170,7 +170,7 @@ void T_PlotsStack::SetBackgroundColor(float R, float G, float B)
 
 void T_PlotsStack::DrawSpecgram(float C_skala, const CLR_map_type map_type)
 {
-  DSP_float *y;
+  DSP::Float *y;
   //float dx, dy;
   int Ny_tmp, ind_x, ind_y;
 
@@ -186,7 +186,7 @@ void T_PlotsStack::DrawSpecgram(float C_skala, const CLR_map_type map_type)
   glNewList(GL_list_index, GL_COMPILE_AND_EXECUTE);
 
   //sprintf(tekst, "%i, %i", Nx, Ny);
-  //DSPf_InfoMessage("DrawSpecgram", tekst);
+  //DSP::log << "DrawSpecgram"<<DSP::e::LogMode::second<< tekst<<endl;
   for (ind_x = 0; ind_x < NoOfSlots; ind_x++)
   {
     y = GetSlot(ind_x);
@@ -243,7 +243,7 @@ void T_PlotsStack::InitialiseSpectrogram(long double F_min_in, long double F_max
   {
     if ((K % 2) != 0)
     {
-      DSPf_ErrorMessage("T_PlotsStack::InitialiseSpectrogram", "WARNING: odd length FFT not supported");
+      DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::InitialiseSpectrogram"<< DSP::e::LogMode::second << "WARNING: odd length FFT not supported"<<endl;
       return;
     }
 
@@ -348,7 +348,7 @@ void T_PlotsStack::InitialiseSpectrogram(long double F_min_in, long double F_max
 
 void T_PlotsStack::DrawSpecgram2_dB(float dB_max, float dB_range, const CLR_map_type map_type)
 {
-  DSP_float *y;
+  DSP::Float *y;
   int Ny_tmp, ind_x, ind_y;
   int counter;
   float C_scale, C_offset;
@@ -368,7 +368,7 @@ void T_PlotsStack::DrawSpecgram2_dB(float dB_max, float dB_range, const CLR_map_
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSPf_ErrorMessage("T_PlotsStack::DrawSpecgram2_lin", "Spectrogram not initialised");
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<<endl;
     return;
   }
 
@@ -442,7 +442,7 @@ void T_PlotsStack::DrawSpecgram2_dB(float dB_max, float dB_range, const CLR_map_
 
 void T_PlotsStack::DrawSpecgram2_lin(float C_scale, const CLR_map_type map_type)
 {
-  DSP_float *y;
+  DSP::Float *y;
   int Ny_tmp, ind_x, ind_y;
   int counter;
 
@@ -457,7 +457,7 @@ void T_PlotsStack::DrawSpecgram2_lin(float C_scale, const CLR_map_type map_type)
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSPf_ErrorMessage("T_PlotsStack::DrawSpecgram2_lin", "Spectrogram not initialised");
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<<endl;
     return;
   }
 
@@ -566,7 +566,7 @@ void T_PlotsStack::DrawSpecgram2_lin(float C_scale, const CLR_map_type map_type)
  */
 void T_PlotsStack::DrawSpecgram2_base(const CLR_map_type map_type)
 {
-  DSP_float *y;
+  DSP::Float *y;
   int Ny_tmp, ind_x, ind_y;
   int counter;
 
@@ -581,7 +581,7 @@ void T_PlotsStack::DrawSpecgram2_base(const CLR_map_type map_type)
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSPf_ErrorMessage("T_PlotsStack::DrawSpecgram2_base", "Spectrogram not initialised");
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_base"<< DSP::e::LogMode::second <<"Spectrogram not initialised"<<endl;
     return;
   }
 
@@ -653,9 +653,9 @@ void T_PlotsStack::DrawSpecgram2_base(const CLR_map_type map_type)
   //glColor3f(0,0,0); // ???
 }
 
-/*! \bug -# Dopasowaæ odpowiednie rozmiary textury
- *   -# obróciæ texturê i rozci¹gn¹æ na pe³ny axis
- *   -# podzieliæ texturê na segmenty i wyrysowywaæ
+/*! \bug -# Dopasowaï¿½ odpowiednie rozmiary textury
+ *   -# obrï¿½ciï¿½ texturï¿½ i rozciï¿½gnï¿½ï¿½ na peï¿½ny axis
+ *   -# podzieliï¿½ texturï¿½ na segmenty i wyrysowywaï¿½
  *   -# quad_strip
  *
  * @param dB_max
@@ -664,7 +664,7 @@ void T_PlotsStack::DrawSpecgram2_base(const CLR_map_type map_type)
  */
 void T_PlotsStack::DrawSpecgram3_dB(float dB_max, float dB_range, const CLR_map_type map_type)
 {
-  DSP_float *y;
+  DSP::Float *y;
   int Ny_tmp, ind_x, ind_y;
   //int counter;
   float C_scale, C_offset;
@@ -684,7 +684,7 @@ void T_PlotsStack::DrawSpecgram3_dB(float dB_max, float dB_range, const CLR_map_
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSPf_ErrorMessage("T_PlotsStack::DrawSpecgram2_lin", "Spectrogram not initialised");
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<<endl;
     return;
   }
 
@@ -1033,9 +1033,9 @@ void T_PlotsStack::FreeSlots(void)
     for (ind=0; ind < NoOfSlots; ind++)
     {
       //sprintf(tekst, "%i/%i %p", ind+1, NoOfSlots, Slots[ind]);
-      //DSPf_InfoMessage("T_PlotsStack::FreeSlots", tekst);
+      //DSP::log << "T_PlotsStack::FreeSlots", tekst);
       //sprintf(tekst, "test%i.log", ind+1);
-      //DSPf_SetLogFileName (tekst);
+      //DSP::f::SetLogFileName (tekst);
       if (Slots[ind] != NULL)
         delete [] Slots[ind];
     }
@@ -1069,7 +1069,7 @@ void T_PlotsStack::Reset(int new_K, int New_NoOfSlots)
     NoOfSlots = New_NoOfSlots;
 
     K=new_K;
-    Slots        = new DSP_float_ptr[NoOfSlots];
+    Slots        = new DSP::Float_ptr[NoOfSlots];
     SlotDataSize = new int[NoOfSlots];
     ColorIndex   = new int[NoOfSlots];
     SlotTime     = new long double[NoOfSlots];
@@ -1077,13 +1077,13 @@ void T_PlotsStack::Reset(int new_K, int New_NoOfSlots)
     for (ind=0; ind < NoOfSlots; ind++)
     {
       if (K > 0)
-        Slots[ind] = new DSP_float[K];
+        Slots[ind] = new DSP::Float[K];
       else
         Slots[ind] = NULL;
 
       //char tekst[1024];
       //sprintf(tekst, "%i/%i %p", ind+1, NoOfSlots, Slots[ind]);
-      //DSPf_InfoMessage("T_PlotsStack::Reset", tekst);
+      //DSP::log << "T_PlotsStack::Reset", tekst);
 
       SlotDataSize[ind] = 0;
       SlotTime[ind] = 0.0;
@@ -1139,7 +1139,7 @@ int T_PlotsStack::Get_NoOfSlots(void)
   return NoOfSlots;
 }
 
-DSP_float_ptr T_PlotsStack::GetSlot(bool PushIfLast)
+DSP::Float_ptr T_PlotsStack::GetSlot(bool PushIfLast)
 {
   if (currentSlot >= NoOfSlots)
   {
@@ -1147,7 +1147,7 @@ DSP_float_ptr T_PlotsStack::GetSlot(bool PushIfLast)
     {
       if (Slots != NULL)
       {
-        DSP_float_ptr tempSlot;
+        DSP::Float_ptr tempSlot;
         //int tempSize;
         int tempColor;
 
@@ -1174,7 +1174,7 @@ DSP_float_ptr T_PlotsStack::GetSlot(bool PushIfLast)
   return Slots[currentSlot];
 }
 
-DSP_float_ptr T_PlotsStack::GetSlot(int No)
+DSP::Float_ptr T_PlotsStack::GetSlot(int No)
 {
   if (No == -1)
     No = currentSlot;
@@ -1200,7 +1200,7 @@ void T_PlotsStack::Set_SlotDataSize(int new_DataSize, int No)
   if (new_DataSize > K)
   {
     new_DataSize = K;
-    DSPf_ErrorMessage("T_PlotsStack::Set_SlotDataSize", "New data size exceeds allocated memory");
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::Set_SlotDataSize"<< DSP::e::LogMode::second << "New data size exceeds allocated memory"<<endl;
   }
   SlotDataSize[No]=new_DataSize;
 }
@@ -1504,7 +1504,7 @@ void TestAudioMixer(wxTextCtrl *Lines, TAudioMixer *Mixer)
       cConnections=MixerLine.cConnections;
       Destination=MixerLine.dwDestination;
 
-      //Okreslamy wlasciwosci kontrolek dla bie¿¹cej linii
+      //Okreslamy wlasciwosci kontrolek dla bieï¿½ï¿½cej linii
       MixerControls=new MIXERCONTROL [cControls];
       MixerLineControls.cbStruct=sizeof(MIXERLINECONTROLS);
       MixerLineControls.dwLineID=LineID;
@@ -1758,7 +1758,7 @@ void TestAudioMixer(wxTextCtrl *Lines, TAudioMixer *Mixer)
 
 
       // **************************************** //
-      //Okreslamy wlasciwosci przylaczy dla bie¿¹cej linii // WAVEIN
+      //Okreslamy wlasciwosci przylaczy dla bieï¿½ï¿½cej linii // WAVEIN
       for (ind_1=0; ind_1<cConnections; ind_1++)
       {
         //Okreslamy wlasciwosci linii dla kolejnych przylaczy linii WAVEIN
@@ -2214,7 +2214,7 @@ void T_PlotsStack::DrawString(GLfloat x, GLfloat y, char *text,
   glPushMatrix();
 
   //char text[1024];
-  //text[0] = 0xc4;  text[1] = 0x85; // ¹ UTF8
+  //text[0] = 0xc4;  text[1] = 0x85; // ï¿½ UTF8
   //strcpy(text+2, "Proba mikrofonu");
 
   switch (mode & DS_method_mask)
@@ -2302,12 +2302,12 @@ void T_PlotsStack::DrawString(GLfloat x, GLfloat y, char *text,
       if (m_bmf != NULL)
         m_bmf->DrawStringAt(x_norm, y_norm, 0.0, text);
       else
-        DSPf_ErrorMessage("T_PlotsStack::DrawString", "WGL bitmap font not set");
+        DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawString" << DSP::e::LogMode::second <<"WGL bitmap font not set"<<endl;
 
       break;
 
     default:
-      DSPf_ErrorMessage("T_PlotsStack::DrawString", "Unsupported drawing mode");
+      DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawString"<< DSP::e::LogMode::second <<"Unsupported drawing mode"<<endl;
       break;
   }
 
@@ -2319,7 +2319,7 @@ void T_PlotsStack::DrawString(GLfloat x, GLfloat y, char *text,
 
 /*! \todo make use of arrays like in DrawSpecgram2
  */
-void T_PlotsStack::DrawSignal(int SegmentSize, DSP_float *Ydata, float skala,
+void T_PlotsStack::DrawSignal(int SegmentSize, DSP::Float *Ydata, float skala,
                               DS_type type, float width)
 {
   float x_offset;
@@ -2378,7 +2378,7 @@ void T_PlotsStack::DrawSignal(int SegmentSize, DSP_float *Ydata, float skala,
  */
 }
 
-void T_PlotsStack::DrawSignal_dB(int SegmentSize, DSP_float *Ydata,
+void T_PlotsStack::DrawSignal_dB(int SegmentSize, DSP::Float *Ydata,
                                  float dB_max, float dB_range, float width)
 {
   float x_offset;
@@ -2387,7 +2387,7 @@ void T_PlotsStack::DrawSignal_dB(int SegmentSize, DSP_float *Ydata,
   int ind;
   float Y_scale, Y_offset;
 
-  // konwertuj na przedzia³ [-1, +1]
+  // konwertuj na przedziaï¿½ [-1, +1]
   Y_scale = 2/dB_range;
   Y_offset = dB_max-dB_range/2; // max ==> dB_range/2
 
@@ -2428,7 +2428,7 @@ void T_PlotsStack::SubPlot(int Rows, int Cols, int index, int WindowW, int Windo
 
     //char text[1024];
     //sprintf(text, "client_W = %i, client_H = %i", client_W, client_H);
-    //DSPf_InfoMessage("T_PlotsStack::SubPlot", text);
+    //DSP::log << "T_PlotsStack::SubPlot", text);
 
     axis_dx = 20; axis_dy = 20;
     axis_dw = 10 + axis_dx; axis_dh = 10 + axis_dy;
@@ -2993,7 +2993,7 @@ void T_PlotsStack::PlotAxis(double to, double Fo, bool use_XOR)
     // draw main ticks
     y = int((dFm + ind0) * y_pixels_per_unit);
 
-    /*! \bug w okolicy linii œrodkowej zmienia siê offset pixela o 1
+    /*! \bug w okolicy linii ï¿½rodkowej zmienia siï¿½ offset pixela o 1
     glRasterPos2i(x0, y0+y-1);
     glDrawPixels(9, //GLsizei width,
                  3, //GLsizei height,
@@ -3157,7 +3157,7 @@ void MoveImage_Left(float move_factor)
   glCopyPixels(MW, y, W-MW, H, GL_COLOR);
 }
 
-void DrawScatterPlot(int SegmentSize, DSP_float *XYdata, float skala, float size,
+void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float size,
                      T_ChannelParams *ChannelInfo)
 {
 //  float BPSKmark, QPSKmark;
@@ -3324,7 +3324,7 @@ void DrawScatterPlot(int SegmentSize, DSP_float *XYdata, float skala, float size
 
 }
 
-void DrawEyeDiagram(int SegmentSize, DSP_float *Xdata, DSP_float *Ydata,
+void DrawEyeDiagram(int SegmentSize, DSP::Float *Xdata, DSP::Float *Ydata,
                     bool IsDataComplex, int SymbolPeriod,
                     float skala_x, float skala_y,
                     T_ChannelParams *ChannelInfo)
@@ -3447,8 +3447,8 @@ void DrawEyeDiagram(int SegmentSize, DSP_float *Xdata, DSP_float *Ydata,
 
     if (SymbolPeriod > 0)
     {
-      DSP_complex_ptr current, next;
-      current = DSP_complex_ptr(Ydata);
+      DSP::Complex_ptr current, next;
+      current = DSP::Complex_ptr(Ydata);
       next = current + SymbolPeriod;
 
       for (ind = 0; ind<(SegmentSize - SymbolPeriod); ind++)
@@ -3512,16 +3512,16 @@ void DrawEyeDiagram(int SegmentSize, DSP_float *Xdata, DSP_float *Ydata,
  *   - -inf => +inf
  * /
 void GetSER_info(char *tekst,
-                 DSP_float_ptr MeanBPSK_SERs_in, DSP_float_ptr MeanQPSK_SERs_in,
+                 DSP::Float_ptr MeanBPSK_SERs_in, DSP::Float_ptr MeanQPSK_SERs_in,
                  long NoOfMarkSegments,
-                 DSP_float TotalBPSK_Mark_in, DSP_float TotalQPSK_Mark_in)
+                 DSP::Float TotalBPSK_Mark_in, DSP::Float TotalQPSK_Mark_in)
 {
-  DSP_float TotalBPSK_Mark_tmp, TotalQPSK_Mark_tmp;
-  DSP_float MeanBPSK_SERs_tmp[12], MeanQPSK_SERs_tmp[12];
+  DSP::Float TotalBPSK_Mark_tmp, TotalQPSK_Mark_tmp;
+  DSP::Float MeanBPSK_SERs_tmp[12], MeanQPSK_SERs_tmp[12];
   char *tmp_tekst;
 
   // +++++++++++++++++++++++++++++++++++++++++++ //
-  DSP_float MeanBPSK_SER=0.0, MeanQPSK_SER=0.0;
+  DSP::Float MeanBPSK_SER=0.0, MeanQPSK_SER=0.0;
   for (int ind_ = 0; ind_ < 12; ind_++)
   {
     MeanBPSK_SERs_tmp[ind_] = MeanBPSK_SERs_in[ind_];
@@ -3553,7 +3553,7 @@ void GetSER_info(char *tekst,
 //  fprintf(tmpFILE, "Average BPSK SER = 10.^(%.2f)\n", log10(MeanBPSK_SER));
 //  fprintf(tmpFILE, "Average QPSK SER = 10.^(%.2f)\n", log10(MeanQPSK_SER));
 // for geometric average
-  DSP_float BPSK_factor, QPSK_factor;
+  DSP::Float BPSK_factor, QPSK_factor;
   int BPSK_order, QPSK_order;
   if (_finite(MeanBPSK_SER))
   {
@@ -3945,7 +3945,7 @@ void T_time_base::SetOffsetDate(const wxDateTime &date_tmp)
   // Czas referencyjny
   dt.Set(day, wxDateTime::Month(wxDateTime::Jan+(month-1)), year,
          real_hours, real_minutes, real_seconds, 0);
-  // uwzglêdniamy time offset
+  // uwzglï¿½dniamy time offset
   dt.Add(wxTimeSpan((long int)hours, (long int)minutes, (long int)seconds, (long int)milliseconds));
 
   // wymieniamy date
@@ -3976,7 +3976,7 @@ void T_time_base::SetOffsetTime(const wxDateTime &date_tmp)
   // Czas referencyjny
   dt.Set(day, wxDateTime::Month(wxDateTime::Jan+(month-1)), year,
          real_hours, real_minutes, real_seconds, 0);
-  // uwzglêdniamy time offset
+  // uwzglï¿½dniamy time offset
   dt.Add(wxTimeSpan((long int)hours, (long int)minutes, (long int)seconds, (long int)milliseconds));
 
   // wymieniamy czas
@@ -4006,7 +4006,7 @@ void T_time_base::AddOffsetToReferenceTime(void)
   // Czas referencyjny
   dt.Set(day, wxDateTime::Month(wxDateTime::Jan+(month-1)), year,
          real_hours, real_minutes, real_seconds, 0);
-  // uwzglêdniamy time offset
+  // uwzglï¿½dniamy time offset
   dt.Add(wxTimeSpan((long int)hours, (long int)minutes, (long int)seconds, (long int)milliseconds));
 
   // zapisz nowy reference time

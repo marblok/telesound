@@ -10,19 +10,31 @@
 #include "BitmapFont.h"
 #include "OutlineFont.h"
 #include "Misc.h"
-#include <DSPmodules_misc.h>
+#include <DSP_modules_misc.h>
 
 #include "MyGLCanvas.h"
 
 const int ID_DrawNow    = wxID_HIGHEST+1;
 const int ID_ProcessEnd = wxID_HIGHEST+2;
 const int ID_BranchEnd  = wxID_HIGHEST+3;
+/*
+Event Macros https://wiki.wxwidgets.org/Custom_Events
+The old macros for this were: DECLARE_EVENT_TYPE(MY_NEW_TYPE, wxID_ANY) and DEFINE_EVENT_TYPE(MY_NEW_TYPE) though it was almost as easy to use non-macro code. 
+SInce wx3.0 events are type-safe and the new macros take this into account; 
+so code that doesn't have to be backwards-compatible should use: wxDECLARE_EVENT(MY_NEW_TYPE, wxCommandEvent); and wxDEFINE_EVENT(MY_NEW_TYPE, wxCommandEvent);
+(Note the semicolons.) You now have to specify the event class that will use the new wxEventType; 
+it will often be wxCommandEvent. 
 DECLARE_EVENT_TYPE(wxEVT_DRAW_NOW, -1)
 DECLARE_EVENT_TYPE(wxEVT_PROCESS_END, -1)
 DECLARE_EVENT_TYPE(wxEVT_BRANCH_END, -1)
+*/
+wxDECLARE_EVENT(wxEVT_DRAW_NOW, wxCommandEvent);
+wxDECLARE_EVENT(wxEVT_PROCESS_END, wxCommandEvent);
+wxDECLARE_EVENT(wxEVT_BRANCH_END, wxCommandEvent);
 #ifdef __DEBUG__
 const int ID_StatusBox_AppendText  = wxID_HIGHEST+4;
-DECLARE_EVENT_TYPE(wxEVT_STATUSBOX_UPDATE, -1)
+//DECLARE_EVENT_TYPE(wxEVT_STATUSBOX_UPDATE, -1);
+wxDECLARE_EVENT(wxEVT_STATUSBOX_UPDATE, wxCommandEvent);
 #endif // __DEBUG__
 
 class T_DSPlib_processing;
@@ -97,7 +109,7 @@ class T_TaskElement : public wxEvtHandler
      */
     MyProcessingBranch *ProcessingBranch;
     //!
-    DSPu_MORSEkey *MorseKey_temp;
+    DSP::u::MORSEkey *MorseKey_temp;
 
   private:
     //! Pointer to the first processing specification on the list

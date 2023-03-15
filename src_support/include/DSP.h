@@ -59,7 +59,7 @@ class T_InputElement;
  *  \warning No feedback loops are allowed !!!
  *
  */
-class T_OutputStackElement : public DSP_name
+class T_OutputStackElement : public DSP::name
 {
     friend class T_InputElement;
 
@@ -248,7 +248,7 @@ class T_OutputStackElement : public DSP_name
      * Returns overlap size required by T_OutputStackElement::Process function.
      * \note If required overlap size is not constant, this function must
      *   return maximum expected overlap segment size.
-     * \note This size is in DSP_complex elements
+     * \note This size is in DSP::Complex elements
      */
     virtual unsigned int ElementOverlapSegmentSize(void) = 0;
     //! Returns size of standard output segment
@@ -331,7 +331,7 @@ class T_OutputStackElement : public DSP_name
      *  to access buffer for its output and must be unlocked
      *  before T_OutputStackElement::ProcessOutputElements
      *
-     *  // DSP_complex_ptr LockCurrentSegment(E_processing_DIR processing_DIR);
+     *  // DSP::Complex_ptr LockCurrentSegment(E_processing_DIR processing_DIR);
      */
     template<class T>
     T *LockCurrentSegment(E_processing_DIR processing_DIR);
@@ -397,15 +397,15 @@ class T_OutputStackElement : public DSP_name
      *
      * \code
 unsigned int T_Test::Process_cplx(E_processing_DIR processing_DIR,
-    unsigned int NoOfSamples, DSP_complex_ptr InputData)
+    unsigned int NoOfSamples, DSP::Complex_ptr InputData)
 {
   unsigned int current_segment_ind;
-  DSP_complex_ptr cplx_buffer;
+  DSP::Complex_ptr cplx_buffer;
 
   cplx_buffer = LockCurrentSegment(processing_DIR);
   if (cplx_buffer == NULL)
   {
-    DSPf_ErrorMessage("T_Test::Process", "output buffer lock failure");
+    DSP::log << DSP::e::LogMode::Error <<"T_Test::Process"<< DSP::e::LogMode::second << "output buffer lock failure"<<endl;
     return;
   }
 
@@ -421,10 +421,10 @@ unsigned int T_Test::Process_cplx(E_processing_DIR processing_DIR,
       \endcode
      */
     virtual unsigned int Process_cplx(E_processing_DIR processing_DIR,
-        unsigned int NoOfSamples, DSP_complex_ptr InputData);
+        unsigned int NoOfSamples, DSP::Complex_ptr InputData);
     //! The same as T_OutputStackElement::Process_cplx but with real input data
     virtual unsigned int Process_real(E_processing_DIR processing_DIR,
-        unsigned int NoOfSamples, DSP_float_ptr InputData);
+        unsigned int NoOfSamples, DSP::Float_ptr InputData);
 };
 
 class T_InputElement : public T_OutputStackElement
@@ -604,15 +604,15 @@ class T_InputElement : public T_OutputStackElement
 class T_FILEinput : public T_InputElement
 {
   private:
-    DSPu_FILEinput *input_file;
+    DSP::u::FileInput *input_file;
     unsigned int raw_buffer_size;
     uint8_t *raw_buffer;
     // unsigned int buffer_size; <== this is managed in T_OutputStackElement
-    // DSP_complex *cplx_buffer; <== this is managed in T_OutputStackElement
+    // DSP::Complex *cplx_buffer; <== this is managed in T_OutputStackElement
 
     bool input_file_is_mono;
     //! Type of the input file
-    DSPe_FileType FileType;
+    DSP::e::FileType FileType;
   public:
     //T_FILEinput(char *filename, unsigned int buffer_size_in = 1024,
     //    unsigned int no_of_output_segments = 8);
@@ -640,7 +640,7 @@ class T_FILEinput : public T_InputElement
 class T_FILEoutput : public T_OutputStackElement
 {
   private:
-    DSPu_FILEoutput *output_file;
+    DSP::u::FileOutput *output_file;
     unsigned int raw_buffer_size;
     uint8_t *raw_buffer;
     //! true if writes to mono file
@@ -662,7 +662,7 @@ class T_FILEoutput : public T_OutputStackElement
      *   Which means both Process_cplx and Process_real will be needed.
      */
     unsigned int Process_cplx(E_processing_DIR processing_DIR = E_PD_forward,
-                      unsigned int NoOfSamples = 0, DSP_complex_ptr InputData = 0);
+                      unsigned int NoOfSamples = 0, DSP::Complex_ptr InputData = 0);
 };
 
 //! \todo_later change the name
@@ -679,13 +679,13 @@ class T_DDS : public T_OutputStackElement
     //! log2(LUT_size)
     static unsigned int LUT_k;
     //! one period (LUT_size) of complex sinusoid
-    static DSP_complex *LUT;
+    static DSP::Complex *LUT;
     static unsigned int LUT2_size;
     static unsigned int LUT2_k;
     //! corrections sinus table (sin(dw)) (LUT2_size)
-    static DSP_float *LUT2a;
+    static DSP::Float *LUT2a;
     //! corrections sinus table (sin(dw/2)) (LUT2_size)
-    static DSP_float *LUT2b;
+    static DSP::Float *LUT2b;
 
     //! normalized frequency of DDS
     double fo;
@@ -756,7 +756,7 @@ class T_DDS : public T_OutputStackElement
     /*! \todo Implement also the real input version
      */
     unsigned int Process_cplx(E_processing_DIR processing_DIR,
-        unsigned int NoOfSamples, DSP_complex_ptr InputData);
+        unsigned int NoOfSamples, DSP::Complex_ptr InputData);
 };
 
 //! Quadrature decimation by 2 with bandpass antialiasing filter
@@ -768,8 +768,8 @@ class T_QD2_BPF : public T_OutputStackElement
     //! decimation filter length
     unsigned int N_FIR;
     //! coefficients of the decimation filter
-    DSP_float *h_LPF;
-    DSP_complex *h_BPF;
+    DSP::Float_vector h_LPF;
+    DSP::Complex *h_BPF;
     double fo, fp, fs;
 
     //! Returns LPF prototype filter length based on fp and fs.
@@ -809,7 +809,7 @@ class T_QD2_BPF : public T_OutputStackElement
     /*! \todo Also real input version might be useful
      */
     unsigned int Process_cplx(E_processing_DIR processing_DIR,
-        unsigned int NoOfSamples, DSP_complex_ptr InputData);
+        unsigned int NoOfSamples, DSP::Complex_ptr InputData);
 };
 
 //! Quadrature decimation by 2 with lowpass antialiasing filter
@@ -821,7 +821,7 @@ class T_QD2_LPF : public T_OutputStackElement
     //! decimation filter length
     unsigned int N_FIR;
     //! coefficients of the decimation filter
-    DSP_float *h_LPF;
+    DSP::Float_vector h_LPF;
     double fp, fs;
 
     //! Returns LPF prototype filter length based on fp and fs.
@@ -861,7 +861,7 @@ class T_QD2_LPF : public T_OutputStackElement
     /*! \todo Also real input version might be useful
      */
     unsigned int Process_cplx(E_processing_DIR processing_DIR,
-        unsigned int NoOfSamples, DSP_complex_ptr InputData);
+        unsigned int NoOfSamples, DSP::Complex_ptr InputData);
 };
 
 
@@ -881,19 +881,19 @@ class T_Spectrogram : public T_OutputStackElement
     unsigned int NoOfOverlappedPSDs;
 
     unsigned int PSD_per_segment;
-    DSP_float Overlap;
+    DSP::Float Overlap;
     unsigned int NoOfPSDsPerAPSD;
     //! number of samples to skip to next PSD input segment
     unsigned int overlap_step;
 
     //! FFT object
-    DSP_Fourier SpecgramFFT;
+    DSP::Fourier SpecgramFFT;
     //! Table storing time window coefficients
-    DSP_float_ptr   time_window;
+    DSP::Float_ptr   time_window;
     //! table for FFT input
-    DSP_complex_ptr FFT_input;
+    DSP::Complex_vector FFT_input;
     //! table for FFT output => squared magnitude
-    DSP_float_ptr   FFT_output;
+    DSP::Float_vector   FFT_output;
     //! number of PSD already used in current APSD calculation
     unsigned int PSD_2_APSD_index;
 
@@ -947,7 +947,7 @@ class T_Spectrogram : public T_OutputStackElement
     /*! \todo Implement version for real input signals
      */
     unsigned int Process_cplx(E_processing_DIR processing_DIR,
-        unsigned int NoOfSamples, DSP_complex_ptr InputData);
+        unsigned int NoOfSamples, DSP::Complex_ptr InputData);
 };
 
 class MyGLCanvas;
@@ -977,7 +977,7 @@ class T_SpectrogramDraw : public T_OutputStackElement
     long double F_L, F_U;
     long double CenterFrequency;
 
-    DSP_float min, max;
+    DSP::Float min, max;
     bool Use_dB;
 
     //! decides how coordinates are displayed
@@ -1005,8 +1005,8 @@ class T_SpectrogramDraw : public T_OutputStackElement
                       T_time_base recording_time_in,
                       //! time offset in samples (first sample used to compute spectrogram)
                       long long time_offset = 0,
-                      DSP_float min_in = -20.0,
-                      DSP_float max_in = +20.0,
+                      DSP::Float min_in = -20.0,
+                      DSP::Float max_in = +20.0,
                       bool Use_dB_in = true
                       );
     ~T_SpectrogramDraw(void);
@@ -1046,7 +1046,7 @@ class T_SpectrogramDraw : public T_OutputStackElement
     unsigned int ElementInputSubsegmentSize(void);
 
     unsigned int Process_real(E_processing_DIR processing_DIR,
-        unsigned int NoOfSamples, DSP_float_ptr InputData);
+        unsigned int NoOfSamples, DSP::Float_ptr InputData);
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
@@ -1080,7 +1080,7 @@ class T_HB_SRC_Farrow : public T_OutputStackElement
      *   one for each FSD filter response sample (size of this vector == N_FSD)
      *  .
      */
-    DSP_float_ptr *p_i_n;
+    DSP::Float_ptr *p_i_n;
   public:
     /*!
      * @param Fs1  input sampling rate
@@ -1101,7 +1101,7 @@ class T_HB_SRC_Farrow : public T_OutputStackElement
     /*! \todo Also real input version might be useful
      */
     unsigned int Process_cplx(E_processing_DIR processing_DIR,
-        unsigned int NoOfSamples, DSP_complex_ptr InputData);
+        unsigned int NoOfSamples, DSP::Complex_ptr InputData);
 };
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
@@ -1117,8 +1117,8 @@ class T_FIR : public T_OutputStackElement
     //! true if filter is the LPF one
     bool Is_LPF;
     //! coefficients of the decimation filter
-    DSP_float *h_LPF;
-    DSP_complex *h_BPF;
+    DSP::Float_vector h_LPF;
+    DSP::Complex *h_BPF;
     double fo, fp, fs;
 
     //! Returns LPF prototype filter length based on fp and fs.
@@ -1144,7 +1144,7 @@ class T_FIR : public T_OutputStackElement
     /*! \todo Also real input version might be useful
      */
     unsigned int Process_cplx(E_processing_DIR processing_DIR,
-        unsigned int NoOfSamples, DSP_complex_ptr InputData);
+        unsigned int NoOfSamples, DSP::Complex_ptr InputData);
 };
 
 

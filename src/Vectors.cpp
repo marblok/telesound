@@ -804,7 +804,7 @@ void TFourier::resize(DWORD K)
 
     for (i=0; i<K; i++)
     { //exp{j*2*pi/K*i}
-      cSin[i]=M_complex(cos(2*M_PIx1*i/K),-sin(2*M_PIx1*i/K));
+      cSin[i]=M_complex(cos(2*DSP::M_PIx1*i/K),-sin(2*DSP::M_PIx1*i/K));
       if ((i%2)==0)
         cSinFFT[i>>1]=cSin[i];
       RevBitTable[i]=BitRev(i, Kbit+1);
@@ -1313,8 +1313,8 @@ void TDemodDecym2::ReInit(short beta)
 
   for (ind=0; ind<beta; ind++)
   {
-    h_re[ind]=sin(M_PIx1*(ind-beta+((Tfloat)0.5)))/
-                 (M_PIx1*(ind-beta+((Tfloat)0.5)));
+    h_re[ind]=sin(DSP::M_PIx1*(ind-beta+((Tfloat)0.5)))/
+                 (DSP::M_PIx1*(ind-beta+((Tfloat)0.5)));
     h_re[ind]*=GetBlackman_h(ind*2, N);
   }
 // /=MAXSHORT można tutaj przeniesc
@@ -1426,8 +1426,8 @@ void TDecym2::ReInit(short beta)
 
   for (ind=0; ind<beta; ind++)
   {
-    h_re[ind]=sin(M_PIx1*(ind-beta+((Tfloat)0.5)))/
-                 (M_PIx1*(ind-beta+((Tfloat)0.5)));
+    h_re[ind]=sin(DSP::M_PIx1*(ind-beta+((Tfloat)0.5)))/
+                 (DSP::M_PIx1*(ind-beta+((Tfloat)0.5)));
     h_re[ind]*=GetBlackman_h(ind*2, N)/2;
   }
 // /=MAXSHORT można tutaj przeniesc
@@ -1805,14 +1805,14 @@ void T_Demodulator::Demodulation(float k, cvector &In, cvector &Out, int K)
 {
   DWORD n;
 
-////  omega=-M_PI+(2*M_PI*k)/length(Segment);
+////  omega=-M_PI+(2*DSP::M_PI*k)/length(Segment);
 
 //  if (k<(int)(length(In)/2))
   if (k<(int)(K/2))
-//    omega=M_PI+(2*M_PI*k)/length(In);
+//    omega=M_PI+(2*DSP::M_PI*k)/length(In);
     omega=1+(2*k)/K;
   else
-//    omega=-M_PI+(2*M_PI*k)/length(In);
+//    omega=-M_PI+(2*DSP::M_PI*k)/length(In);
     omega=-1+(2*k)/K;
 
   Out=In;
@@ -1820,7 +1820,7 @@ void T_Demodulator::Demodulation(float k, cvector &In, cvector &Out, int K)
   for (n=0; n<length(Out); n++)
   {
 //    Out[n]*=M_complex(cos(n*omega), -sin(n*omega));
-    Out[n]*=M_complex(cos(M_PIx1*faza), -sin(M_PIx1*faza));
+    Out[n]*=M_complex(cos(DSP::M_PIx1*faza), -sin(DSP::M_PIx1*faza));
     faza += omega;
 
     if (faza > 1)

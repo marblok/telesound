@@ -72,66 +72,78 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   run_as_server = SpecList->run_as_server;
   address = SpecList->IP_address;
-  wave_in_resample_LPF_b = NULL;
-  wave_in_resample_LPF_a = NULL;
+  wave_in_resample_LPF_b.clear();
+  wave_in_resample_LPF_a.clear();
+
   switch (Fp)
   {
     case 8000:
       Fp_wave_in = 48000;
       L = 1; M = 6;
       resample_LPF_order = 14;
-      wave_in_resample_LPF_b = NULL;
-      wave_in_resample_LPF_a = NULL;
-      wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_48000_8000;
-      wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_48000_8000;
+      wave_in_resample_LPF_b.clear();
+      wave_in_resample_LPF_a.clear();
+      //wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_48000_8000
+      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_b, wave_in_resample_LPF_b_48000_8000);
+      //wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_48000_8000;
+      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_a, wave_in_resample_LPF_a_48000_8000);
       break;
     case 11025:
       Fp_wave_in = 44100;
       L = 1; M = 4;
       resample_LPF_order = 14;
-      wave_in_resample_LPF_b = NULL;
-      wave_in_resample_LPF_a = NULL;
-      wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_44100_11025;
-      wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_44100_11025;
+      wave_in_resample_LPF_b.clear();
+      wave_in_resample_LPF_a.clear();
+      //wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_44100_11025;
+      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_b, wave_in_resample_LPF_b_44100_11025);
+      //wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_44100_11025;
+      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_a, wave_in_resample_LPF_a_44100_11025);
       break;
     case 16000:
       Fp_wave_in = 48000;
       L = 1; M = 3;
       resample_LPF_order = 14;
-      wave_in_resample_LPF_b = NULL;
-      wave_in_resample_LPF_a = NULL;
-      wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_48000_16000;
-      wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_48000_16000;
+      wave_in_resample_LPF_b.clear();
+      wave_in_resample_LPF_a.clear();
+      //wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_48000_16000;
+      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_b, wave_in_resample_LPF_b_48000_16000);
+      //wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_48000_16000;
+      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_a, wave_in_resample_LPF_a_48000_16000);
       break;
     case 22050:
       Fp_wave_in = 44100;
       L = 1; M = 2;
       resample_LPF_order = 14;
-      wave_in_resample_LPF_b = const_cast<DSP_float_ptr>(wave_in_resample_LPF_b_44100_22050);
-      wave_in_resample_LPF_a = const_cast<DSP_float_ptr>(wave_in_resample_LPF_a_44100_22050);
+      //wave_in_resample_LPF_b.assign(wave_in_resample_LPF_a_44100_22050);
+      copy(&wave_in_resample_LPF_b_44100_22050[0], &wave_in_resample_LPF_b_44100_22050[15], back_inserter(wave_in_resample_LPF_b));
+      //wave_in_resample_LPF_a.
+      //wave_in_resample_LPF_a = const_cast<DSP::Float_ptr>(*wave_in_resample_LPF_a_44100_22050);
+      copy(&wave_in_resample_LPF_a_44100_22050[0], &wave_in_resample_LPF_a_44100_22050[15], back_inserter(wave_in_resample_LPF_a));
       break;
     case 32000:
       Fp_wave_in = 48000;
       L = 2; M = 3;
       resample_LPF_order = 14;
-      wave_in_resample_LPF_b = NULL;
-      wave_in_resample_LPF_a = NULL;
-      wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_48000_32000;
-      wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_48000_32000;
+      wave_in_resample_LPF_b.clear();
+      wave_in_resample_LPF_a.clear();
+      //wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_48000_32000;
+      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_b, wave_in_resample_LPF_b_48000_32000);
+      //wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_48000_32000;
+      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_a, wave_in_resample_LPF_a_48000_32000);
       break;
     case 44100:
       Fp_wave_in = 44100;
       L =1; M = 1;
       resample_LPF_order = 0;
-      wave_in_resample_LPF_b = NULL;
-      wave_in_resample_LPF_a = NULL;
+      wave_in_resample_LPF_b.clear();
+      wave_in_resample_LPF_a.clear();
       break;
     case 48000:
       Fp_wave_in = 48000;
       L =1; M = 1;
       resample_LPF_order = 0;
-      wave_in_resample_LPF_b = NULL;
-      wave_in_resample_LPF_a = NULL;
+      wave_in_resample_LPF_b.clear();
+      wave_in_resample_LPF_a.clear();
       break;
     default:
       Fp_wave_in = 1;
@@ -139,7 +151,6 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   }
   specgram_time_span = SpecList->time_span; // in [sek]
   NoOfSamplesPerAPSD = (unsigned int)(specgram_time_span*Fp)/NoOfPSDslots;
-
   // 100 slotów na 2 sek ==> 2*Fp próbek
   // 8000Sa/s : 16000 / 100 ==> 160 Sa na slot
   // 48000Sa/s : 96000 / 100 ==> 960 Sa na slot
@@ -210,9 +221,9 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
 
 
   CurrentObject = NULL;
-  tmp_FFT_buffer = NULL;
-  tmp_FFT_out_buffer = NULL;
-  tmp_FFT_out_buffer2 = NULL;
+  //tmp_FFT_buffer = NULL;
+  //tmp_FFT_out_buffer = NULL;
+  //tmp_FFT_out_buffer2 = NULL;
   window = NULL;
 
   SignalSegments = NULL;
@@ -231,32 +242,17 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   GraphInitialized = false;
 
   //! \bug put socket sample type into SpecList and let user select
-  CreateAlgorithm(run_as_server, address, Fp, DSP_ST_short);
+  CreateAlgorithm(run_as_server, address, Fp, DSP::e::SampleType::ST_short);
 
-  DSP_component::CheckInputsOfAllComponents();
-  DSP_component::ListComponents(MasterClock);
-  DSP_clock::SchemeToDOTfile(MasterClock, "processing_scheme.dot");
+  DSP::Component::CheckInputsOfAllComponents();
+  DSP::Component::ListComponents(MasterClock);
+  DSP::Clock::SchemeToDOTfile(MasterClock, "processing_scheme.dot");
 }
 
 T_DSPlib_processing::~T_DSPlib_processing(void)
 {
   DestroyAlgorithm();
 
-  if (tmp_FFT_buffer != NULL)
-  {
-    delete [] tmp_FFT_buffer;
-    tmp_FFT_buffer = NULL;
-  }
-  if (tmp_FFT_out_buffer != NULL)
-  {
-    delete [] tmp_FFT_out_buffer;
-    tmp_FFT_out_buffer = NULL;
-  }
-  if (tmp_FFT_out_buffer2 != NULL)
-  {
-    delete [] tmp_FFT_out_buffer2;
-    tmp_FFT_out_buffer2 = NULL;
-  }
   if (window != NULL)
   {
     delete [] window;
@@ -347,11 +343,21 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
   if ((temp_spec->userdata_state & E_US_channel_LPF_coefs) != 0)
   {
     // compute new LPF filter coefs
+    DSP::Float_ptr LPF_new_coefs_b_ptr;
+    DSP::Float_ptr LPF_new_coefs_a_ptr;
+//TODO: change this
     ChannelFg = temp_spec->channel_Fg;
-    GetIIR_LPF_coefs(ChannelFg, Fp, LPF_new_Nb, LPF_new_coefs_b, LPF_new_Na, LPF_new_coefs_a);
+    GetIIR_LPF_coefs(ChannelFg, Fp, LPF_new_Nb, LPF_new_coefs_b_ptr, LPF_new_Na, LPF_new_coefs_a_ptr);
+      LPF_new_coefs_b.resize(LPF_new_Nb);
+    LPF_new_coefs_a.resize(LPF_new_Na);
+  for  (int ind = 0; ind < LPF_new_Nb; ind++)
+    LPF_new_coefs_b[ind] = LPF_new_coefs_b_ptr[ind];
+  for  (int ind = 0; ind < LPF_new_Na; ind++)
+    LPF_new_coefs_a[ind] = LPF_new_coefs_a_ptr[ind];
+
     if (LPF_new_Na <= 0)
     {
-      LPF_new_coefs_a = new DSP_float[1];
+      LPF_new_coefs_a.resize(1);
       LPF_new_coefs_a[0] = 1.0;
     } // coefs_b == NULL is e proper value
     //! \bug implement support for ChannelFilterON
@@ -362,18 +368,18 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
       int ind;
 
       sprintf(text, "LPF_new_Nb = %i", LPF_new_Nb);
-      DSPf_InfoMessage(text);
+      DSP::log << text<<endl;
       for (ind = 0; ind < LPF_new_Nb; ind++)
       {
         sprintf(text, "  LPF_new_coefs_b[%i] = %.6f", ind, LPF_new_coefs_b[ind]);
-        DSPf_InfoMessage(text);
+        DSP::log << text<<endl;
       }
       sprintf(text, "LPF_new_Na = %i", LPF_new_Na);
-      DSPf_InfoMessage(text);
+      DSP::log << text<<endl;
       for (ind = 0; ind < LPF_new_Na; ind++)
       {
         sprintf(text, "  LPF_new_coefs_a[%i] = %.6f", ind, LPF_new_coefs_a[ind]);
-        DSPf_InfoMessage(text);
+        DSP::log << text<<endl;
       }
     }
     #endif
@@ -385,11 +391,20 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
   if ((temp_spec->userdata_state & E_US_channel_HPF_coefs) != 0)
   {
     // compute new HPF filter coefs
+    DSP::Float_ptr HPF_new_coefs_b_tmp, HPF_new_coefs_a_tmp;
     ChannelFd = temp_spec->channel_Fd;
-    GetIIR_HPF_coefs(ChannelFd, Fp, HPF_new_Nb, HPF_new_coefs_b, HPF_new_Na, HPF_new_coefs_a);
+    GetIIR_HPF_coefs(ChannelFd, Fp, HPF_new_Nb, HPF_new_coefs_b_tmp, HPF_new_Na, HPF_new_coefs_a_tmp);
+    HPF_new_coefs_b.resize(HPF_new_Nb);
+    HPF_new_coefs_a.resize(HPF_new_Na);
+    for  (int ind = 0; ind < HPF_new_Nb; ind++)
+      HPF_new_coefs_b[ind] = HPF_new_coefs_b_tmp[ind];
+    for  (int ind = 0; ind < HPF_new_Na; ind++)
+      HPF_new_coefs_a[ind] = HPF_new_coefs_a_tmp[ind];
+
+
     if (HPF_new_Na <= 0)
     {
-      HPF_new_coefs_a = new DSP_float[1];
+      HPF_new_coefs_a.resize(1);
       HPF_new_coefs_a[0] = 1.0;
     } // coefs_b == NULL is e proper value
     //! \bug implement support for ChannelFilterON
@@ -400,18 +415,18 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
       int ind;
 
       sprintf(text, "HPF_new_Nb = %i", HPF_new_Nb);
-      DSPf_InfoMessage(text);
+      DSP::log << text<<endl;
       for (ind = 0; ind < HPF_new_Nb; ind++)
       {
         sprintf(text, "  HPF_new_coefs_b[%i] = %.6f", ind, HPF_new_coefs_b[ind]);
-        DSPf_InfoMessage(text);
+         DSP::log << text<<endl;
       }
       sprintf(text, "HPF_new_Na = %i", HPF_new_Na);
-      DSPf_InfoMessage(text);
+      DSP::log << text<<endl;
       for (ind = 0; ind < HPF_new_Na; ind++)
       {
         sprintf(text, "  HPF_new_coefs_a[%i] = %.6f", ind, HPF_new_coefs_a[ind]);
-        DSPf_InfoMessage(text);
+        DSP::log << text<<endl;
       }
     }
     #endif
@@ -439,7 +454,7 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
   if (temp_spec->userdata_state != E_US_none)
   {
     #ifdef __DEBUG__
-      DSPf_ErrorMessage("T_DSPlib_processing::ProcessUserData", "unsupported userdata state");
+      DSP::log << DSP::e::LogMode::Error <<"T_DSPlib_processing::ProcessUserData"<< DSP::e::LogMode::second << "unsupported userdata state"<<endl;
     #endif
     temp_spec->userdata_state = E_US_none;
   }
@@ -447,11 +462,11 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
 }
 
 void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
-                                          long SamplingRate, DSPe_SampleType sockets_sample_type)
+                                          long SamplingRate, DSP::e::SampleType sockets_sample_type)
 {
   char tekst[1024];
   int ind;
-  DSP_clock_ptr WaveInClock, WaveInClock2;
+  DSP::Clock_ptr WaveInClock, WaveInClock2;
 
   if (MasterClock != NULL)
     DestroyAlgorithm();
@@ -464,9 +479,9 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
     //if (address == NULL)
       address = "0.0.0.0"; // always use this address to avoid problems
 
-    //DSPf_SetLogState(DSP_LS_file);
+    //DSP::f::SetLogState(DSP_LS_file);
 #ifdef __DEBUG__
-    DSPf_SetLogFileName("log_file_server.log");
+    DSP::log.SetLogFileName("log_file_server.log");
 #endif
   }
   else
@@ -474,247 +489,258 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
     if (address.length() == 0)
       address = "127.0.0.1";
 
-    //DSPf_SetLogState(DSP_LS_file);
+    //DSP::f::SetLogState(DSP_LS_file);
 #ifdef __DEBUG__
-    DSPf_SetLogFileName("log_file_client.log");
+    DSP::log.SetLogFileName("log_file_client.log");
 #endif
   }
 
-  DSPf_InfoMessage(DSP_lib_version_string());
-  DSPf_InfoMessage();
+  DSP::log << DSP::lib_version_string()<<endl<<endl;
 
-  MasterClock=DSP_clock::CreateMasterClock();
+  MasterClock=DSP::Clock::CreateMasterClock();
 
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // wejście 1: mikrofon // możliwośæ wyłączenia w trybie DEBUG
-  AudioIn = new DSPu_AudioInput(MasterClock, Fp, 1, 16);
+  AudioIn = new DSP::u::AudioInput(MasterClock, Fp, 1, 16);
   if (AudioInOff == true)
-    AudioInGain = new DSPu_Amplifier(0.0);
+    AudioInGain = new DSP::u::Amplifier(0.0);
   else
-    AudioInGain = new DSPu_Amplifier(1.0);
-  DSP_float a_in[2] = {1.0, -0.99};
+    AudioInGain = new DSP::u::Amplifier(1.0);
   float factor = 1.99/2.0;
-  DSP_float b_in[2] = {factor*1.0, factor*-1.0};
-  DC_notcher = new DSPu_IIR (2, a_in, 2, b_in);
+  DSP::Float_vector a_in{1.0f, -0.99f}, b_in{factor*1.0f, factor*-1.0f};;
+
+
+  DC_notcher = new DSP::u::IIR (a_in,b_in);
   DC_notcher->SetName("DC_notcher", false);
-  DSP_connect(AudioIn->Output("out"), DC_notcher->Input("in"));
-  DSP_connect(DC_notcher->Output("out"), AudioInGain->Input("in"));
+  AudioIn->Output("out")>>DC_notcher->Input("in");
+  DC_notcher->Output("out")>> AudioInGain->Input("in");
 
   // wejście 2: kod MORSE'a
   if (run_as_server == true)
-    CarrierIn = new DSPu_DDScos(MasterClock, false, 0.5, DSP_float(1200*M_PIx2/Fp));
-    //CarrierIn = new DSPu_DDScos(MasterClock, false, 0.5, DSP_float(400*M_PIx2/Fp));
+    CarrierIn = new DSP::u::DDScos(MasterClock, false, 0.5, DSP::Float(1200*DSP::M_PIx2/Fp));
+    //CarrierIn = new DSP::u::DDScos(MasterClock, false, 0.5, DSP::Float(400*DSP::M_PIx2/Fp));
   else
-    CarrierIn = new DSPu_DDScos(MasterClock, false, 0.5, DSP_float(800*M_PIx2/Fp));
-  MorseKey = new DSPu_MORSEkey(MasterClock, WPM, Fp);
+    CarrierIn = new DSP::u::DDScos(MasterClock, false, 0.5, DSP::Float(800*DSP::M_PIx2/Fp));
+  MorseKey = new DSP::u::MORSEkey(MasterClock, WPM, Fp);
   MorseKey->LoadCodeTable("polish.mct");
-  MorseMul = new DSPu_RealMultiplication(2);
-  DSP_connect(CarrierIn->Output("out"), MorseMul->Input("in1"));
-  DSP_connect(MorseKey->Output("out"), MorseMul->Input("in2"));
+  MorseMul = new DSP::u::RealMultiplication(2);
+  CarrierIn->Output("out")>> MorseMul->Input("in1");
+  MorseKey->Output("out")>> MorseMul->Input("in2");
 
   // wejście 3: plik audio ??? <== może tylko na starcie ??
   //! \bug problem z szybkością próbkowania
-  //WaveIn = new DSPu_WaveInput(MasterClock, "test.wav", ".");
-  WaveInClock = DSP_clock::GetClock(MasterClock, M, L);
-  WaveInClock2 = DSP_clock::GetClock(MasterClock, M, 1);
-  WaveIn = new DSPu_FILEinput(WaveInClock, "", 1U, DSP_ST_short, DSP_FT_wav);
+  //WaveIn = new DSP::u::WaveInput(MasterClock, "test.wav", ".");
+  WaveInClock = DSP::Clock::GetClock(MasterClock, M, L);
+  WaveInClock2 = DSP::Clock::GetClock(MasterClock, M, 1);
+  WaveIn = new DSP::u::FileInput(WaveInClock, "", 1U, DSP::e::SampleType::ST_short, DSP::e::FileType::FT_wav);
   if (L > 1)
   {
-    Zeroinserter = new DSPu_Zeroinserter(WaveInClock, L);
-    DSP_connect(WaveIn->Output("out"), Zeroinserter->Input("in"));
+    Zeroinserter = new DSP::u::Zeroinserter(WaveInClock, L);
+    WaveIn->Output("out")>> Zeroinserter->Input("in");
   }
   if (resample_LPF_order > 0)
   {
-    if (wave_in_resample_LPF_a != NULL)
+    if (!wave_in_resample_LPF_a.empty())
     {
-      WaveIn_LPF = new DSPu_IIR(resample_LPF_order+1, wave_in_resample_LPF_a, resample_LPF_order+1, wave_in_resample_LPF_b);
+      WaveIn_LPF = new DSP::u::IIR(wave_in_resample_LPF_a, wave_in_resample_LPF_b);
 
       if (Zeroinserter == NULL)
-        DSP_connect(WaveIn->Output("out"), WaveIn_LPF->Input("in"));
+        WaveIn->Output("out")>> WaveIn_LPF->Input("in");
       else
-        DSP_connect(Zeroinserter->Output("out"), WaveIn_LPF->Input("in"));
+        Zeroinserter->Output("out")>> WaveIn_LPF->Input("in");
     }
     else
     {
       for (ind = 0; ind < no_of_sos_segments-1; ind++)
       {
-        WaveIn_sos_LPF[ind] = new DSPu_IIR(3, (*wave_in_resample_LPF_sos_a)[ind], 3, (*wave_in_resample_LPF_sos_b)[ind]);
+        WaveIn_sos_LPF[ind] = new DSP::u::IIR(wave_in_resample_LPF_sos_a[ind], wave_in_resample_LPF_sos_b[ind]);
         if (ind >= 1)
-          DSP_connect(WaveIn_sos_LPF[ind-1]->Output("out"), WaveIn_sos_LPF[ind]->Input("in"));
+          WaveIn_sos_LPF[ind-1]->Output("out")>> WaveIn_sos_LPF[ind]->Input("in");
       }
       if (L > 1)
       {
-        DSP_float temp_float[3];
+        DSP::Float_vector temp_float(3);
         for (ind = 0; ind < 3; ind++)
         {
-          temp_float[ind] = L*(*wave_in_resample_LPF_sos_b)[no_of_sos_segments-1][ind];
+          temp_float[ind] = L*wave_in_resample_LPF_sos_b[no_of_sos_segments-1][ind];
         }
-        WaveIn_LPF = new DSPu_IIR(3, (*wave_in_resample_LPF_sos_a)[no_of_sos_segments-1],
-                                  3, temp_float);
+        WaveIn_LPF = new DSP::u::IIR(wave_in_resample_LPF_sos_a[no_of_sos_segments-1], temp_float);
       }
       else
       {
-        WaveIn_LPF = new DSPu_IIR(3, (*wave_in_resample_LPF_sos_a)[no_of_sos_segments-1],
-                                  3, (*wave_in_resample_LPF_sos_b)[no_of_sos_segments-1]);
+        WaveIn_LPF = new DSP::u::IIR(wave_in_resample_LPF_sos_a[no_of_sos_segments-1], wave_in_resample_LPF_sos_b[no_of_sos_segments-1]);
       }
-      DSP_connect(WaveIn_sos_LPF[no_of_sos_segments-2]->Output("out"), WaveIn_LPF->Input("in"));
+      WaveIn_sos_LPF[no_of_sos_segments-2]->Output("out")>> WaveIn_LPF->Input("in");
 
       if (Zeroinserter == NULL)
-        DSP_connect(WaveIn->Output("out"), WaveIn_sos_LPF[0]->Input("in"));
+        WaveIn->Output("out")>>WaveIn_sos_LPF[0]->Input("in");
       else
-        DSP_connect(Zeroinserter->Output("out"), WaveIn_sos_LPF[0]->Input("in"));
+        Zeroinserter->Output("out")>> WaveIn_sos_LPF[0]->Input("in");
     }
   }
   if (M > 1)
   {
-    Decimator = new DSPu_RawDecimator(WaveInClock2, M);
+    Decimator = new DSP::u::RawDecimator(WaveInClock2, M);
     if (WaveIn_LPF == NULL)
     {
       if (Zeroinserter == NULL)
       {
-        DSP_connect(WaveIn->Output("out"), Decimator->Input("in"));
+        WaveIn->Output("out")>> Decimator->Input("in");
       }
       else
-        DSP_connect(Zeroinserter->Output("out"), Decimator->Input("in"));
+        Zeroinserter->Output("out")>> Decimator->Input("in");
     }
     else
-      DSP_connect(WaveIn_LPF->Output("out"), Decimator->Input("in"));
+      WaveIn_LPF->Output("out")>> Decimator->Input("in");
   }
 
-  DigitalSignalsAdd = new DSPu_Addition(2U, 0U);
+  DigitalSignalsAdd = new DSP::u::Addition(2U, 0U);
   DigitalSignalsAdd->SetName("Add", false);
-  DSP_connect(MorseMul->Output("out"), DigitalSignalsAdd->Input("in1"));
+  MorseMul->Output("out")>> DigitalSignalsAdd->Input("in1");
 
   if (Decimator == NULL)
   {
     if (WaveIn_LPF == NULL)
     {
       if (Zeroinserter == NULL)
-        DSP_connect(WaveIn->Output("out"), DigitalSignalsAdd->Input("in2"));
+        WaveIn->Output("out")>> DigitalSignalsAdd->Input("in2");
       else
-        DSP_connect(Zeroinserter->Output("out"), DigitalSignalsAdd->Input("in2"));
+        Zeroinserter->Output("out")>> DigitalSignalsAdd->Input("in2");
     }
     else
-      DSP_connect(WaveIn_LPF->Output("out"), DigitalSignalsAdd->Input("in2"));
+      WaveIn_LPF->Output("out")>> DigitalSignalsAdd->Input("in2");
   }
   else
-    DSP_connect(Decimator->Output("out"), DigitalSignalsAdd->Input("in2"));
+    Decimator->Output("out")>> DigitalSignalsAdd->Input("in2");
 
-  AllSignalsAdd = new DSPu_Addition(2U, 0U);
+  AllSignalsAdd = new DSP::u::Addition(2U, 0U);
   AllSignalsAdd->SetName("Add", false);
-  DSP_connect(AudioInGain->Output("out"), AllSignalsAdd->Input("in1"));
-  DSP_connect(DigitalSignalsAdd->Output("out"), AllSignalsAdd->Input("in2"));
+  AudioInGain->Output("out")>> AllSignalsAdd->Input("in1");
+  DigitalSignalsAdd->Output("out")>> AllSignalsAdd->Input("in2");
 
   if (run_as_server == true)
-    out_socket = new DSPu_SOCKEToutput(address, false, 0x00000002, 1, sockets_sample_type);
+    out_socket = new DSP::u::SocketOutput(address, false, 0x00000002, 1, sockets_sample_type);
   else
-    out_socket = new DSPu_SOCKEToutput(address, true, 0x00000001, 1, sockets_sample_type);
-  DSP_connect(AllSignalsAdd->Output("out"), out_socket->Input("in"));
+    out_socket = new DSP::u::SocketOutput(address, true, 0x00000001, 1, sockets_sample_type);
+  AllSignalsAdd->Output("out")>> out_socket->Input("in");
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   if (run_as_server == true)
-    in_socket = new DSPu_SOCKETinput(MasterClock, address, false, 0x00000001, 1, sockets_sample_type);
+    in_socket = new DSP::u::SocketInput(MasterClock, address, false, 0x00000001, 1, sockets_sample_type);
   else
-    in_socket = new DSPu_SOCKETinput(MasterClock, address, true, 0x00000002, 1, sockets_sample_type);
+    in_socket = new DSP::u::SocketInput(MasterClock, address, true, 0x00000002, 1, sockets_sample_type);
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
-  LocalSignalGain = new DSPu_Amplifier(local_signal_gain);
-  LocalSignalAdd = new DSPu_Addition(2U,0U);
+  LocalSignalGain = new DSP::u::Amplifier(local_signal_gain);
+  LocalSignalAdd = new DSP::u::Addition(2U,0U);
   LocalSignalAdd->SetName("Add", false);
-  DSP_connect(DigitalSignalsAdd->Output("out"), LocalSignalGain->Input("in1"));
-  DSP_connect(LocalSignalGain->Output("out"), LocalSignalAdd->Input("in1"));
-  DSP_connect(in_socket->Output("out"),       LocalSignalAdd->Input("in2"));
+  DigitalSignalsAdd->Output("out")>>LocalSignalGain->Input("in1");
+  LocalSignalGain->Output("out")>> LocalSignalAdd->Input("in1");
+  in_socket->Output("out")>>       LocalSignalAdd->Input("in2");
 
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
-  DSP_float_ptr coefs_b, coefs_a;
+  DSP::Float_vector coefs_b, coefs_a;
+  DSP::Float_ptr coefs_b_ptr, coefs_a_ptr;
   int Na, Nb;
-  GetIIR_HPF_coefs(ChannelFd, Fp, Nb, coefs_b, Na, coefs_a);
+  //FIXME: change to GetIIR_HPF_coefs(ChannelFd, Fp, coefs_b, coefs_a);
+  GetIIR_HPF_coefs(ChannelFd, Fp, Nb, coefs_b_ptr, Na, coefs_a_ptr);
+  //Temporary workaround, not very efficient
+  coefs_b.resize(Nb);
+  coefs_a.resize(Na);
+  for  (ind = 0; ind < Nb; ind++)
+    coefs_b[ind] = coefs_b_ptr[ind];
+  for  (ind = 0; ind < Na; ind++)
+    coefs_a[ind] = coefs_a_ptr[ind];
+
+
   if (Na <= 0)
   {
-    coefs_a = new DSP_float[1];
+    coefs_a.resize(1);
     coefs_a[0] = 1.0;
   } // coefs_b == NULL is e proper value
   //! \bug implement support for ChannelFilterON
-  ChannelFilter_HPF = new DSPu_IIR(Na, coefs_a, Nb, coefs_b);
+  ChannelFilter_HPF = new DSP::u::IIR(coefs_a, coefs_b);
   ChannelFilter_HPF->SetName("IIR HPF", false);
 #ifdef __DOUBLE_CHANNEL_FILTER__
-  ChannelFilter_HPF2 = new DSPu_IIR(Na, coefs_a, Nb, coefs_b);
+  ChannelFilter_HPF2 = new DSP::u::IIR(coefs_a,coefs_b);
   ChannelFilter_HPF2->SetName("IIR HPF 2", false);
 #endif
-  if (coefs_a != NULL)
-    delete [] coefs_a;
-  if (coefs_b != NULL)
-    delete [] coefs_b;
-
+ 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
-  GetIIR_LPF_coefs(ChannelFg, Fp, Nb, coefs_b, Na, coefs_a);
+  //FIXME: change to GetIIR_LPF_coefs(ChannelFg, Fp, coefs_b, coefs_a);
+  GetIIR_LPF_coefs(ChannelFg, Fp, Nb, coefs_b_ptr, Na, coefs_a_ptr);
+  
+  coefs_b.resize(Nb);
+  coefs_a.resize(Na);
+  for  (ind = 0; ind < Nb; ind++)
+    coefs_b[ind] = coefs_b_ptr[ind];
+  for  (ind = 0; ind < Na; ind++)
+    coefs_a[ind] = coefs_a_ptr[ind];
+
   if (Na <= 0)
   {
-    coefs_a = new DSP_float[1];
+    coefs_a.resize(1);
     coefs_a[0] = 1.0;
   } // coefs_b == NULL is e proper value
   //! \bug implement support for ChannelFilterON
-  ChannelFilter_LPF = new DSPu_IIR(Na, coefs_a, Nb, coefs_b);
+  ChannelFilter_LPF = new DSP::u::IIR(coefs_a, coefs_b);
   ChannelFilter_LPF->SetName("IIR LPF", false);
 #ifdef __DOUBLE_CHANNEL_FILTER__
-  ChannelFilter_LPF2 = new DSPu_IIR(Na, coefs_a, Nb, coefs_b);
+  ChannelFilter_LPF2 = new DSP::u::IIR(*coefs_a,*coefs_b);
   ChannelFilter_LPF2->SetName("IIR LPF 2", false);
 #endif
-  if (coefs_a != NULL)
-    delete [] coefs_a;
-  if (coefs_b != NULL)
-    delete [] coefs_b;
+
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   int noise_len = (int)ceil(4*Fp*specgram_time_span);
-  NoiseBuffer = new DSPu_InputBuffer(MasterClock, noise_len, 1, DSP_cyclic);
-  DSP_float_ptr  temp_noise = new DSP_float[noise_len];
-  DSP_rand::InitRandGenerator(false);
-  DSP_rand::randn(noise_len, temp_noise);
-  NoiseBuffer->WriteBuffer(temp_noise, noise_len*sizeof(DSP_float));
+  NoiseBuffer = new DSP::u::InputBuffer(MasterClock, noise_len, 1, DSP::e::BufferType::cyclic);
+  DSP::Float_ptr  temp_noise = new DSP::Float[noise_len];
+  DSP::Randomization::InitRandGenerator(false);
+  DSP::Randomization::randn(noise_len, temp_noise);
+  NoiseBuffer->WriteBuffer(temp_noise, noise_len*sizeof(DSP::Float));
   NoiseBuffer->SetName("randn");
-  NoiseGain = new DSPu_Amplifier(alfa_n);
-  DSP_connect(NoiseBuffer->Output("out"), NoiseGain->Input("in"));
+  NoiseGain = new DSP::u::Amplifier(alfa_n);
+  NoiseBuffer->Output("out")>>NoiseGain->Input("in");
 
-  SignalGain = new DSPu_Amplifier(alfa_s);
-  DSP_connect(LocalSignalAdd->Output("out"), SignalGain->Input("in"));
+  SignalGain = new DSP::u::Amplifier(alfa_s);
+  LocalSignalAdd->Output("out")>>SignalGain->Input("in");
 
-  NoiseAdd = new DSPu_Addition(2U, 0U);
+  NoiseAdd = new DSP::u::Addition(2U, 0U);
   NoiseAdd->SetName("Add", false);
 
-  AudioOut = new DSPu_AudioOutput(Fp, 1, 16);
-  //AudioOut = new DSPu_Vacuum;
+  AudioOut = new DSP::u::AudioOutput(Fp, 1, 16);
+  //AudioOut = new DSP::u::Vacuum;
 
 #ifdef __TEST_CHANNEL_FILTER__
-  DSP_connect(SignalGain->Output("out"), NoiseAdd->Input("in1"));
-  DSP_connect(NoiseGain->Output("out"), NoiseAdd->Input("in2"));
-  DSP_connect(NoiseAdd->Output("out"), ChannelFilter_LPF->Input("in"));
+  SignalGain->Output("out")>> NoiseAdd->Input("in1");
+  NoiseGain->Output("out")>> NoiseAdd->Input("in2");
+  NoiseAdd->Output("out")>> ChannelFilter_LPF->Input("in");
   #ifdef __DOUBLE_CHANNEL_FILTER__
-    DSP_connect(ChannelFilter_LPF->Output("out"), ChannelFilter_LPF2->Input("in"));
-    DSP_connect(ChannelFilter_LPF2->Output("out"), ChannelFilter_HPF2->Input("in"));
-    DSP_connect(ChannelFilter_HPF2->Output("out"), ChannelFilter_HPF->Input("in"));
-    DSP_connect(ChannelFilter_HPF->Output("out"), AudioOut->Input("in"));
+    ChannelFilter_LPF->Output("out")>> ChannelFilter_LPF2->Input("in");
+    ChannelFilter_LPF2->Output("out")>> ChannelFilter_HPF2->Input("in");
+    ChannelFilter_HPF2->Output("out")>> ChannelFilter_HPF->Input("in");
+    ChannelFilter_HPF->Output("out")>> AudioOut->Input("in");
   #else
-    DSP_connect(ChannelFilter_LPF->Output("out"), ChannelFilter_HPF->Input("in"));
-    DSP_connect(ChannelFilter_HPF->Output("out"), AudioOut->Input("in"));
+    ChannelFilter_LPF->Output("out")>> ChannelFilter_HPF->Input("in");
+    ChannelFilter_HPF->Output("out")>> AudioOut->Input("in");
   #endif
 #else
-  DSP_connect(SignalGain->Output("out"), ChannelFilter_LPF->Input("in"));
+  SignalGain->Output("out")>> ChannelFilter_LPF->Input("in");
   #ifdef __DOUBLE_CHANNEL_FILTER__
-    DSP_connect(ChannelFilter_LPF->Output("out"), ChannelFilter_LPF2->Input("in"));
-    DSP_connect(ChannelFilter_LPF2->Output("out"), ChannelFilter_HPF2->Input("in"));
-    DSP_connect(ChannelFilter_HPF2->Output("out"), ChannelFilter_HPF->Input("in"));
-    DSP_connect(ChannelFilter_HPF->Output("out"), NoiseAdd->Input("in1"));
+    ChannelFilter_LPF->Output("out")>> ChannelFilter_LPF2->Input("in");
+    ChannelFilter_LPF2->Output("out")>> ChannelFilter_HPF2->Input("in");
+    ChannelFilter_HPF2->Output("out")>> ChannelFilter_HPF->Input("in");
+    ChannelFilter_HPF->Output("out")>>NoiseAdd->Input("in1");
   #else
-    DSP_connect(ChannelFilter_LPF->Output("out"), ChannelFilter_HPF->Input("in"));
-    DSP_connect(ChannelFilter_HPF->Output("out"), NoiseAdd->Input("in1"));
+    ChannelFilter_LPF->Output("out")>> ChannelFilter_HPF->Input("in");
+    ChannelFilter_HPF->Output("out")>> NoiseAdd->Input("in1");
   #endif
-  DSP_connect(NoiseGain->Output("out"), NoiseAdd->Input("in2"));
-  DSP_connect(NoiseAdd->Output("out"), AudioOut->Input("in"));
+  NoiseGain->Output("out")>> NoiseAdd->Input("in2");
+  NoiseAdd->Output("out")>> AudioOut->Input("in");
 #endif
 
 
@@ -744,8 +770,8 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
   // precompute window of the length BufferSize
   if (window != NULL)
     delete [] window;
-  window = new DSP_float[BufferSize];
-  DSPf_Blackman(BufferSize, window,false);
+  window = new DSP::Float[BufferSize];
+  DSP::f::Blackman(BufferSize, window,false);
   //! \bug properly select PSD_scaling_factor
   //PSD_scaling_factor = 1.0/BufferSize;
   if (standard_PSD_scaling == true)
@@ -767,10 +793,9 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
     window[ind] *= sqrt(PSD_scaling_factor);
 
 
-  if (tmp_FFT_buffer != NULL)
-    delete [] tmp_FFT_buffer;
-  tmp_FFT_buffer = new DSP_float[FFT_size];
-  memset(tmp_FFT_buffer, 0, FFT_size*sizeof(float));
+  
+  tmp_FFT_buffer = DSP::Float_vector(FFT_size);
+ // memset(tmp_FFT_buffer, 0, FFT_size*sizeof(float));
 
   SignalSegments = new T_PlotsStack(NoOfPSDslots, BufferStep);
   //SignalSegments.Reset(NoOfPSDslots, BufferStep);
@@ -804,24 +829,21 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
   memset(A_PSD_dB, 0, sizeof(float)*PSD_size);
 
   // call FFT to initialize FFT block
-  if (tmp_FFT_out_buffer != NULL)
-    delete [] tmp_FFT_out_buffer;
-  tmp_FFT_out_buffer = new DSP_float[PSD_size];
+
+  tmp_FFT_out_buffer = DSP::Float_vector(PSD_size);
   PSDs_counter = 0;
   FFT_block.absFFTR(FFT_size, tmp_FFT_out_buffer, tmp_FFT_buffer, true);
-  if (tmp_FFT_out_buffer2 != NULL)
-    delete [] tmp_FFT_out_buffer2;
-  tmp_FFT_out_buffer2 = new DSP_float[PSD_size];
+  tmp_FFT_out_buffer2 = DSP::Float_vector(PSD_size);
 
 
   //! BufferStep is to small use more segments together
   MorseDecoder_options = new TOptions(Fp);
   no_of_morse_decoder_slots = 8;
-  morse_decoder_slot = new DSP_float[no_of_morse_decoder_slots*BufferStep];
+  morse_decoder_slot = new DSP::Float[no_of_morse_decoder_slots*BufferStep];
   morse_decoder_slot_ind = 0;
   MorseDecoder_options->audio_segment_size = no_of_morse_decoder_slots*BufferStep;
   //! \todo user should be able to select max WPM value
-  MorseDecoder_options->MinDotLength=(int)(DSPu_MORSEkey::GetDotLength(30, Fp/2) + 0.5);
+  MorseDecoder_options->MinDotLength=(int)(DSP::u::MORSEkey::GetDotLength(30, Fp/2) + 0.5);
 
   morse_text_buffer[0] = 0x00;
   if (MorseDecoder_options->MinDotLength >= MorseDecoder_options->audio_segment_size)
@@ -839,36 +861,38 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
   }
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
-  analysis_buffer = new DSPu_OutputBuffer (BufferSize, 1U,
-      DSP_stop_when_full, MasterClock, BufferStep,  // int NotificationsStep_in=,
-      T_DSPlib_processing::AnalysisBufferCallback//DSPu_notify_callback_ptr func_ptr=NULL,
+  analysis_buffer = new DSP::u::OutputBuffer (BufferSize, 1U,
+      DSP::e::BufferType::stop_when_full, MasterClock, BufferStep,  // int NotificationsStep_in=,
+      T_DSPlib_processing::AnalysisBufferCallback//DSP::u::notify_callback_ptr func_ptr=NULL,
       );//int CallbackIdentifier=0);
 
 #ifdef __TEST_CHANNEL_FILTER__
-  DSP_connect(ChannelFilter_HPF->Output("out"), analysis_buffer->Input("in"));
+  ChannelFilter_HPF->Output("out")>> analysis_buffer->Input("in");
 #else
-  DSP_connect(NoiseAdd->Output("out"), analysis_buffer->Input("in"));
+  NoiseAdd->Output("out")>> analysis_buffer->Input("in");
 #endif
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 }
 
-void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsigned int UserDefinedIdentifier)
+void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier)
 {
-  DSPu_OutputBuffer *buffer;
-  DSP_float_ptr temp_slot, temp_hist_slot, temp_psd_slot;
+  DSP::u::OutputBuffer *buffer;
+  DSP::Float_vector temp_slot;
+  DSP::Float_ptr temp_hist_slot, temp_psd_slot;
   float hist_factor;
   int ind, index;
 
-  if (UserDefinedIdentifier && CallbackID_signal_mask != 0)
+  if (UserDefinedIdentifier && DSP::CallbackID_signal_mask != 0)
   { // ignore start / stop signaling
     return;
   }
 
-  buffer = (DSPu_OutputBuffer *)(Caller->Convert2Block());
-
-  memset(CurrentObject->tmp_FFT_buffer, 0, CurrentObject->FFT_size*sizeof(float));
-  buffer->ReadBuffer(CurrentObject->tmp_FFT_buffer, CurrentObject->BufferSize*sizeof(float), -2, DSP_ST_float);
+  buffer = (DSP::u::OutputBuffer *)(Caller->Convert2Block());
+  
+ //memset(CurrentObject->tmp_FFT_buffer, 0, CurrentObject->FFT_size*sizeof(float));
+  CurrentObject->tmp_FFT_buffer.assign(CurrentObject->FFT_size, 0.0f);
+  buffer->ReadBuffer(CurrentObject->tmp_FFT_buffer.data(), CurrentObject->BufferSize*sizeof(float), -2, DSP::e::SampleType::ST_float);
   //FFT_block.absFFTR(FFT_size, tmp_FFT_out_buffer, tmp_FFT_buffer, true);
 
   CS_OnDraw.Enter();
@@ -908,7 +932,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
     {
       //! \todo 2011.11.28 - measure time on file opening (does these causes audio of socket buffers stutter)
       CurrentObject->WaveIn->OpenFile(CurrentObject->wav_filename,
-          DSP_ST_short, DSP_FT_wav);
+          DSP::e::SampleType::ST_short, DSP::e::FileType::FT_wav);
       CurrentObject->UpdateState &= (~E_US_wav_file_open);
     }
 
@@ -933,18 +957,9 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
     {
       CS_UserData.Enter();
       CurrentObject->ChannelFilter_LPF->SetCoefs(
-          CurrentObject->LPF_new_Na, CurrentObject->LPF_new_coefs_a,
-          CurrentObject->LPF_new_Nb, CurrentObject->LPF_new_coefs_b);
-      if (CurrentObject->LPF_new_coefs_a != NULL)
-      {
-        delete [] CurrentObject->LPF_new_coefs_a;
-        CurrentObject->LPF_new_coefs_a = NULL;
-      }
-      if (CurrentObject->LPF_new_coefs_b != NULL)
-      {
-        delete [] CurrentObject->LPF_new_coefs_b;
-        CurrentObject->LPF_new_coefs_b = NULL;
-      }
+          CurrentObject->LPF_new_coefs_a,
+          CurrentObject->LPF_new_coefs_b);
+  
       CurrentObject->UpdateState &= (~E_US_channel_LPF_coefs);
       CS_UserData.Leave();
     }
@@ -953,18 +968,9 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
     {
       CS_UserData.Enter();
       CurrentObject->ChannelFilter_HPF->SetCoefs(
-          CurrentObject->HPF_new_Na, CurrentObject->HPF_new_coefs_a,
-          CurrentObject->HPF_new_Nb, CurrentObject->HPF_new_coefs_b);
-      if (CurrentObject->HPF_new_coefs_a != NULL)
-      {
-        delete [] CurrentObject->HPF_new_coefs_a;
-        CurrentObject->HPF_new_coefs_a = NULL;
-      }
-      if (CurrentObject->HPF_new_coefs_b != NULL)
-      {
-        delete [] CurrentObject->HPF_new_coefs_b;
-        CurrentObject->HPF_new_coefs_b = NULL;
-      }
+          CurrentObject->HPF_new_coefs_a,
+          CurrentObject->HPF_new_coefs_b);
+
       CurrentObject->UpdateState &= (~E_US_channel_HPF_coefs);
       CS_UserData.Leave();
     }
@@ -973,7 +979,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
     {
       if (CurrentObject->MorseReceiverState == false)
       { // reset window state
-        //DSPf_InfoMessage("\002", "\000");
+        //DSP::log << "\002"<< DSP::e::LogMode::second << "\000"<<endl;
         CurrentObject->LastLockState = E_none;
       }
       //! \todo reset MORSE decoder internal state
@@ -986,14 +992,16 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // get time slot (BufferStep samples)
-  temp_slot = CurrentObject->SignalSegments->GetSlot(true);
-  memcpy(temp_slot, CurrentObject->tmp_FFT_buffer, CurrentObject->BufferStep*sizeof(float));
+  //TODO: check if this is correct
+  temp_slot.push_back(*CurrentObject->SignalSegments->GetSlot(true));
+  //memcpy(temp_slot, CurrentObject->tmp_FFT_buffer, CurrentObject->BufferStep*sizeof(float));
+  temp_slot.assign(CurrentObject->tmp_FFT_buffer.begin(), CurrentObject->tmp_FFT_buffer.begin() + CurrentObject->BufferStep);
   CurrentObject->SignalSegments->Set_SlotDataSize(CurrentObject->BufferStep);
   // MORSE decoder
   if ((CurrentObject->MorseDecoder != NULL) && (CurrentObject->MorseReceiverState == true))
   {
-    memcpy(CurrentObject->morse_decoder_slot + CurrentObject->morse_decoder_slot_ind*CurrentObject->BufferStep,
-        temp_slot, CurrentObject->BufferStep*sizeof(float));
+   memcpy(CurrentObject->morse_decoder_slot + CurrentObject->morse_decoder_slot_ind*CurrentObject->BufferStep,  temp_slot.data(), CurrentObject->BufferStep*sizeof(float));
+  
     CurrentObject->morse_decoder_slot_ind++;
     CurrentObject->morse_decoder_slot_ind %= CurrentObject->no_of_morse_decoder_slots;
 
@@ -1002,7 +1010,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
       // reset message buffer
       CurrentObject->morse_text_buffer[0] = 0x00;
 
-      //DSPf_InfoMessage("MorseDecoder->ProcessSegment");
+      //DSP::log << "MorseDecoder->ProcessSegment"<<endl;
       CurrentObject->MorseDecoder->ProcessSegment(
           CurrentObject->morse_decoder_slot,
           CurrentObject->morse_text_buffer);
@@ -1013,16 +1021,16 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
         switch (CurrentObject->MorseDecoder->LockState)
         {
           case E_locked:
-            DSPf_InfoMessage("\002", "\001");
+            DSP::log << "\002"<< DSP::e::LogMode::second << "\001"<<endl;
             break;
           case E_locking:
-            DSPf_InfoMessage("\002", "\002");
+            DSP::log << "\002"<< DSP::e::LogMode::second << "\002"<<endl;
             break;
           case E_unlocked:
-            DSPf_InfoMessage("\002", "\003");
+            DSP::log << "\002"<< DSP::e::LogMode::second << "\003"<<endl;
             break;
           default: // E_none
-            DSPf_InfoMessage("\002", "\000");
+            DSP::log << "\002"<< DSP::e::LogMode::second << "\000"<<endl;
             break;
         }
         CurrentObject->LastLockState = CurrentObject->MorseDecoder->LockState;
@@ -1030,7 +1038,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
 
       if (strlen(CurrentObject->morse_text_buffer) > 0)
       {
-        DSPf_InfoMessage("\001", CurrentObject->morse_text_buffer);
+        DSP::log << "\001"<< DSP::e::LogMode::second <<CurrentObject->morse_text_buffer<<endl;
         //CurrentObject->morse_text_buffer[0] = 0x00;
       }
     }
@@ -1053,7 +1061,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
   temp_hist_slot = CurrentObject->Histograms->GetSlot(true);
   //for (ind = 0; ind < CurrentObject->NoOfHistBins; ind++)
   //  temp_hist_slot[ind] = 0;
-  memset(temp_hist_slot, 0, CurrentObject->NoOfHistBins*sizeof(DSP_float));
+  memset(temp_hist_slot, 0, CurrentObject->NoOfHistBins*sizeof(DSP::Float));
   hist_factor = CurrentObject->NoOfHistBins / 2;
   for (ind = 0; ind < CurrentObject->BufferStep; ind++)
   { // signal range [-1, +1]
@@ -1146,7 +1154,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
     }
     char text[1024];
     sprintf(text, "PSD_min = %.3f, PSD_max = %.3f", min_, max_);
-    DSPf_InfoMessage(text);
+    DSP::log << text);
     */
 
     // --------------------------------------------------------- //
@@ -1159,7 +1167,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
   if (CurrentObject->AudioIn->GetNoOfFreeBuffers() == 0)
   {
     //#ifdef __DEBUG__
-    //  DSPf_ErrorMessage("DisableDrawing");
+    //  DSP::log << DSP::e::LogMode::Error <<"DisableDrawing");
     //#endif
     MyGLCanvas::DisableDrawing(false);
   }
@@ -1171,14 +1179,25 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP_component_ptr Caller, unsig
   //! \todo get time slot mask (for signal drawing)
   CS_OnDraw.Leave();
 }
-
+//FIXME: this is only a temporary solution, it should be removed in the future
+void T_DSPlib_processing::copy_7x3_array_to_2d_vector(vector<vector<float>> &v, float a[7][3]){
+    v.clear();
+    v.resize(7);
+    for (int i = 0; i < 7; i++)
+    {
+      v[i].resize(3);
+      for (int j = 0; j < 3; j++)
+        v[i][j] = a[i][j];
+    }
+};
 void T_DSPlib_processing::ComputeHighResolutionSpectorgram(void)
 {
-  DSP_float *FFT_input_buffer = NULL;
-  DSP_float *FFT_output_buffer = NULL;
-  DSP_float *input_window = NULL;
-  DSP_float *temp_float, *temp_slot, *temp_psd_slot;
-  DSP_Fourier high_res_FFT;
+  DSP::Float_vector FFT_input_buffer;
+  DSP::Float_vector FFT_output_buffer;
+  DSP::Float *input_window = NULL;
+  DSP::Float_vector temp_float; 
+  DSP::Float *temp_slot, *temp_psd_slot;
+  DSP::Fourier high_res_FFT;
   int FFT_high_size, Window_size;
   int L, N, N_all;
   int ind, ind2, seg_no;
@@ -1194,13 +1213,13 @@ void T_DSPlib_processing::ComputeHighResolutionSpectorgram(void)
   while (FFT_high_size < 4*Window_size)
     FFT_high_size *= 2;
   //! FFT buffer
-  FFT_input_buffer = new DSP_float[FFT_high_size];
+  FFT_input_buffer.resize(FFT_high_size);
   PSD_high_size = (FFT_high_size / 2) + 1;
-  FFT_output_buffer = new DSP_float[PSD_high_size];
+  FFT_output_buffer.resize(PSD_high_size);
 
   //! time window
-  input_window = new DSP_float[Window_size];
-  DSPf_Blackman(Window_size, input_window, false);
+  input_window = new DSP::Float[Window_size];
+  DSP::f::Blackman(Window_size, input_window, false);
 
   //! number of processing segments
   seg_no = SignalSegments->Get_NoOfSlots() - (L-1);
@@ -1219,14 +1238,15 @@ void T_DSPlib_processing::ComputeHighResolutionSpectorgram(void)
       temp_slot = SignalSegments->GetSlot(ind+ind2);
       N = SignalSegments->Get_SlotDataSize(ind+ind2);
 
-      memcpy(temp_float, temp_slot, N*sizeof(DSP_float));
-      temp_float += N; N_all += N;
+      //memcpy(temp_float, temp_slot, N*sizeof(DSP::Float));
+      //temp_float += N; N_all += N;
     }
     if (N_all < Window_size)
-      memset(FFT_input_buffer, 0x00, FFT_high_size*sizeof(DSP_float));
+      //memset(FFT_input_buffer, 0x00, FFT_high_size*sizeof(DSP::Float));
+      FFT_input_buffer.assign(FFT_high_size, 0.0);
     else
-      memset(temp_float, 0x00, (FFT_high_size-N_all)*sizeof(DSP_float));
-
+      //memset(temp_float, 0x00, (FFT_high_size-N_all)*sizeof(DSP::Float));
+      temp_float.assign(FFT_high_size-N_all, 0.0);
     // windowing
     for (ind2 = 0; ind2 < N_all; ind2++)
       FFT_input_buffer[ind2] *=  input_window[ind2];
@@ -1246,10 +1266,6 @@ void T_DSPlib_processing::ComputeHighResolutionSpectorgram(void)
     //high_res_PSDs->NextSlot(false);
   }
 
-  if (FFT_input_buffer != NULL)
-    delete [] FFT_input_buffer;
-  if (FFT_output_buffer != NULL)
-    delete [] FFT_output_buffer;
   if (input_window != NULL)
     delete [] input_window;
 
@@ -1404,7 +1420,7 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
     MorseDecoder = NULL;
   }
   LastLockState = E_none;
-  DSPf_InfoMessage("\002", "\000");
+  DSP::log << "\002"<< DSP::e::LogMode::second << "\000"<<endl;
   if (MorseDecoder_options != NULL)
   {
     delete MorseDecoder_options;
@@ -1422,12 +1438,12 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
     analysis_buffer = NULL;
   }
 
-  DSPf_InfoMessage("T_DSPlib_processing::DestroyAlgorithm", "blocks deleted");
-  DSP_clock::FreeClocks();
+  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second << "blocks deleted"<<endl;
+  DSP::Clock::FreeClocks();
   MasterClock = NULL;
-  DSPf_InfoMessage("T_DSPlib_processing::DestroyAlgorithm", "clocks deleted");
-  DSP_component::ListComponents();
-  DSPf_InfoMessage("T_DSPlib_processing::DestroyAlgorithm", "Components listed");
+  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second << "clocks deleted"<<endl;
+  DSP::Component::ListComponents();
+  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second << "Components listed"<<endl;
 
   if (SignalSegments != NULL)
   {
@@ -1455,7 +1471,7 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
     high_res_PSDs = NULL;
   }
 
-  DSPf_InfoMessage("T_DSPlib_processing::DestroyAlgorithm", "PlotsStacks deleted");
+  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second <<"PlotsStacks deleted"<<endl;
 
   CurrentObject = NULL;
 }
@@ -1469,25 +1485,25 @@ unsigned int T_DSPlib_processing::MaxNumberOfProtectedSamples(void)
 
 bool T_DSPlib_processing::Process(E_processing_DIR processing_DIR)
 {
-  DSPe_SocketStatus status;
+  DSP::e::SocketStatus status;
 
 #ifdef __DEBUG__
-  //DSPf_InfoMessage("Before Exec");
+  //DSP::log << "Before Exec"<<endl;
 #endif
-  DSPf_Sleep(0);
-  DSPf_Sleep(5);
-  DSP_clock::Execute(MasterClock, cycles_per_segment);
-  DSPf_Sleep(0);
-  DSPf_Sleep(5);
+  DSP::f::Sleep(0);
+  DSP::f::Sleep(5);
+  DSP::Clock::Execute(MasterClock, cycles_per_segment);
+  DSP::f::Sleep(0);
+  DSP::f::Sleep(5);
 #ifdef __DEBUG__
-  //DSPf_InfoMessage("After Exec");
+  //DSP::log << "After Exec"<<endl;
 #endif
 
-
+//TODO: check if casting to int is correct and necessary
   if (out_socket != NULL)
   {
     status = out_socket->GetSocketStatus();
-    if ((status & DSP_socket_closed) != 0)
+    if (((int)status & (int)DSP::e::SocketStatus::closed) != 0)
     {
       return false;
     }
@@ -1495,7 +1511,7 @@ bool T_DSPlib_processing::Process(E_processing_DIR processing_DIR)
   if (in_socket != NULL)
   {
     status = in_socket->GetSocketStatus();
-    if ((status & DSP_socket_closed) != 0)
+    if (((int)status & (int)DSP::e::SocketStatus::closed) != 0)
     {
       return false;
     }

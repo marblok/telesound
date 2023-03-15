@@ -5,18 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) Ex2 — Windows debug run ",
+            "name": "(gdb) TeleSound — Windows debug run ",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Ex2_task1_dbg.exe",
-            "args": [],
+            "program": "${workspaceFolder}/TeleSound_dbg.exe",
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
-            "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
 //            "miDebuggerPath": "d:/CodeBlocks_20_03/MinGW/bin/gdb.exe",
-            "miDebuggerPath": "c:/msys64/usr/bin/gdb.exe",
+            "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe",
             "setupCommands": [
                 {
                     "description": "Włącz formatowanie kodu dla gdb",
@@ -24,7 +22,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "Build Ex2_task1.cpp"
+            "preLaunchTask": "Build TeleSound"
         }
     ]
 }

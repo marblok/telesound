@@ -27,9 +27,9 @@ public:
   Tfloat imag(void);
   friend Tfloat imag(const M_complex &);
   friend M_complex operator *(Tfloat &, M_complex &);
-  friend Tfloat abs2(const M_complex &); //kwadrat modu³u
-  friend Tfloat abs(const M_complex &);  //modu³
-  //friend Tfloat abs(M_complex);  //modu³
+  friend Tfloat abs2(const M_complex &); //kwadrat moduï¿½u
+  friend Tfloat abs(const M_complex &);  //moduï¿½
+  //friend Tfloat abs(M_complex);  //moduï¿½
   M_complex operator *(Tfloat &);
   M_complex operator /(Tfloat);
   //M_complex operator /(const Tfloat &);
@@ -199,10 +199,10 @@ private:
   cvector fft;
 
   cvector cSin, cSinFFT;		//sinus zespolony
-  cvector cSinConj; //sprzê¿ony sinus zespolony
+  cvector cSinConj; //sprzï¿½ony sinus zespolony
   dvector RevBitTable, FFTshift_RevBitTable;
-  DWORD K;   //liczba próbek dft dla sygna³u zespolonego
-  DWORD K2;  //liczba próbek dft dla sygna³u rzeczywistego
+  DWORD K;   //liczba prï¿½bek dft dla sygnaï¿½u zespolonego
+  DWORD K2;  //liczba prï¿½bek dft dla sygnaï¿½u rzeczywistego
   DWORD BitRev(DWORD x, DWORD s);
   void  CheckIsFFT(DWORD K);
 public:
@@ -210,8 +210,8 @@ public:
   TFourier(DWORD K); //inicjacja cSin przy tworzeniu
   void resize(DWORD K); //zmiana rozmiaru transformaty
   void resizeR(DWORD K2); //zmiana rozmiaru transformaty
-  											 //na podstawie d³ugoœci widma
-                         //sygna³u rzeczywistego
+  											 //na podstawie dï¿½ugoï¿½ci widma
+                         //sygnaï¿½u rzeczywistego
 
 //DFT length is equal cSin length (sSin.N)
   DWORD DFTlength(void);
@@ -249,8 +249,8 @@ class Tfilter
     void Execute(cvector &Out, rvector &In);
 };
 
-//Demodulator z dwukrotn¹ decymacja
-//konversja sygna³ rzeczysty na zespolony + decymacja przez 2
+//Demodulator z dwukrotnï¿½ decymacja
+//konversja sygnaï¿½ rzeczysty na zespolony + decymacja przez 2
 class TDemodDecym2
 {
   private:
@@ -261,7 +261,7 @@ class TDemodDecym2
   public:
     TDemodDecym2(void);
     void ReInit(short beta);
-    void filter(DWORD Ile, float *In, cvector &Out); //Ile musi byc liczb¹ podzieln¹ przez 4
+    void filter(DWORD Ile, float *In, cvector &Out); //Ile musi byc liczbï¿½ podzielnï¿½ przez 4
 };
 
 //Dwukrotna decymacja
@@ -274,10 +274,10 @@ class TDecym2
   public:
     TDecym2(void);
     void ReInit(short beta);
-    void filter(DWORD Ile, cvector &In, cvector &Out); //Ile musi byc liczb¹ podzieln¹ przez 4
+    void filter(DWORD Ile, cvector &In, cvector &Out); //Ile musi byc liczbï¿½ podzielnï¿½ przez 4
 };
 
-//Filtracja oknem prostok¹tnym
+//Filtracja oknem prostokï¿½tnym
 class TBoxFilter
 {
   private:
@@ -290,9 +290,9 @@ class TBoxFilter
     ~TBoxFilter(void);
     void ReInit(short FilterLength, short SegmentLength);
     void ResizeFilter(short FilterLength);
-    void filter(cvector &In, cvector &Out); //Ile musi byc liczb¹ podzieln¹ przez 4
-    void filter(cvector &In, cvector &Out, rvector &Out2); //Ile musi byc liczb¹ podzieln¹ przez 4
-    void filter(rvector &In, rvector &Out); //Ile musi byc liczb¹ podzieln¹ przez 4
+    void filter(cvector &In, cvector &Out); //Ile musi byc liczbï¿½ podzielnï¿½ przez 4
+    void filter(cvector &In, cvector &Out, rvector &Out2); //Ile musi byc liczbï¿½ podzielnï¿½ przez 4
+    void filter(rvector &In, rvector &Out); //Ile musi byc liczbï¿½ podzielnï¿½ przez 4
 };
 
 class T_Demodulator
@@ -318,12 +318,12 @@ class T_CMPO
 
 inline Tfloat GetBlackman_h(DWORD n, DWORD N)
 { //Do okienkowania odpowiedzi impulsowych (odrzucamy skrajne zera)
-  return (0.42 - 0.5*cos(2*M_PIx1*(n+1)/(N+1)) + 0.08*cos(4*M_PIx1*(n+1)/(N+1)));
+  return (0.42 - 0.5*cos(2*DSP::M_PIx1*(n+1)/(N+1)) + 0.08*cos(4*DSP::M_PIx1*(n+1)/(N+1)));
 }
 
 inline Tfloat GetBlackman(DWORD n, DWORD N)
-{ //Do okienkowania sygna³u przy widmie
-  return (0.42 - 0.5*cos(2*M_PIx1*n/(N-1)) + 0.08*cos(4*M_PIx1*n/(N-1)));
+{ //Do okienkowania sygnaï¿½u przy widmie
+  return (0.42 - 0.5*cos(2*DSP::M_PIx1*n/(N-1)) + 0.08*cos(4*DSP::M_PIx1*n/(N-1)));
 }
 
 inline unsigned int minimum(unsigned int a, unsigned int b)

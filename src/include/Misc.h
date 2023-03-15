@@ -9,7 +9,7 @@
 #define MISC_H_
 
 #include <DSP_lib.h>
-#include <DSPmodules_misc.h>
+#include <DSP_modules_misc.h>
 
 #include <wxAddons.h>
 
@@ -155,10 +155,10 @@ class wxMorseValidator: public wxValidator
 
     /*! if morse_block == NULL remove connection to current morse key block
      */
-    void SetMorseKey(DSPu_MORSEkey *morse_block = NULL);
+    void SetMorseKey(DSP::u::MORSEkey *morse_block = NULL);
 
   protected:
-    DSPu_MORSEkey *current_morse_block;
+    DSP::u::MORSEkey *current_morse_block;
 
     bool CheckValidator() const
     {

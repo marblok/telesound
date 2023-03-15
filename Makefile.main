@@ -7,9 +7,8 @@ ifeq ($(VS_CFG),Windows-Debug)
 	
 	OUT_DIR = ./out_win_dbg
 	MISC_LINKER_FLAGS = -static -mwindows
-	# LIBS = -lwinmm -lws2_32 -lwxbase31ud -lwxmsw31ud_core -lwxmsw31ud_gl -lopengl32 -lglu32 -liphlpapi
-	LIBS = -lwxbase31ud -lwxmsw31ud_core 
-	DFLAGS = -D_WIN32_WINNT=0x0601 -D__WXMSW__ -DwxUSE_GUI -DWXUSINGDLL -DwxUSE_UNICODE -DUNICODE -DwxUSE_UNICODE_WINDOWS_H 
+	LIBS=-lwxbase32u -lwxmsw32u_core -lwxmsw32u_gl -lwxmsw32u_stc -lwxmsw32u_richtext -lwxpng -lwxzlib -lDSPE -lDSPEsockets -lwinmm -lws2_32 -lopengl32 -lglu32 -lcomctl32 -lole32 -loleacc -loleaut32 -luuid -lwininet -lmswsock -liphlpapi -luser32 -lkernel32 -lws2help -lgdi32 -ladvapi32 -lwinspool -lshlwapi -lsetupapi -lcfgmgr32 -lhid -lcomdlg32 -lodbccp32 -lodbc32 -lodbccr32 -lmsimg32 -lmsvcrt -lversion 
+	DFLAGS = -D_WIN32_WINNT=0x0601 -D__WXMSW__  -DwxUSE_GUI -DWXUSINGDLL -DwxUSE_UNICODE -DUNICODE -DwxUSE_UNICODE_WINDOWS_H  -DWIN32 
 	# -DWX_UNICODE=1 -DWX_DEBUG=0 -DNDEBUG
 endif
 ifeq ($(VS_CFG),Windows-Release)
@@ -18,15 +17,17 @@ ifeq ($(VS_CFG),Windows-Release)
 	COMFLAG = -m64
 	
 	OUT_DIR = ./out_win_rls
-	MISC_LINKER_FLAGS = -static -mwindows
-	LIBS = -lwxbase31u -lwxmsw31u_core 
-	DFLAGS = -D_WIN32_WINNT=0x0601 -D__WXMSW__ -DwxUSE_GUI -DWXUSINGDLL -DwxUSE_UNICODE -DUNICODE -DwxUSE_UNICODE_WINDOWS_H 
+	MISC_LINKER_FLAGS = -static -mwindows 
+	LIBS=-lwxbase32u -lwxmsw32u_core -lwxmsw32u_gl -lwxmsw32u_stc -lwxmsw32u_richtext -lwxpng -lwxzlib -lDSPE -lDSPEsockets -lwinmm -lws2_32 -lopengl32 -lglu32 -lcomctl32 -lole32 -loleacc -loleaut32 -luuid -lwininet -lmswsock -liphlpapi -luser32 -lkernel32 -lws2help -lgdi32 -ladvapi32 -lwinspool -lshlwapi -lsetupapi -lcfgmgr32 -lhid -lcomdlg32 -lodbccp32 -lodbc32 -lodbccr32 -lmsimg32 -lmsvcrt -lversion 
+	
+	
+	DFLAGS = -D_WIN32_WINNT=0x0601 -D__WXMSW__ -DwxUSE_GUI -DWXUSINGDLL -DwxUSE_UNICODE -DUNICODE -DwxUSE_UNICODE_WINDOWS_H -DWIN32
 	# -DWX_UNICODE=1 -DWX_DEBUG=0 -DNDEBUG
 endif
 
 
 build: 
-	@echo "Building AutoBatchFeeder app"
+	@echo "Building TeleSound app"
 	@echo $(VS_CFG): $(MODE) // $(MAKEFILE)
 	make build MODE=$(MODE) COMFLAG="$(COMFLAG)" DFLAGS="$(DFLAGS)" LIBS="$(LIBS)" OUT_DIR=$(OUT_DIR) MISC_LINKER_FLAGS="$(MISC_LINKER_FLAGS)" -f $(MAKEFILE)
 

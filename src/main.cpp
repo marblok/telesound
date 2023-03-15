@@ -31,12 +31,18 @@
 #include "../bitmaps/help.xpm"
 
 //#include "../bitmaps/Ikony.xpm"
-
+/*
 DEFINE_EVENT_TYPE(wxEVT_DRAW_NOW)
 DEFINE_EVENT_TYPE(wxEVT_PROCESS_END)
 DEFINE_EVENT_TYPE(wxEVT_BRANCH_END)
+*/
+wxDEFINE_EVENT(wxEVT_DRAW_NOW, wxCommandEvent);
+wxDEFINE_EVENT(wxEVT_PROCESS_END, wxCommandEvent);
+wxDEFINE_EVENT(wxEVT_BRANCH_END, wxCommandEvent);
+
 #ifdef __DEBUG__
-DEFINE_EVENT_TYPE(wxEVT_STATUSBOX_UPDATE)
+//DEFINE_EVENT_TYPE(wxEVT_STATUSBOX_UPDATE)
+wxDEFINE_EVENT(wxEVT_STATUSBOX_UPDATE, wxCommandEvent);
 #endif // __DEBUG__
 
 // (::wxPostEvent)
@@ -305,11 +311,15 @@ bool MyApp::LogFunction(const string &source, const string &message, bool IsErro
       }
 
     #ifdef __DEBUG__
+      /*FIXME: - replace empty strings with real data*/
       string MessageText;
       if (IsError == true)
-        MessageText = DSPf_GetErrorMessage(source, message);
+        //MessageText = DSP::f::GetErrorMessage(source, message);
+        MessageText = "";
       else
-        MessageText = DSPf_GetInfoMessage(source, message);
+        //MessageText = DSP::f::GetInfoMessage(source, message);
+        MessageText = "";
+      
 
       //frame->StatusBox->AppendText(MessageText);
       // Send event to GUI thread
@@ -321,7 +331,8 @@ bool MyApp::LogFunction(const string &source, const string &message, bool IsErro
         event.SetInt( 0 );
       }
       event.SetString( MessageText );
-      frame->GetEventHandler()->AddPendingEvent(event);
+      //frame->GetEventHandler()->AddPendingEvent(event);
+      wxPostEvent(frame, event);
     #endif
   }
 
@@ -355,15 +366,15 @@ bool MyApp::OnInit()
 
     // Create the main frame window
 #ifdef __DEBUG__
-    DSPf_SetLogState(DSP_LS_file | DSP_LS_user_function);
-    DSPf_SetLogFileName("log_file.log");
-    DSPf_SetLogFunctionPtr(&(MyApp::LogFunction));
-    DSPf_InfoMessage(DSP_lib_version_string());
+    DSP::log.SetLogState(DSP::e::LogState::file | DSP::e::LogState::user_function);
+    DSP::log.SetLogFileName("log_file.log");
+    DSP::log.SetLogFunctionPtr(&(MyApp::LogFunction));
+    DSP::log << DSP::lib_version_string() << endl << endl;
 #else
-    DSPf_SetLogState(DSP_LS_user_function);
-    //DSPf_SetLogFileName("log_file.log");
-    DSPf_SetLogFunctionPtr(&(MyApp::LogFunction));
-    DSPf_InfoMessage(DSP_lib_version_string());
+    DSP::log.SetLogState(DSP::e::LogState::user_function);
+    //DSP::f::SetLogFileName("log_file.log");
+    DSP::log.SetLogFunctionPtr(&(MyApp::LogFunction));
+    DSP::log << DSP::lib_version_string() << endl << endl;
 #endif
 
 #ifdef GLUT_API_VERSION
@@ -427,7 +438,7 @@ bool MyApp::OnInit()
 
     frame->Show(true);
     SetTopWindow(frame);
-
+ 
     return true;
 }
 
@@ -549,7 +560,7 @@ T_TaskElement::~T_TaskElement(void)
       if (NoOfTasks > 0)
         NoOfTasks--;
       else
-        DSPf_ErrorMessage("T_TaskElement::~T_TaskElement", "NoOfTasks was already 0");
+        DSP::log << DSP::e::LogMode::Error <<"T_TaskElement::~T_TaskElement"<< DSP::e::LogMode::second << "NoOfTasks was already 0"<<endl;
     }
     else
     {
@@ -561,7 +572,7 @@ T_TaskElement::~T_TaskElement(void)
           if (NoOfTasks > 0)
             NoOfTasks--;
           else
-            DSPf_ErrorMessage("T_TaskElement::~T_TaskElement", "NoOfTasks was already 0");
+            DSP::log << DSP::e::LogMode::Error <<"T_TaskElement::~T_TaskElement"<< DSP::e::LogMode::second << "NoOfTasks was already 0"<<endl;
           break;
         }
 
@@ -570,13 +581,13 @@ T_TaskElement::~T_TaskElement(void)
 
       if (current_task == NULL)
       {
-        DSPf_ErrorMessage("T_TaskElement::~T_TaskElement", "delete task was not on the list");
+        DSP::log << DSP::e::LogMode::Error <<"T_TaskElement::~T_TaskElement"<< DSP::e::LogMode::second << "delete task was not on the list"<<endl;
       }
     }
   }
   else
   {
-    DSPf_ErrorMessage("T_TaskElement::~T_TaskElement", "tasks list already was empty");
+    DSP::log << DSP::e::LogMode::Error <<"T_TaskElement::~T_TaskElement"<< DSP::e::LogMode::second << "tasks list already was empty"<<endl;
   }
 
   // ++++++++++++++++++++++++++++++++++++++++ //
@@ -606,7 +617,8 @@ void T_TaskElement::OnBranchEnd( wxCommandEvent &event )
     //wxCommandEvent event( wxMenuEvent, ID_STOP_TASK );
     wxCommandEvent event2( wxEVT_COMMAND_TOOL_CLICKED, ID_STOP_TASK );
     //wxCommandEvent event( wxEVT_COMMAND_MENU_SELECTED, ID_STOP_TASK );
-    task_parent_window->GetEventHandler()->AddPendingEvent( event2 );
+    //task_parent_window->GetEventHandler()->AddPendingEvent( event2 );
+    wxPostEvent(task_parent_window, event2);
   }
   /*
   if (ProcessingBranch != NULL)
@@ -674,20 +686,20 @@ void T_TaskElement::StopTaskProcessing(void)
     command_data->BranchToClose = ProcessingBranch;
     temp = new T_BranchCommand(E_BC_closing, command_data);
     #ifdef __DEBUG__
-      DSPf_InfoMessage("T_TaskElement::StopTaskProcessing", "PostCommandToBranch");
+      DSP::log << "T_TaskElement::StopTaskProcessing"<< DSP::e::LogMode::second <<"PostCommandToBranch"<<endl;
     #endif
     ProcessingBranch->PostCommandToBranch(temp);
     ProcessingBranch = NULL; // branch will be deleted in the processing thread
     // ++++++++++++++++++++++++
     // Wait for branch finish
     task_is_running = false;
-    DSPf_ErrorMessage("T_TaskElement::StopTaskProcessing", "Waiting for thread branch to finish");
+    DSP::log << DSP::e::LogMode::Error <<"T_TaskElement::StopTaskProcessing"<< DSP::e::LogMode::second << "Waiting for thread branch to finish"<<endl;
     //BranchFinished_semaphore->Wait();
     while (BranchFinished_semaphore->TryWait() == wxSEMA_BUSY)
     {
       wxGetApp().Yield(true);
     }
-    DSPf_ErrorMessage("T_TaskElement::StopTaskProcessing", "!!! Thread branch finished");
+    DSP::log << DSP::e::LogMode::Error <<"T_TaskElement::StopTaskProcessing"<< DSP::e::LogMode::second << "!!! Thread branch finished"<<endl;
   }
   task_is_running = false;
   task_is_paused = false;
@@ -705,7 +717,7 @@ void T_TaskElement::StopTaskProcessing(void)
 
 //! \todo implement task deletion
 //  delete MDI_parent_task;
-//  DSPf_ErrorMessage("MyChild::OnClose", "MDI_parent_task deleted");
+//  DSP::log << DSP::e::LogMode::Error <<"MyChild::OnClose"<< DSP::e::LogMode::second << "MDI_parent_task deleted"<<endl;
 
 }
 
@@ -728,7 +740,7 @@ bool T_TaskElement::PauseTaskProcessing(void)
 
         temp = new T_BranchCommand(E_BC_pause);
         #ifdef __DEBUG__
-          DSPf_InfoMessage("T_TaskElement::PauseTaskProcessing", "PostCommandToBranch");
+          DSP::log << "T_TaskElement::PauseTaskProcessing"<< DSP::e::LogMode::second << "PostCommandToBranch"<<endl;
         #endif
         ProcessingBranch->PostCommandToBranch(temp);
       }
@@ -738,7 +750,7 @@ bool T_TaskElement::PauseTaskProcessing(void)
 
         temp = new T_BranchCommand(E_BC_continue);
         #ifdef __DEBUG__
-          DSPf_ErrorMessage("T_TaskElement::PauseTaskProcessing", "PostCommandToBranch");
+          DSP::log << DSP::e::LogMode::Error <<"T_TaskElement::PauseTaskProcessing"<< DSP::e::LogMode::second << "PostCommandToBranch"<<endl;
         #endif
         ProcessingBranch->PostCommandToBranch(temp);
       }
@@ -1227,8 +1239,8 @@ wxPanel *MyFrame::CreatePage(wxNotebook *parent, E_PageIDs PageNo)
         {
           mixer_state = AudioMixer->GetSourceLineType(ind);
           if (mixer_state == MIXERLINE_COMPONENTTYPE_SRC_MICROPHONE)
-          {
-            if (Active == -1)
+        {
+        if (Active == -1)
               Active = ind;
           }
           SourceLine_ComboBox->Insert(AudioMixer->GetSourceLineName(ind), ind);
@@ -1271,9 +1283,9 @@ wxPanel *MyFrame::CreatePage(wxNotebook *parent, E_PageIDs PageNo)
         for (int ind=0; ind<AudioMixer->GetNumberOfDestLines(); ind++)
         {
           if (ind != Active)
-            AudioMixer->SetDestLineState(ind, AM_MUTED_YES);
+           AudioMixer->SetDestLineState(ind, DSP::e::AM_MutedState::MUTED_YES);
           else
-            AudioMixer->SetDestLineState(ind, AM_MUTED_NO);
+      AudioMixer->SetDestLineState(ind, DSP::e::AM_MutedState::MUTED_NO);
         }
         val = AudioMixer->GetDestLineVolume(Active);
         DestLine_slider = new wxSlider(panel, ID_DestLine_SLIDER,
@@ -1284,13 +1296,13 @@ wxPanel *MyFrame::CreatePage(wxNotebook *parent, E_PageIDs PageNo)
 
         wxStaticText *MasterLine_ST;
         MasterLine_ST = new wxStaticText(panel, wxID_ANY, _T("Głośność główna:"));
-        val = AudioMixer->GetDestLineVolume(AM_MasterControl);
+        val = AudioMixer->GetDestLineVolume(DSP::AM_MasterControl);
         MasterLine_slider = new wxSlider(panel, ID_MasterLine_SLIDER,
             (int)(val*MAX_SLIDER_VALUE), 0, MAX_SLIDER_VALUE,
             wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL);
         if (val < 0)
           MasterLine_slider->Enable(false);
-        AudioMixer->SetDestLineState(AM_MasterControl, AM_MUTED_NO);
+        AudioMixer->SetDestLineState(DSP::AM_MasterControl, DSP::e::AM_MutedState::MUTED_NO);
 
 
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
@@ -1713,7 +1725,7 @@ void MyFrame::FillSettingsInterface(T_TaskElement *selected_task)
 
 void MyFrame::OnClose(wxCloseEvent& event)
 {
-    DSPf_InfoMessage("MyFrame::OnClose", "start");
+    DSP::log << "MyFrame::OnClose"<< DSP::e::LogMode::second << "start"<<endl;
     /*
     if ( event.CanVeto() && (gs_nFrames > 0) )
     {
@@ -1730,9 +1742,9 @@ void MyFrame::OnClose(wxCloseEvent& event)
     */
     frame_is_closing = true;
 
-    DSPf_InfoMessage("MyFrame::OnClose", "Calling FreeThreads");
+    DSP::log << "MyFrame::OnClose"<< DSP::e::LogMode::second <<"Calling FreeThreads"<<endl;
     MyProcessingThread::FreeThreads();
-    DSPf_InfoMessage("MyFrame::OnClose", "Finished FreeThreads");
+    DSP::log << "MyFrame::OnClose"<< DSP::e::LogMode::second << "Finished FreeThreads"<<endl;
 
     event.Skip();
 }
@@ -1746,7 +1758,7 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event) )
 {
   string text, text2;
 
-  text = DSP_lib_version_string();
+  text = DSP::lib_version_string();
   text2 = "TeleSound 2020\n\n";
   text2 += "Author: Marek Blok (c) 2020\n\n";
   text2 += text;
@@ -1764,7 +1776,7 @@ void MyFrame::OnRunTask(wxCommandEvent& event)
 
     if (interface_state.task_is_running == true)
     {
-      DSPf_ErrorMessage("MyFrame::OnRunTask", "Task is still running");
+      DSP::log << DSP::e::LogMode::Error <<"MyFrame::OnRunTask"<< DSP::e::LogMode::second << "Task is still running"<<endl;
       return;
     }
     parent_task = new T_TaskElement(this);
@@ -1931,7 +1943,7 @@ void MyFrame::InitToolBar(wxToolBar* toolBar)
 
 void MyFrame::OnProcessEnd( wxCommandEvent &event )
 {
-  DSPf_ErrorMessage("MyFrame::OnProcessEnd");
+  DSP::log << DSP::e::LogMode::Error <<"MyFrame::OnProcessEnd"<<endl;
 }
 
 void MyFrame::OnSettingsInterfaceChange(wxCommandEvent& event)
@@ -2002,9 +2014,9 @@ void MyFrame::OnSettingsInterfaceChange(wxCommandEvent& event)
         for (int ind=0; ind<AudioMixer->GetNumberOfDestLines(); ind++)
         {
           if (ind != Active)
-            AudioMixer->SetDestLineState(ind, AM_MUTED_YES);
+            AudioMixer->SetDestLineState(ind, DSP::e::AM_MutedState::MUTED_YES);
           else
-            AudioMixer->SetDestLineState(ind, AM_MUTED_NO);
+            AudioMixer->SetDestLineState(ind,DSP::e::AM_MutedState::MUTED_NO);
         }
         val = AudioMixer->GetDestLineVolume(Active);
         if (val < 0)
@@ -2103,7 +2115,7 @@ void MyFrame::OnSettingsInterfaceChange(wxCommandEvent& event)
           command_data->UserData = (void *)(&interface_state);
           temp = new T_BranchCommand(E_BC_userdata, command_data);
           #ifdef __DEBUG__
-            DSPf_InfoMessage("ID_MIKE_ON_OFF", "PostCommandToBranch");
+            DSP::log << "ID_MIKE_ON_OFF"<< DSP::e::LogMode::second << "PostCommandToBranch"<<endl;
           #endif
           parent_task->ProcessingBranch->PostCommandToBranch(temp);
         }
@@ -2161,7 +2173,7 @@ void MyFrame::OnSettingsInterfaceChange(wxCommandEvent& event)
           command_data->UserData = (void *)(&interface_state);
           temp = new T_BranchCommand(E_BC_userdata, command_data);
           #ifdef __DEBUG__
-            DSPf_InfoMessage("ID_LOCAL_SIGNAL_ON_OFF", "PostCommandToBranch");
+            DSP::log << "ID_LOCAL_SIGNAL_ON_OFF"<< DSP::e::LogMode::second <<"PostCommandToBranch"<<endl;
           #endif
           parent_task->ProcessingBranch->PostCommandToBranch(temp);
         }
@@ -2203,20 +2215,20 @@ bool MyGLCanvas::temporary_BlockDrawing = true;
 
 void MyGLCanvas::OnDrawNow_(void)
 {
-  DSPe_SocketStatus status;
+  DSP::e::SocketStatus status;
   E_DrawModes current_mode;
 
   if (temporary_BlockDrawing == true)
   {
     #ifdef __DEBUG__
-      DSPf_ErrorMessage("Drawing block (temporary)- skipping");
+      DSP::log << DSP::e::LogMode::Error <<"Drawing block (temporary)- skipping"<<endl;
     #endif
     return;
   }
   if (BlockDrawing == true)
   {
     #ifdef __DEBUG__
-      DSPf_ErrorMessage("Drawing block - clearing");
+      DSP::log << DSP::e::LogMode::Error <<"Drawing block - clearing"<<endl;
     #endif
     current_mode = E_DM_none;
     //return;
@@ -2258,10 +2270,10 @@ void MyGLCanvas::OnDrawNow_(void)
 
       SocketsAreConnected = true;
       status = T_DSPlib_processing::CurrentObject->out_socket->GetSocketStatus();
-      if ((status & DSP_socket_connected) == 0)
+      if (((int)status & (int) DSP::e::SocketStatus::connected) == 0)
         SocketsAreConnected = false;
       status = T_DSPlib_processing::CurrentObject->in_socket->GetSocketStatus();
-      if ((status & DSP_socket_connected) == 0)
+      if (((int)status & (int)DSP::e::SocketStatus::connected) == 0)
         SocketsAreConnected = false;
     }
     else
@@ -2299,12 +2311,12 @@ void MyGLCanvas::OnDrawNow_(void)
       if (SocketsAreConnected == true)
       {
         glClearColor(1.0,1.0,1.0,0);
-        //DSPf_InfoMessage("Connected");
+        //DSP::log << "Connected"<<endl;
       }
       else
       {
         glClearColor(1.0,1.0,0.0,0);
-        //DSPf_InfoMessage("Not connected");
+        //DSP::log << "Not connected"<<endl;
       }
       glClear(GL_COLOR_BUFFER_BIT);
       break;
@@ -2977,7 +2989,7 @@ void MyProcessingThread::Initialize(void)
   if (NoOfCPUs <= 0)
     NoOfCPUs = 1;
   sprintf(tekst, "Number of CPUs detected = %i", NoOfCPUs);
-  DSPf_InfoMessage(tekst);
+  DSP::log << tekst<<endl;
 
   /*
   if (m_priority <= 20)
@@ -3009,7 +3021,7 @@ MyProcessingThread::~MyProcessingThread(void)
           Branches[ind]->Parent->GetParentTask()->DeleteBranch(Branches[ind]);
         else
         {
-          DSPf_ErrorMessage("MyProcessingThread::~MyProcessingThread", "GetParentTask() == NULL");
+          DSP::log << DSP::e::LogMode::Error <<"MyProcessingThread::~MyProcessingThread"<< DSP::e::LogMode::second << "GetParentTask() == NULL"<<endl;
           delete Branches[ind];
         }
         //delete Branches[ind];
@@ -3095,17 +3107,17 @@ wxThread::ExitCode MyProcessingThread::Entry(void)
       UpdateBranches_semaphore->WaitTimeout(10); // suspend process until new branches will be available
     }
 
-    //DSPf_InfoMessage("Yield");
+    //DSP::log << "Yield"<<endl;
     //! \ bug check if it should be done here (maybe timer in main loop)
     //::wxGetApp().Yield(true);
-    //DSPf_InfoMessage("Yield2");
+    //DSP::log << "Yield2"<<endl;
 
-    //DSPf_InfoMessage("UpdateBranches()");
+    //DSP::log << "UpdateBranches()"<<endl;
     if (UpdateBranches() == false)
       DoFinish = true;
 
 
-    //DSPf_InfoMessage("ProcessBranches()");
+    //DSP::log << "ProcessBranches()"<<endl;
     // command can be post before thread start
     NoOfActiveBranches = 0;
     for (ind = 0; ind < NoOfBranches; ind++)
@@ -3118,14 +3130,14 @@ wxThread::ExitCode MyProcessingThread::Entry(void)
     if ((Parent != NULL) && (NoOfActiveBranches != 0))
     {
       //AddPendingEvent
-      //DSPf_InfoMessage("GLcanvas->Refresh()");
+      //DSP::log << "GLcanvas->Refresh()"<<endl;
       Parent->GetGLcanvas(0)->Refresh(); // invalidate window
       //! \bug na słabszym sprzęcie bez Update poniżej się potrafi wywalić
       //Parent->GetGLcanvas(0)->Update();  // refresh canvas immediately
     }
 
 /*
-    //DSPf_InfoMessage("DrawWait()");
+    //DSP::log << "DrawWait()"<<endl;
     for (ind = 0; ind < NoOfBranches; ind++)
       if (Branches[ind]->DrawIsBlocked == false)
       {
@@ -3142,13 +3154,14 @@ wxThread::ExitCode MyProcessingThread::Entry(void)
     if (TestDestroy() == true)
       break;
 
-    //DSPf_InfoMessage("DoFinish()");
+    //DSP::log << "DoFinish()"<<endl;
     if (DoFinish == true)
     {
-      //DSPf_InfoMessage("DoFinish() == true");
+      //DSP::log << "DoFinish() == true"<<endl;
       wxCommandEvent event( wxEVT_PROCESS_END, ID_ProcessEnd );
       event.SetClientData( this );
-      Parent->GetEventHandler()->AddPendingEvent( event );
+      //Parent->GetEventHandler()->AddPendingEvent( event );
+      wxPostEvent(Parent, event);
       break;
     }
   }
@@ -3157,12 +3170,12 @@ wxThread::ExitCode MyProcessingThread::Entry(void)
   Parent->GetGLcanvas(0)->DisableDrawing();
   CS_OnDraw.Leave();
 
-  DSPf_ErrorMessage("Thread loop ended");
+  DSP::log << DSP::e::LogMode::Error <<"Thread loop ended"<<endl;
 
   ////  not needed for wxTHREAD_JOINABLE
-  DSPf_ErrorMessage("ThreadFinished is about to be posted");
+  DSP::log << DSP::e::LogMode::Error <<"ThreadFinished is about to be posted"<<endl;
   ThreadFinished_semaphore[ThreadIndex]->Post(); // signal finishing
-  DSPf_ErrorMessage("ThreadFinished has been posted");
+  DSP::log << DSP::e::LogMode::Error <<"ThreadFinished has been posted"<<endl;
 
   return 0;
 }
@@ -3201,7 +3214,7 @@ bool MyProcessingThread::UpdateBranches(void)
 
   if (new_branch != NULL)
   {
-    DSPf_InfoMessage("MyProcessingThread::UpdateBranches", "new_branch");
+    DSP::log << "MyProcessingThread::UpdateBranches"<< DSP::e::LogMode::second << "new_branch"<<endl;
 
     MyProcessingBranch **new_Branches;
     new_Branches = new MyProcessingBranch *[NoOfBranches+1];
@@ -3229,7 +3242,7 @@ bool MyProcessingThread::UpdateBranches(void)
   {
     if (Branches[ind]->DoFinish == true)
     {
-      DSPf_InfoMessage("MyProcessingThread::UpdateBranches", "branch delete");
+      DSP::log << "MyProcessingThread::UpdateBranches"<< DSP::e::LogMode::second <<"branch delete"<<endl;
 
       CS_OnDraw.Enter();
       Parent->GetGLcanvas(0)->DisableDrawing();
@@ -3239,7 +3252,7 @@ bool MyProcessingThread::UpdateBranches(void)
         Branches[ind]->Parent->GetParentTask()->DeleteBranch(Branches[ind]);
       else
       {
-        DSPf_ErrorMessage("MyProcessingThread::UpdateBranches", "branch parent task is NULL");
+        DSP::log << DSP::e::LogMode::Error <<"MyProcessingThread::UpdateBranches"<< DSP::e::LogMode::second << "branch parent task is NULL"<<endl;
         delete Branches[ind];
       }
       Branches[ind] = NULL;
@@ -3248,7 +3261,7 @@ bool MyProcessingThread::UpdateBranches(void)
     {
       if (ind > new_NoOfBranches)
       {
-        DSPf_InfoMessage("MyProcessingThread::UpdateBranches", "branch relocated");
+        DSP::log << "MyProcessingThread::UpdateBranches"<< DSP::e::LogMode::second <<"branch relocated"<<endl;
 
         Branches[new_NoOfBranches] = Branches[ind];
       }
@@ -3263,7 +3276,7 @@ bool MyProcessingThread::UpdateBranches(void)
     Branches = NULL;
   }
 
-  //DSPf_InfoMessage("MyProcessingThread::UpdateBranches", "update finished");
+  //DSP::log << "MyProcessingThread::UpdateBranches"<< DSP::e::LogMode::second <<"update finished"<<endl;
   MyProcessingBranch::CS_CommandList.Leave();
   return true; // keep thread working
 }
@@ -3391,7 +3404,7 @@ void MyFrame::OnChannelFilterChange(wxScrollEvent& event)
       command_data->UserData = (void *)(&interface_state);
       temp = new T_BranchCommand(E_BC_userdata, command_data);
       #ifdef __DEBUG__
-        DSPf_InfoMessage("Channel filter settings change", "PostCommandToBranch");
+        DSP::log << "Channel filter settings change"<< DSP::e::LogMode::second << "PostCommandToBranch"<<endl;
       #endif
       parent_task->ProcessingBranch->PostCommandToBranch(temp);
     }
@@ -3440,7 +3453,7 @@ void MyFrame::OnChannelSNRChange(wxScrollEvent& event)
       command_data->UserData = (void *)(&interface_state);
       temp = new T_BranchCommand(E_BC_userdata, command_data);
       #ifdef __DEBUG__
-        DSPf_InfoMessage("MyFrame::OnChannelSNRChange", "PostCommandToBranch");
+        DSP::log << "MyFrame::OnChannelSNRChange"<< DSP::e::LogMode::second << "PostCommandToBranch"<<endl;
       #endif
       parent_task->ProcessingBranch->PostCommandToBranch(temp);
     }
@@ -3499,7 +3512,7 @@ void MyFrame::OnMixerVolumeChange(wxScrollEvent& event)
     case ID_MasterLine_SLIDER:
       val = MasterLine_slider->GetValue();
       val /= MAX_SLIDER_VALUE;
-      AudioMixer->SetDestLineVolume(AM_MasterControl, val);
+      AudioMixer->SetDestLineVolume(DSP::AM_MasterControl, val);
       break;
 
     default:
@@ -3547,7 +3560,7 @@ void MyFrame::OnWPMchange(wxScrollEvent& event)
       command_data->UserData = (void *)(&interface_state);
       temp = new T_BranchCommand(E_BC_userdata, command_data);
       #ifdef __DEBUG__
-        DSPf_InfoMessage("Myframe::OnSendAsciText", "PostCommandToBranch");
+        DSP::log << "Myframe::OnSendAsciText"<< DSP::e::LogMode::second << "PostCommandToBranch"<<endl;
       #endif
       parent_task->ProcessingBranch->PostCommandToBranch(temp);
     }
@@ -3710,7 +3723,7 @@ void MyFrame::OnButtonPress(wxCommandEvent& event)
       command_data->UserData = (void *)(&interface_state);
       temp = new T_BranchCommand(E_BC_userdata, command_data);
       #ifdef __DEBUG__
-        DSPf_InfoMessage("Myframe::OnSendAsciText", "PostCommandToBranch");
+        DSP::log << "Myframe::OnSendAsciText"<< DSP::e::LogMode::second << "PostCommandToBranch"<<endl;
       #endif
       parent_task->ProcessingBranch->PostCommandToBranch(temp);
     }

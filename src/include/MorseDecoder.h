@@ -9,7 +9,7 @@
 #define MORSEDECODER_H_
 
 #include "Vectors.h"
-#include <DSPmodules_misc.h>
+#include <DSP_modules_misc.h>
 
 enum TE_LockState {E_none, E_unlocked, E_locking, E_locked};
 enum TE_LengthEstimationMode {E_LEM_searching, E_LEM_correcting};
@@ -61,7 +61,7 @@ class T_DecodedMorse
 class T_Counters_Processor
 {
   public:
-    TMorseTable MorseTable;
+    DSP::TMorseTable MorseTable;
     T_MorseDecoder *Parent;
 
     T_Counters Counters;
