@@ -1061,6 +1061,26 @@ MyFrame::MyFrame(wxWindow *parent,
 {
   frame_is_closing = false;
   task_is_stopping_now = false;
+  //FIXME: possible bug - when there is no audio device in the system, an segfault occurs. This should be fixed. Maybe by checking if the audio device is present first?
+ 
+ 
+  //requires testing
+  try{
+  if(TAudioMixer::GetWaveInDevName().empty())
+    throw std::invalid_argument("No input audio device found.");
+  if(TAudioMixer::GetWaveOutDevName().empty())
+   throw std::invalid_argument("No output audio device found.");
+  }
+  catch(std::invalid_argument& e)
+  {
+    DSP::log<<DSP::e::LogMode::Error<<(string)e.what()<<std::endl;
+    wxMessageBox(wxString::FromUTF8("Nie wykryto urządzenia wyjściowego lub wejściowego. Sprawdź połączenie głośników i mikrofonu"), wxString::FromUTF8("Błąd: "+(string)e.what()), wxOK | wxICON_ERROR);
+    exit(1);
+  }
+ 
+
+
+
   AudioMixer = new TAudioMixer;
   AudioMixer->MemorizeMixerSettings_WAVEIN();
   AudioMixer->MemorizeMixerSettings_OUT();

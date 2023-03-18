@@ -312,26 +312,26 @@ class T_LPF_IIR_coefs_48000 : public T_IIR_coefs
   static const DSP::Prec_Float_ptr const_coef_a[];
 };
 
-bool GetIIR_HPF_coefs(float Fp, long sampling_rate, int &Nb, DSP::Float *&b, int &Na, DSP::Float *&a);
+bool GetIIR_HPF_coefs(float Fp, long sampling_rate, DSP::Float_vector &b, DSP::Float_vector &a);
 
-bool GetIIR_LPF_coefs(float Fp, long sampling_rate, int &Nb, DSP::Float *&b, int &Na, DSP::Float *&a);
+bool GetIIR_LPF_coefs(float Fp, long sampling_rate, DSP::Float_vector &b, DSP::Float_vector &a);
 
 
 const int no_of_sos_segments = 7;
 
-extern float wave_in_resample_LPF_b_48000_8000[no_of_sos_segments][3];
-extern float wave_in_resample_LPF_a_48000_8000[no_of_sos_segments][3];
+extern std::vector<std::vector<float>> wave_in_resample_LPF_b_48000_8000;
+extern std::vector<std::vector<float>> wave_in_resample_LPF_a_48000_8000;
 
-extern float wave_in_resample_LPF_b_44100_11025[no_of_sos_segments][3];
-extern float wave_in_resample_LPF_a_44100_11025[no_of_sos_segments][3];
+extern std::vector<std::vector<float>> wave_in_resample_LPF_b_44100_11025;
+extern std::vector<std::vector<float>> wave_in_resample_LPF_a_44100_11025;
 
-extern float wave_in_resample_LPF_b_48000_16000[no_of_sos_segments][3];
-extern float wave_in_resample_LPF_a_48000_16000[no_of_sos_segments][3];
+extern std::vector<std::vector<float>> wave_in_resample_LPF_b_48000_16000;
+extern std::vector<std::vector<float>> wave_in_resample_LPF_a_48000_16000;
 
-extern const float wave_in_resample_LPF_b_44100_22050[15];
-extern const float wave_in_resample_LPF_a_44100_22050[15];
+extern const std::vector<float> wave_in_resample_LPF_b_44100_22050;
+extern const std::vector<float> wave_in_resample_LPF_a_44100_22050;
 
-extern float wave_in_resample_LPF_b_48000_32000[no_of_sos_segments][3];
-extern float wave_in_resample_LPF_a_48000_32000[no_of_sos_segments][3];
+extern std::vector<std::vector<float>> wave_in_resample_LPF_b_48000_32000;
+extern std::vector<std::vector<float>> wave_in_resample_LPF_a_48000_32000;
 
 #endif //IIR_coefs

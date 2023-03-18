@@ -83,10 +83,8 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
       resample_LPF_order = 14;
       wave_in_resample_LPF_b.clear();
       wave_in_resample_LPF_a.clear();
-      //wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_48000_8000
-      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_b, wave_in_resample_LPF_b_48000_8000);
-      //wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_48000_8000;
-      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_a, wave_in_resample_LPF_a_48000_8000);
+      wave_in_resample_LPF_sos_b = wave_in_resample_LPF_b_48000_8000;
+      wave_in_resample_LPF_sos_a = wave_in_resample_LPF_a_48000_8000;
       break;
     case 11025:
       Fp_wave_in = 44100;
@@ -94,10 +92,8 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
       resample_LPF_order = 14;
       wave_in_resample_LPF_b.clear();
       wave_in_resample_LPF_a.clear();
-      //wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_44100_11025;
-      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_b, wave_in_resample_LPF_b_44100_11025);
-      //wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_44100_11025;
-      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_a, wave_in_resample_LPF_a_44100_11025);
+      wave_in_resample_LPF_sos_b = wave_in_resample_LPF_b_44100_11025;
+      wave_in_resample_LPF_sos_a = wave_in_resample_LPF_a_44100_11025;
       break;
     case 16000:
       Fp_wave_in = 48000;
@@ -105,20 +101,15 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
       resample_LPF_order = 14;
       wave_in_resample_LPF_b.clear();
       wave_in_resample_LPF_a.clear();
-      //wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_48000_16000;
-      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_b, wave_in_resample_LPF_b_48000_16000);
-      //wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_48000_16000;
-      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_a, wave_in_resample_LPF_a_48000_16000);
+      wave_in_resample_LPF_sos_b = wave_in_resample_LPF_b_48000_16000;
+      wave_in_resample_LPF_sos_a = wave_in_resample_LPF_a_48000_16000;
       break;
     case 22050:
       Fp_wave_in = 44100;
       L = 1; M = 2;
       resample_LPF_order = 14;
-      //wave_in_resample_LPF_b.assign(wave_in_resample_LPF_a_44100_22050);
-      copy(&wave_in_resample_LPF_b_44100_22050[0], &wave_in_resample_LPF_b_44100_22050[15], back_inserter(wave_in_resample_LPF_b));
-      //wave_in_resample_LPF_a.
-      //wave_in_resample_LPF_a = const_cast<DSP::Float_ptr>(*wave_in_resample_LPF_a_44100_22050);
-      copy(&wave_in_resample_LPF_a_44100_22050[0], &wave_in_resample_LPF_a_44100_22050[15], back_inserter(wave_in_resample_LPF_a));
+      wave_in_resample_LPF_b = wave_in_resample_LPF_b_44100_22050;
+      wave_in_resample_LPF_a = wave_in_resample_LPF_a_44100_22050;
       break;
     case 32000:
       Fp_wave_in = 48000;
@@ -126,10 +117,8 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
       resample_LPF_order = 14;
       wave_in_resample_LPF_b.clear();
       wave_in_resample_LPF_a.clear();
-      //wave_in_resample_LPF_sos_b = &wave_in_resample_LPF_b_48000_32000;
-      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_b, wave_in_resample_LPF_b_48000_32000);
-      //wave_in_resample_LPF_sos_a = &wave_in_resample_LPF_a_48000_32000;
-      copy_7x3_array_to_2d_vector(wave_in_resample_LPF_sos_a, wave_in_resample_LPF_a_48000_32000);
+      wave_in_resample_LPF_sos_b = wave_in_resample_LPF_b_48000_32000;
+      wave_in_resample_LPF_sos_a = wave_in_resample_LPF_a_48000_32000;
       break;
     case 44100:
       Fp_wave_in = 44100;
@@ -343,23 +332,14 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
   if ((temp_spec->userdata_state & E_US_channel_LPF_coefs) != 0)
   {
     // compute new LPF filter coefs
-    DSP::Float_ptr LPF_new_coefs_b_ptr;
-    DSP::Float_ptr LPF_new_coefs_a_ptr;
-//TODO: change this
     ChannelFg = temp_spec->channel_Fg;
-    GetIIR_LPF_coefs(ChannelFg, Fp, LPF_new_Nb, LPF_new_coefs_b_ptr, LPF_new_Na, LPF_new_coefs_a_ptr);
-      LPF_new_coefs_b.resize(LPF_new_Nb);
-    LPF_new_coefs_a.resize(LPF_new_Na);
-  for  (int ind = 0; ind < LPF_new_Nb; ind++)
-    LPF_new_coefs_b[ind] = LPF_new_coefs_b_ptr[ind];
-  for  (int ind = 0; ind < LPF_new_Na; ind++)
-    LPF_new_coefs_a[ind] = LPF_new_coefs_a_ptr[ind];
-
+    GetIIR_LPF_coefs(ChannelFg, Fp, LPF_new_coefs_b, LPF_new_coefs_a);
     if (LPF_new_Na <= 0)
     {
       LPF_new_coefs_a.resize(1);
       LPF_new_coefs_a[0] = 1.0;
-    } // coefs_b == NULL is e proper value
+    } 
+    // coefs_b == NULL is e proper value
     //! \bug implement support for ChannelFilterON
 
     #ifdef __DEBUG__
@@ -391,18 +371,10 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
   if ((temp_spec->userdata_state & E_US_channel_HPF_coefs) != 0)
   {
     // compute new HPF filter coefs
-    DSP::Float_ptr HPF_new_coefs_b_tmp, HPF_new_coefs_a_tmp;
     ChannelFd = temp_spec->channel_Fd;
-    GetIIR_HPF_coefs(ChannelFd, Fp, HPF_new_Nb, HPF_new_coefs_b_tmp, HPF_new_Na, HPF_new_coefs_a_tmp);
-    HPF_new_coefs_b.resize(HPF_new_Nb);
-    HPF_new_coefs_a.resize(HPF_new_Na);
-    for  (int ind = 0; ind < HPF_new_Nb; ind++)
-      HPF_new_coefs_b[ind] = HPF_new_coefs_b_tmp[ind];
-    for  (int ind = 0; ind < HPF_new_Na; ind++)
-      HPF_new_coefs_a[ind] = HPF_new_coefs_a_tmp[ind];
+    GetIIR_HPF_coefs(ChannelFd, Fp, HPF_new_coefs_b, HPF_new_coefs_a);
 
-
-    if (HPF_new_Na <= 0)
+    if (HPF_new_coefs_a.size() == 0)
     {
       HPF_new_coefs_a.resize(1);
       HPF_new_coefs_a[0] = 1.0;
@@ -644,24 +616,16 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   DSP::Float_vector coefs_b, coefs_a;
-  DSP::Float_ptr coefs_b_ptr, coefs_a_ptr;
-  int Na, Nb;
-  //FIXME: change to GetIIR_HPF_coefs(ChannelFd, Fp, coefs_b, coefs_a);
-  GetIIR_HPF_coefs(ChannelFd, Fp, Nb, coefs_b_ptr, Na, coefs_a_ptr);
-  //Temporary workaround, not very efficient
-  coefs_b.resize(Nb);
-  coefs_a.resize(Na);
-  for  (ind = 0; ind < Nb; ind++)
-    coefs_b[ind] = coefs_b_ptr[ind];
-  for  (ind = 0; ind < Na; ind++)
-    coefs_a[ind] = coefs_a_ptr[ind];
 
 
-  if (Na <= 0)
+  GetIIR_HPF_coefs(ChannelFd, Fp,coefs_b, coefs_a);
+
+  if (coefs_a.size() == 0)
   {
     coefs_a.resize(1);
     coefs_a[0] = 1.0;
-  } // coefs_b == NULL is e proper value
+  } 
+  // coefs_b == NULL is e proper value
   //! \bug implement support for ChannelFilterON
   ChannelFilter_HPF = new DSP::u::IIR(coefs_a, coefs_b);
   ChannelFilter_HPF->SetName("IIR HPF", false);
@@ -671,17 +635,9 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
 #endif
  
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
-  //FIXME: change to GetIIR_LPF_coefs(ChannelFg, Fp, coefs_b, coefs_a);
-  GetIIR_LPF_coefs(ChannelFg, Fp, Nb, coefs_b_ptr, Na, coefs_a_ptr);
+  GetIIR_LPF_coefs(ChannelFg, Fp, coefs_b, coefs_a);
   
-  coefs_b.resize(Nb);
-  coefs_a.resize(Na);
-  for  (ind = 0; ind < Nb; ind++)
-    coefs_b[ind] = coefs_b_ptr[ind];
-  for  (ind = 0; ind < Na; ind++)
-    coefs_a[ind] = coefs_a_ptr[ind];
-
-  if (Na <= 0)
+  if (coefs_a.size() == 0)
   {
     coefs_a.resize(1);
     coefs_a[0] = 1.0;
@@ -1179,17 +1135,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
   //! \todo get time slot mask (for signal drawing)
   CS_OnDraw.Leave();
 }
-//FIXME: this is only a temporary solution, it should be removed in the future
-void T_DSPlib_processing::copy_7x3_array_to_2d_vector(vector<vector<float>> &v, float a[7][3]){
-    v.clear();
-    v.resize(7);
-    for (int i = 0; i < 7; i++)
-    {
-      v[i].resize(3);
-      for (int j = 0; j < 3; j++)
-        v[i][j] = a[i][j];
-    }
-};
+
 void T_DSPlib_processing::ComputeHighResolutionSpectorgram(void)
 {
   DSP::Float_vector FFT_input_buffer;
