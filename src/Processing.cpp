@@ -834,7 +834,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
 void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier)
 {
   DSP::u::OutputBuffer *buffer;
-  DSP::Float_vector temp_slot;
+  DSP::Float_ptr temp_slot;
   DSP::Float_ptr temp_hist_slot, temp_psd_slot;
   float hist_factor;
   int ind, index;
@@ -948,15 +948,13 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // get time slot (BufferStep samples)
-  //TODO: check if this is correct
-  temp_slot.push_back(*CurrentObject->SignalSegments->GetSlot(true));
-  //memcpy(temp_slot, CurrentObject->tmp_FFT_buffer, CurrentObject->BufferStep*sizeof(float));
-  temp_slot.assign(CurrentObject->tmp_FFT_buffer.begin(), CurrentObject->tmp_FFT_buffer.begin() + CurrentObject->BufferStep);
+  temp_slot = CurrentObject->SignalSegments->GetSlot(true);
+  memcpy(temp_slot, CurrentObject->tmp_FFT_buffer.data(), CurrentObject->BufferStep*sizeof(float));
   CurrentObject->SignalSegments->Set_SlotDataSize(CurrentObject->BufferStep);
   // MORSE decoder
   if ((CurrentObject->MorseDecoder != NULL) && (CurrentObject->MorseReceiverState == true))
   {
-   memcpy(CurrentObject->morse_decoder_slot + CurrentObject->morse_decoder_slot_ind*CurrentObject->BufferStep,  temp_slot.data(), CurrentObject->BufferStep*sizeof(float));
+   memcpy(CurrentObject->morse_decoder_slot + CurrentObject->morse_decoder_slot_ind*CurrentObject->BufferStep,  temp_slot, CurrentObject->BufferStep*sizeof(float));
   
     CurrentObject->morse_decoder_slot_ind++;
     CurrentObject->morse_decoder_slot_ind %= CurrentObject->no_of_morse_decoder_slots;
