@@ -481,7 +481,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
   else
     AudioInGain = new DSP::u::Amplifier(1.0);
   float factor = 1.99/2.0;
-  DSP::Float_vector a_in{1.0f, -0.99f}, b_in{factor*1.0f, factor*-1.0f};;
+  DSP::Float_vector a_in{1.0f, -0.99f}, b_in{factor*1.0f, factor*-1.0f};
 
 
   DC_notcher = new DSP::u::IIR (a_in,b_in);
@@ -750,7 +750,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
 
 
   
-  tmp_FFT_buffer = DSP::Float_vector(FFT_size);
+  tmp_FFT_buffer = DSP::Float_vector(FFT_size, 0);
  // memset(tmp_FFT_buffer, 0, FFT_size*sizeof(float));
 
   SignalSegments = new T_PlotsStack(NoOfPSDslots, BufferStep);
@@ -1183,7 +1183,10 @@ void T_DSPlib_processing::ComputeHighResolutionSpectorgram(void)
       N = SignalSegments->Get_SlotDataSize(ind+ind2);
 
       //memcpy(temp_float, temp_slot, N*sizeof(DSP::Float));
-      //temp_float += N; N_all += N;
+      temp_float.assign(temp_slot, temp_slot+N);
+
+      //temp_float += N; 
+      N_all += N;
     }
     if (N_all < Window_size)
       //memset(FFT_input_buffer, 0x00, FFT_high_size*sizeof(DSP::Float));

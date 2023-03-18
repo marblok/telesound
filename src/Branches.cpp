@@ -182,7 +182,7 @@ void MyProcessingBranch::RemoveCommandFromList(T_BranchCommand *command)
 void MyProcessingBranch::PostCommandToBranch(T_BranchCommand *new_command_in)
 {
   T_BranchCommand *temp_command;
-  T_BranchCommand *last_command;;
+  T_BranchCommand *last_command;
 
   //ParentThread->Pause(); // pause thread operations
   CS_CommandList.Enter();

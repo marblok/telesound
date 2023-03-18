@@ -298,7 +298,7 @@ unsigned int T_OutputStackElement::Process_cplx(E_processing_DIR processing_DIR,
   char tekst[1024];
 
   sprintf(tekst, "No processing for complex input signal has been implemented for: %s", GetName());
-  DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::Process_cplx"<< DSP::e::LogMode::second << tekst<<endl;;
+  DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::Process_cplx"<< DSP::e::LogMode::second << tekst<<endl;
 
   return 0;
 }

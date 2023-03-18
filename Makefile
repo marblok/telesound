@@ -1,7 +1,7 @@
 # Run: make Release 
 # Run: make Debug 
 CC=g++
-
+WINDRES=windres
 # comflag = -m32
 # comflag = -m64
 comflag = $(COMFLAG)
@@ -61,10 +61,11 @@ all: build
 build: $(SRC_DIR)/$(MAIN_APP_EXE_FILENAME)
 -include $(MAIN_APP_DEPENDS)
 
+
 $(SRC_DIR)/$(MAIN_APP_EXE_FILENAME): $(MAIN_APP_OBJECTS)
 	@echo $(MAIN_APP_EXE_FILENAME)
-	$(CC) $(MAIN_APP_OBJECTS)  -o"$(SRC_DIR)/$(MAIN_APP_EXE_FILENAME)" $(LINKER_FLAGS) $(LIBS)
-
+	$(WINDRES) src/Telesound.rc -o $(OUT_DIR)_app/Telesound_rc.o $(INCLUDES)
+	$(CC) $(MAIN_APP_OBJECTS) $(OUT_DIR)_app/Telesound_rc.o -o "$(SRC_DIR)/$(MAIN_APP_EXE_FILENAME)" $(LINKER_FLAGS) $(LIBS) -mwindows -Wl,--subsystem,windows 
 
 # ########################################################################################### #	
 # ########################################################################################### #	
