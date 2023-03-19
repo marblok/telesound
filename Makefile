@@ -6,7 +6,6 @@ WINDRES=windres
 # comflag = -m64
 comflag = $(COMFLAG)
 
-# wxWidgets_DIR = ../wxWidgets-3.1.5
 wxWidgets_DIR = wxWidgets-3.2.2
 wxWidgets_gcc = gcc1220
 
@@ -25,7 +24,7 @@ MAIN_APP_NAME = TeleSound
 ifeq ($(MODE),Release)
 	CFLAGS = $(comflag) -std=c++0x -O3 -Wall -c -fmessage-length=0 -fno-strict-aliasing -fpermissive
 	LINKER_FLAGS = $(comflag)  -s -static-libgcc -static-libstdc++ $(MISC_LINKER_FLAGS)  -L$(DSPElib_DIR)/rls -L$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll
-	INCLUDES := -Isrc/ -Isrc/include -Isrc_support/include -I"$(wxWidgets_DIR)/include" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll/" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll/mswud" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll" -I"$(DSPElib_DIR)/include" -I"$(DSPElib_DIR)/dbg" -I"$(DSPElib_DIR)/include/dbg"
+	INCLUDES := -Isrc/ -Isrc/include -Isrc_support/include -I"$(wxWidgets_DIR)/include" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll/" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll/mswud" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll" -I"$(DSPElib_DIR)/include" -I"$(DSPElib_DIR)/rls" -I"$(DSPElib_DIR)/include/rls"
 	MAIN_APP_EXE_FILENAME = $(MAIN_APP_NAME)_rls.exe
 else
 	CFLAGS   = $(comflag) -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -W -Wshadow -Wconversion -fstrict-aliasing -fmax-errors=5 -fpermissive
@@ -33,8 +32,7 @@ else
 	INCLUDES := -Isrc/include -Isrc_support/include -I"$(wxWidgets_DIR)/include" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll/" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll/mswud" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll" -I"$(DSPElib_DIR)/include" -I"$(DSPElib_DIR)/dbg" -I"$(DSPElib_DIR)/include/dbg"
 	MAIN_APP_EXE_FILENAME = $(MAIN_APP_NAME)_dbg.exe
 endif
-# -U__STRICT_ANSI__ jest potrzebne do kompilacji debug_new.cpp, jezeli pominac ten plik to mozna rowniez wyrzucic te opcje
-#CFLAGS_debug   = $(comflag) -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -W -Wshadow -Wco#nversion -fstrict-aliasing -U__STRICT_ANSI__
+
 
 MAIN_APP_SOURCES_NAMES = 
 MAIN_APP_SOURCES_NAMES += src/Branches.cpp src/IIR_coefs.cpp src/MorseDecoder.cpp src/Processing.cpp src/Vectors.cpp src/main.cpp
@@ -42,8 +40,6 @@ MAIN_APP_SOURCES_NAMES += src_support/BitmapFont.cpp src_support/DSP.cpp src_sup
 
 MAIN_APP_SOURCES = $(addprefix $(SRC_CPP_SUBDIR)/,$(MAIN_APP_SOURCES_NAMES))
 
-SOURCES_DBG =
-# SOURCES_DBG += $(SRC_DIR)/Main.cpp
 
 # ################################################# #
 # DEBUG
@@ -65,7 +61,7 @@ build: $(SRC_DIR)/$(MAIN_APP_EXE_FILENAME)
 $(SRC_DIR)/$(MAIN_APP_EXE_FILENAME): $(MAIN_APP_OBJECTS)
 	@echo $(MAIN_APP_EXE_FILENAME)
 	$(WINDRES) src/Telesound.rc -o $(OUT_DIR)_app/Telesound_rc.o $(INCLUDES)
-	$(CC) $(MAIN_APP_OBJECTS) $(OUT_DIR)_app/Telesound_rc.o -o "$(SRC_DIR)/$(MAIN_APP_EXE_FILENAME)" $(LINKER_FLAGS) $(LIBS) -mwindows -Wl,--subsystem,windows 
+	$(CC) $(MAIN_APP_OBJECTS) $(OUT_DIR)_app/Telesound_rc.o -o "$(SRC_DIR)/$(MAIN_APP_EXE_FILENAME)" $(LINKER_FLAGS) $(LIBS)
 
 # ########################################################################################### #	
 # ########################################################################################### #	

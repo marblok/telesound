@@ -19,10 +19,7 @@ ifeq ($(VS_CFG),Windows-Release)
 	OUT_DIR = ./out_win_rls
 	MISC_LINKER_FLAGS = -static -mwindows 
 	LIBS=-lwxbase32u -lwxmsw32u_core -lwxmsw32u_gl -lwxmsw32u_stc -lwxmsw32u_richtext -lwxpng -lwxzlib -lDSPE -lDSPEsockets -lwinmm -lws2_32 -lopengl32 -lglu32 -lcomctl32 -lole32 -loleacc -loleaut32 -luuid -lwininet -lmswsock -liphlpapi -luser32 -lkernel32 -lws2help -lgdi32 -ladvapi32 -lwinspool -lshlwapi -lsetupapi -lcfgmgr32 -lhid -lcomdlg32 -lodbccp32 -lodbc32 -lodbccr32 -lmsimg32 -lmsvcrt -lversion 
-	
-	
 	DFLAGS = -D_WIN32_WINNT=0x0601 -D__WXMSW__ -DwxUSE_GUI -DWXUSINGDLL -DwxUSE_UNICODE -DUNICODE -DwxUSE_UNICODE_WINDOWS_H -DWIN32
-	# -DWX_UNICODE=1 -DWX_DEBUG=0 -DNDEBUG
 endif
 
 

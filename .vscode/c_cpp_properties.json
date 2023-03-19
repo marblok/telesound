@@ -7,9 +7,9 @@
                 "${workspaceFolder}/src_support/include",
                 "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include",
                 "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/",
-                "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include/dbg",
+                "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include/rls",
                 "${workspaceFolder}/wxWidgets-3.2.2/include",
-                "${workspaceFolder}/wxWidgets-3.2.2/lib_dev/gcc1220_x64_dll/mswu"
+                "${workspaceFolder}/wxWidgets-3.2.2/lib/gcc1220_x64_dll"
             ],
             "defines": [
                 "WIN32",
