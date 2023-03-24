@@ -496,7 +496,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
   else
     CarrierIn = new DSP::u::DDScos(MasterClock, false, 0.5, DSP::Float(800*DSP::M_PIx2/Fp));
   MorseKey = new DSP::u::MORSEkey(MasterClock, WPM, Fp);
-  MorseKey->LoadCodeTable("polish.mct");
+  MorseKey->LoadCodeTable("config\\polish.mct");
   MorseMul = new DSP::u::RealMultiplication(2);
   CarrierIn->Output("out")>> MorseMul->Input("in1");
   MorseKey->Output("out")>> MorseMul->Input("in2");

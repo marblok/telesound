@@ -70,6 +70,7 @@ MyProcessingBranch::~MyProcessingBranch(void)
   if (ProcessingStack != NULL)
   {
     ProcessingStack->DeleteStack();
+    // delete ProcessingStack;
     ProcessingStack = NULL;
   }
 

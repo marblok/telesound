@@ -134,7 +134,7 @@ class T_Counters_Processor
 
     T_Counters_Processor(void)
     {
-      MorseTable.LoadFromFile("polish.mct");
+      MorseTable.LoadFromFile("config\\polish.mct");
 
 //  MorseTable.MorseCode[MorseTable.MorseCodeEntriesNo]=MorseTable.MorseCodeText2Number("--...-"); //Converter to number
 //  MorseTable.CharCode[MorseTable.MorseCodeEntriesNo]=-113; // 'Ź'

@@ -4,7 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
+        {   // https://code.visualstudio.com/docs/cpp/launch-json-reference
             "name": "(gdb) TeleSound — Windows debug run ",
             "type": "cppdbg",
             "request": "launch",
@@ -22,6 +22,7 @@
                     "ignoreFailures": true
                 }
             ],
+            "environment": [{"name": "Path", "value":  "${env:Path};C:\\msys64\\mingw64\\bin;${workspaceFolder}\\wxWidgets-3.2.2\\lib_dev\\gcc1220_x64_dll"}],
             "preLaunchTask": "Build TeleSound"
         }
     ]
