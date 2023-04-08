@@ -2,17 +2,24 @@
 See the [wiki](https://git.pg.edu.pl/dspe/telesound/-/wikis/home) for more information.
 
 ## DLLs required for TeleSound to work:
+- libgcc_s_seh-1.dll
+- libstdc++-6.dll
+- libwinpthread-1.dll
+
 - wxbase32u_gcc1220_x64.dll
 - wxms32u_gl_gcc1220_x64.dll
 - wxms32u_core_gcc1220_x64.dll
-Place them in the same folder as *TeleSound.exe*
+
+Make sure these files are in PATH, or place them in the same folder as *TeleSound.exe*
 
 ## Known issues:
 - The program may crash when running without audio devices or when audio devices become unavailable during runtime.
 - Switching modes (client/server) may cause problems (also in earlier versions).
 
+
 ## TODO:
 - Verify that devices are available before attempting to use them.
+- Validate IP address input,
 - Fix the "No audio devices found" message box,
 - Fix release build (#if DEBUG statements),
 - Fix spacing between elements in the main window,
