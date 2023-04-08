@@ -1,6 +1,9 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
+#include "IDs.h"
+#include "../TeleSound_wxGlade.h"
+
 #include <wx/listctrl.h>
 //#include <wx/splitter.h>
 #include <wx/sashwin.h>
@@ -11,23 +14,9 @@
 #include "OutlineFont.h"
 #include "Misc.h"
 #include <DSP_modules_misc.h>
-
+#include "DSP.h"
 #include "MyGLCanvas.h"
 
-const int ID_DrawNow    = wxID_HIGHEST+1;
-const int ID_ProcessEnd = wxID_HIGHEST+2;
-const int ID_BranchEnd  = wxID_HIGHEST+3;
-/*
-Event Macros https://wiki.wxwidgets.org/Custom_Events
-The old macros for this were: DECLARE_EVENT_TYPE(MY_NEW_TYPE, wxID_ANY) and DEFINE_EVENT_TYPE(MY_NEW_TYPE) though it was almost as easy to use non-macro code. 
-SInce wx3.0 events are type-safe and the new macros take this into account; 
-so code that doesn't have to be backwards-compatible should use: wxDECLARE_EVENT(MY_NEW_TYPE, wxCommandEvent); and wxDEFINE_EVENT(MY_NEW_TYPE, wxCommandEvent);
-(Note the semicolons.) You now have to specify the event class that will use the new wxEventType; 
-it will often be wxCommandEvent. 
-DECLARE_EVENT_TYPE(wxEVT_DRAW_NOW, -1)
-DECLARE_EVENT_TYPE(wxEVT_PROCESS_END, -1)
-DECLARE_EVENT_TYPE(wxEVT_BRANCH_END, -1)
-*/
 wxDECLARE_EVENT(wxEVT_DRAW_NOW, wxCommandEvent);
 wxDECLARE_EVENT(wxEVT_PROCESS_END, wxCommandEvent);
 wxDECLARE_EVENT(wxEVT_BRANCH_END, wxCommandEvent);
@@ -40,17 +29,17 @@ wxDECLARE_EVENT(wxEVT_STATUSBOX_UPDATE, wxCommandEvent);
 class T_DSPlib_processing;
 class MyProcessingThread;
 class MyProcessingBranch;
-class MyFrame;
+class MainFrame;
 class MyMorseKey;
 
 // Define a new application
-class MyApp : public wxApp
+class MainApp : public wxApp
 {
 public:
   static string HostAddress;
 
 private:
-  static MyFrame *frame;
+  static MainFrame *frame;
 
   static bool LogFunction(const string &source, const string &message, bool IsError);
 
@@ -115,7 +104,7 @@ class T_TaskElement : public wxEvtHandler
     //! Pointer to the first processing specification on the list
     T_ProcessingSpec *FirstProcessingSpec;
     //! MDI window related to this task
-    static MyFrame *task_parent_window;
+    static MainFrame *task_parent_window;
 
     //! Creates processing branch based on processing specification
     /*!
@@ -184,18 +173,11 @@ class T_TaskElement : public wxEvtHandler
     //! Pause task processing
     bool PauseTaskProcessing(void);
 
-    T_TaskElement(MyFrame *parent);
+    T_TaskElement(MainFrame *parent);
     ~T_TaskElement(void);
 };
 
-enum E_PageIDs
-{
-  E_PID_tasks = 0,
-  E_PID_CHANNEL = 1,
-  E_PID_MORSE = 2,
-  E_PID_status = 3,
-  E_PID_default = 1000
-};
+
 class T_InterfaceState
 {
   public:
@@ -242,7 +224,7 @@ class T_InterfaceState
     ~T_InterfaceState(void);
 };
 // Define a new frame
-class MyFrame : public wxFrame
+class MainFrame : public GUIFrame
 {
   public:
     //char HostAddress[1024];
@@ -250,90 +232,21 @@ class MyFrame : public wxFrame
   public:
     wxPanel *CreatePage(wxNotebook *parent, E_PageIDs PageNo = E_PID_tasks);
     void SelectPage(E_PageIDs PageNo = E_PID_tasks);
+    void SetStatusBoxMessage(std::string MessageText, bool isError=false);
 
-    //// Splitter window which allows managing MDIclient area versus notebook area
-    //wxSplitterWindow *MainSplitter;
-    wxSashWindow *NotebookSash;
-    //! width of the notebook sash
-    int NotebookSash_width;
-    wxNotebook *notebookWindow;
-
-    //! GLcanvas used to draw signals
-    MyGLCanvas *GLcanvas;
     MyGLCanvas *GetGLcanvas(unsigned int CanvasInd);
     //! current task working with parent window
     T_TaskElement *parent_task;
     T_TaskElement *GetParentTask(void);
 
 
-    // --------------------------------------- //
-    // Panel #1 : Task management / file info
-        // Tasks action controls
-    wxToolBar *TasksToolBar;
-    wxToolBarToolBase *MikeToolOFF;
-    wxToolBarToolBase *MikeToolON;
-    wxToolBarToolBase *LocalSignalToolOFF;
-    wxToolBarToolBase *LocalSignalToolON;
-    // input file parameters
-    wxRadioButton *WorksAsServer;
-    wxRadioButton *WorksAsClient;
-    wxTextCtrl *ServerAddressEdit;
-    wxComboBox *SamplingRateBox;
-    //wxStaticText *ConnectionInfo;
-
     TAudioMixer *AudioMixer;
-    wxComboBox *SourceLine_ComboBox;
-    wxSlider *SourceLine_slider;
-    wxComboBox *DestLine_ComboBox;
-    wxSlider *DestLine_slider;
-    wxSlider *MasterLine_slider;
+      MyMorseKey *KeyingCtrl;
 
-    // --------------------------------------- //
-    // Panel #2 : processing setting controls
-    wxComboBox *DrawModeBox;
-    wxTextCtrl *PSD_slots_text;
-    wxSlider *PSD_slots_slider;
 
-    wxTextCtrl *SNR_text;
-    wxSlider *SNR_slider;
-
-    wxTextCtrl *LPF_text;
-    wxSlider *LPF_slider;
-    wxTextCtrl *HPF_text;
-    wxSlider *HPF_slider;
-
-    // --------------------------------------- //
-    // Panel #3 : MORSE code
-    wxTextCtrl *WPM_text;
-    wxSlider   *WPM_slider;
-    wxTextCtrl *AsciiTextEntry;
-    MyMorseKey *KeyingCtrl;
-    wxButton   *SendAsciiText;
-
-    wxCheckBox *MorseReceiverState;
-    wxTextCtrl *AsciiTextReceiver;
-
-    // --------------------------------------- //
-    // Panel #4 : speech signal
-    wxRadioButton  *UseLogatoms;
-    wxRadioButton  *UseSentences;
-    wxComboBox     *VoiceTypeBox;
-    wxButton       *SelectVoiceFile;
-    wxTextCtrl     *VoiceFileIndex;
-    wxBitmapButton *OpenWAVEfile;
-    wxBitmapButton *StopWAVEfile;
-
-#ifdef __DEBUG__
-    // --------------------------------------- //
-    // Panel #5 : status controls
-    wxTextCtrl *StatusBox;
-#endif
-
-    // --------------------------------------- //
-    // --------------------------------------- //
-    MyFrame(wxWindow *parent, const wxWindowID id, const wxString& title,
+    MainFrame(wxWindow *parent, const wxWindowID id, const wxString& title,
             const wxPoint& pos, const wxSize& size, const long style);
-    virtual ~MyFrame(void);
+    virtual ~MainFrame(void);
 
 
     void OnSize(wxSizeEvent& event);
@@ -385,7 +298,7 @@ class MyFrame : public wxFrame
     // ++++++++++++++++++++++++++++++++++++++++++++++ //
     DECLARE_EVENT_TABLE()
 };
-//extern MyFrame *frame;
+//extern MainFrame *frame;
 
 class MyMorseKey : public wxTextCtrl
 {
@@ -394,7 +307,7 @@ class MyMorseKey : public wxTextCtrl
     bool is_down;
     //int counter;
     char text[1024];
-    MyFrame *Parent;
+    MainFrame *Parent;
 
   public:
     void OnKeyDown(wxKeyEvent& event);
@@ -403,7 +316,7 @@ class MyMorseKey : public wxTextCtrl
     //void OnMouseLeftDown(wxMouseEvent& event);
     //void OnMouseLeftUp(wxMouseEvent& event);
 
-    MyMorseKey(MyFrame* frame, wxWindow* parent, wxWindowID id, const wxString& label,
+    MyMorseKey(MainFrame* frame, wxWindow* parent, wxWindowID id, const wxString& label,
         const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
         long style = 0, const wxValidator& validator = wxDefaultValidator)
      : wxTextCtrl(parent, id, label, pos, size, style, validator)
@@ -416,63 +329,6 @@ class MyMorseKey : public wxTextCtrl
 
   DECLARE_EVENT_TABLE()
 };
-
-/*
-class MyGLCanvas;
-
-class MyChild: public wxMDIChildFrame
-{
-  friend class MyGLCanvas;
-  private:
-    //! Task to which this MDI window belongs
-    T_TaskElement *MDI_parent_task;
-
-  public:
-    MyChild(wxMDIParentFrame *parent, T_TaskElement *MDI_task);
-    ~MyChild();
-
-    void InitToolBar(wxToolBar* toolBar);
-
-    MyGLCanvas  *GLcanvas;
-    //bool m_init;
-    //void InitGL(void);
-    MyGLCanvas *GetGLcanvas(unsigned int CanvasInd);
-    T_TaskElement *GetParentTask(void);
-
-  private:
-    //unsigned int GUI_lock_counter;
-    wxCriticalSection CS_OnGUI_LockUnlock;
-
-  public:
-    void LockDrawingData(unsigned int GLcanvas_index);
-    //void Full_UnlockGUI(unsigned int GLcanvas_index = 0);
-    void UnlockDrawingData(unsigned int GLcanvas_index);
-
-    void OnActivate(wxActivateEvent& event);
-
-    //void OnRefresh(wxCommandEvent& event);
-    //void OnUpdateRefresh(wxUpdateUIEvent& event);
-    //void OnPaint(wxPaintEvent& event);
-    void OnChangeTitle(wxCommandEvent& event);
-    void OnChangePosition(wxCommandEvent& event);
-    void OnChangeSize(wxCommandEvent& event);
-    void OnQuit(wxCommandEvent& event);
-    void OnSize(wxSizeEvent& event);
-//    void OnMove(wxMoveEvent& event);
-
-    void OnSetFocus(wxFocusEvent& event);
-
-    void OnClose(wxCloseEvent& event);
-
-#if wxUSE_CLIPBOARD
-    void OnPaste(wxCommandEvent& event);
-    void OnUpdatePaste(wxUpdateUIEvent& event);
-#endif // wxUSE_CLIPBOARD
-
-    DECLARE_EVENT_TABLE()
-};
-*/
-
 
 //! Represents processing thread container
 /*! \todo implemented multiple threads management on multiple core CPUs
@@ -506,13 +362,13 @@ class MyProcessingThread : public wxThread
 
   private:
     int ThreadIndex;
-    MyFrame *Parent;
+    MainFrame *Parent;
 
     unsigned int NoOfBranches;
     MyProcessingBranch **Branches;
 
   private:
-    MyProcessingThread(MyFrame *Parent);
+    MyProcessingThread(MainFrame *Parent);
   public:
     ~MyProcessingThread(void);
     //! checks if thread is on ProcessingThreads table and remove it from there
@@ -530,7 +386,7 @@ class MyProcessingThread : public wxThread
     //! Adds processing branch to one of the active threads
     /*! \note Only one branch should have given MyChild window as a Parent
      */
-    static MyProcessingBranch *AddProcessingBranch(MyFrame *Parent_in,
+    static MyProcessingBranch *AddProcessingBranch(MainFrame *Parent_in,
         T_InputElement *ProcessingStack_in);
 
     //! Deletes all threads
@@ -540,70 +396,10 @@ class MyProcessingThread : public wxThread
      *  and used in MyProcessingThread::AddProcessingBranch
      *  for branches distribution and processing.
      */
-    static void CreateAndRunThreads(MyFrame *Parent_in, int NoOfThreads = -1);
+    static void CreateAndRunThreads(MainFrame *Parent_in, int NoOfThreads = -1);
 };
 
-// menu items ids
-#define MAX_SLIDER_VALUE 100
-// 5, 10, 15, ...
-#define WPM_20_SLIDER_VALUE  3
-#define WPM_MAX_SLIDER_VALUE 5
-enum
-{
-    MDI_QUIT = wxID_EXIT,
 
-    ID_connection_state = 101,
-    ID_work_as_server = 102,
-    ID_work_as_client = 103,
-    ID_server_address = 104,
-    ID_SELECT_SAMPLING_RATE = 105,
-    ID_SELECT_MIXER_SOURCE_LINE = 106,
-    ID_SELECT_MIXER_DEST_LINE = 107,
-    ID_SourceLine_SLIDER = 108,
-    ID_DestLine_SLIDER = 109,
-    ID_MasterLine_SLIDER = 110,
 
-    ID_SELECT_DRAW_MODE = 121,
-    ID_PSD_SLOTS_SLIDER = 122,
-
-    ID_SNR_SLIDER = 123,
-    ID_LPF_SLIDER = 124,
-    ID_HPF_SLIDER = 125,
-
-    ID_WPM_SLIDER = 126,
-    ID_ascii_text = 127,
-    ID_morse_receiver_state = 128,
-    ID_received_ascii_text = 129,
-    ID_send_ascii_text = 130,
-
-    ID_use_logatoms = 131,
-    ID_use_sentences = 132,
-    ID_voice_type = 133,
-    ID_select_voice_file = 134,
-    ID_voice_file_index = 135,
-    ID_open_wav_file = 136,
-    ID_stop_wav_file = 137,
-
-    ID_RUN_TASK = 201,
-    ID_PAUSE_TASK = 202,
-    ID_STOP_TASK = 203,
-    ID_MIKE_ON_OFF = 204,
-    ID_LOCAL_SIGNAL_ON_OFF = 205,
-
-    ID_NOTEBOOK_SASH = 301,
-    ID_draw_time_signal = 302,
-    ID_draw_histogram = 303,
-    ID_draw_psd = 304,
-    ID_draw_spectrogram = 305,
-    ID_draw_none = 306,
-
-    MDI_REFRESH,
-    MDI_CHANGE_TITLE,
-    MDI_CHANGE_POSITION,
-    MDI_CHANGE_SIZE,
-    MDI_CHILD_QUIT,
-
-    MDI_ABOUT = wxID_ABOUT
-};
 
 #endif /*MAIN_H_*/

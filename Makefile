@@ -35,7 +35,7 @@ endif
 
 
 MAIN_APP_SOURCES_NAMES = 
-MAIN_APP_SOURCES_NAMES += src/Branches.cpp src/IIR_coefs.cpp src/MorseDecoder.cpp src/Processing.cpp src/Vectors.cpp src/main.cpp
+MAIN_APP_SOURCES_NAMES += src/Branches.cpp src/IIR_coefs.cpp src/MorseDecoder.cpp src/Processing.cpp src/Vectors.cpp src/TeleSound_wxGlade.cpp src/main.cpp 
 MAIN_APP_SOURCES_NAMES += src_support/BitmapFont.cpp src_support/DSP.cpp src_support/GUIcalls.cpp src_support/OutlineFont.cpp src_support/wxAddons.cpp 
 
 MAIN_APP_SOURCES = $(addprefix $(SRC_CPP_SUBDIR)/,$(MAIN_APP_SOURCES_NAMES))
