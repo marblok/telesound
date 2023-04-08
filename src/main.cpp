@@ -979,6 +979,7 @@ MainFrame::~MainFrame(void)
   if (KeyingCtrl != NULL)
   {
     delete KeyingCtrl;
+    KeyingCtrl = NULL;
   }
 }
 // Define my frame constructor
@@ -1091,7 +1092,7 @@ MainFrame::MainFrame(wxWindow *parent,
   MasterLine_slider->SetValue((int)val * MAX_SLIDER_VALUE);
   if (val < 0)
     MasterLine_slider->Enable(false);
-
+  AudioMixer->SetDestLineState(DSP::AM_MasterControl, DSP::e::AM_MutedState::MUTED_NO);
   // Replace placeholder with morsekey
   KeyingCtrl = new MyMorseKey(this, page3, wxID_ANY, _T("Key OFF"));
   sizer_18->Replace(TextCtrlPlaceholder, KeyingCtrl);
