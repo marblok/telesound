@@ -229,8 +229,7 @@ void T_OutputStackElement::DeleteStack(void)
         OutputStacks[ind][ind2]->DeleteStack();
     }
   }
-
-  // delete this;
+  delete this;
 }
 
 T_OutputStackElement::~T_OutputStackElement(void)

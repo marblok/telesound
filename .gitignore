@@ -6,3 +6,4 @@
 *.log
 !/wxWidgets-3.2.2/README.md
 *.bak
+*.dot

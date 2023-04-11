@@ -1,4 +1,4 @@
-/*! \file DSP_modules_misc.h
+/*! \file DSPmodules_misc.h
  * This is DSP engine miscellaneous components and sources
  * definition module header file.
  *

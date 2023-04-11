@@ -14,7 +14,6 @@ Make sure these files are in PATH, or place them in the same folder as *TeleSoun
 
 ## Known issues:
 - The program may crash when running without audio devices or when audio devices become unavailable during runtime.
-- Switching modes (client/server) may cause problems (also in earlier versions).
 
 
 ## TODO:
@@ -23,4 +22,3 @@ Make sure these files are in PATH, or place them in the same folder as *TeleSoun
 - Fix the "No audio devices found" message box,
 - Fix release build (#if DEBUG statements),
 - Fix spacing between elements in the main window,
-- Fix switching modes.

@@ -39,12 +39,12 @@
   #define __NO_WINSOCK__
 
   //#include <sys/types.h>
- // #include <sys/socket.h>
-//  #include <arpa/inet.h>
-//  #include <netdb.h>  /* Needed for getaddrinfo() and freeaddrinfo() */
-  //#include <unistd.h> /* Needed for close() */
- // #include <sys/ioctl.h>
- // #include <cerrno>
+  #include <sys/socket.h>
+  #include <arpa/inet.h>
+  #include <netdb.h>  /* Needed for getaddrinfo() and freeaddrinfo() */
+  #include <unistd.h> /* Needed for close() */
+  #include <sys/ioctl.h>
+  #include <cerrno>
 
   typedef int SOCKET;
   //const int INVALID_SOCKET = -1;

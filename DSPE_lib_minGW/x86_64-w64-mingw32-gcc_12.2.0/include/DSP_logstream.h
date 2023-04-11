@@ -7,7 +7,9 @@
 #ifndef DSP_TEESTREAM_H
 #define DSP_TEESTREAM_H
 
+  //#include <iostream>
   #include <ostream>
+  #include <fstream>
   #include <memory>
   #include <mutex>
 
@@ -67,7 +69,7 @@
 
   namespace DSP {
 
-      class logstream : public std::ostream // std::basic_ostream
+      class logstream : private std::streambuf, public std::ostream // std::basic_ostream
       {
       public:
         // Construct an ostream which forwards output to DSP::InfoMessage and DSP::ErrorMessage.

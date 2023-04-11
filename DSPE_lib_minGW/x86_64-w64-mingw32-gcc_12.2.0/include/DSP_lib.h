@@ -11,7 +11,7 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 20
-#define DSP_VER_BUILD 13 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_BUILD 22 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2023
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -58,19 +58,19 @@ struct DSP::libver
  *    for blocks like DSP::u::PCCC. Those should work like sources and have clock defined.
  *    ConvertConst2Source <== checks whether all inputs are constant,
  *        defines block clock and adds to list of constant input blocks for given clock.
- *  \todo <b>2008.04.06</b> DSP::u::RawDecimator, DSP::u::SampleRateConverter - zaimplementowa� w wersji bez
+ *  \todo <b>2008.04.06</b> DSP::u::RawDecimator, DSP::u::SampleRateConverter - zaimplementowa  w wersji bez
  *    rejestracji jako źródło (może nawet zaimplementować jako zwykły blok przetwarzania)
  *    - może przyśpieszyć przetwarzanie - mniej źródeł do przeszukiwania
  *  \todo <b>2008.04.06</b> DSP::Component::CheckInputsOfComponents(DSP_clock_ptr) - checking
  *     only for components of given clock. Also implement version in DSP_clock like
  *     DSP_clock::ListOfComponents
- *  \todo <b>2008.04.10</b> Przejrze� bloczki wieloszybkosciowe i asynchroniczne.
- *   -# dla bloczk�w multirate
- *     -# decymatory w stosunku wymiernym -> przerobi� na zwyk�e processing blocks,
- *        nie wymagaj� obs�ugi za pomoc� zegara
- *     -# interpolatory w stosunku wymiernym -> musz� by� bloczkami typu mixed.
- *        Pytanie nale�y korzysta� z Notifications czy lepiej kontrol�
- *        kompletno�ci pr�bek wej�ciowych pozostawi� InputExecute i OutputExecute.
+ *  \todo <b>2008.04.10</b> Przejrze  bloczki wieloszybkosciowe i asynchroniczne.
+ *   -# dla bloczk w multirate
+ *     -# decymatory w stosunku wymiernym -> przerobi  na zwyk e processing blocks,
+ *        nie wymagaj  obs ugi za pomoc  zegara
+ *     -# interpolatory w stosunku wymiernym -> musz  by  bloczkami typu mixed.
+ *        Pytanie nale y korzysta  z Notifications czy lepiej kontrol 
+ *        kompletno ci pr bek wej ciowych pozostawi  InputExecute i OutputExecute.
  *  \todo <b>2008.04.13</b> When wav file does not exist, something
  *     more then "Unsupported input sampling rate" should be stated
  *    for DSP::u::WaveInput
@@ -167,9 +167,9 @@ string DSP::lib_version_string();
 
 /*! \mainpage Digital Signal Processing Engine Documentation
  *
- *  <b>Digital Signal Processing Engine</b> 2005-2021
+ *  <b>Digital Signal Processing Engine</b> 2005-2023
  *
- *  This project is licensed under GNU Lesser General Public License v2.1. 
+ *  This project is licensed under GNU Lesser General Public License ver. 3
  *  \ref lib_license
  *
  * \section lib_lic_author Engine author
