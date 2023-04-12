@@ -17,8 +17,5 @@ Make sure these files are in PATH, or place them in the same folder as *TeleSoun
 
 
 ## TODO:
-- Verify that devices are available before attempting to use them.
-- Validate IP address input,
-- Fix the "No audio devices found" message box,
-- Fix release build (#if DEBUG statements),
-- Fix spacing between elements in the main window,
+- Verify that devices are available before attempting to use them (Fix the "No audio devices found" message box),
+- Validate IP address input (?)

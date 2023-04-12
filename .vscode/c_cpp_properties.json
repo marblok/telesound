@@ -3,6 +3,7 @@
         {
             "name": "Windows-Release",
             "includePath": [
+                "${workspaceFolder}/**",
                 "${workspaceFolder}/src_support/include",
                 "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include",
                 "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include/rls",
@@ -38,6 +39,7 @@
         {
             "name": "Windows-Debug",
             "includePath": [
+                "${workspaceFolder}/**",
                 "${workspaceFolder}/src_support/include",
                 "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include",
                 "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include/dbg",

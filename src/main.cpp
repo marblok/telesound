@@ -358,13 +358,6 @@ bool MainApp::OnInit()
   // strcpy(frame->HostAddress, HostAddress);
   frame->SetIcon(wxICON(TelesoundMainIcon));
 
-#if 0
-    // Experimental: change the window menu
-    wxMenu* windowMenu = new wxMenu;
-    windowMenu->Append(5000, _T("My menu item!"));
-    frame->SetWindowMenu(windowMenu);
-#endif
-
   SetTopWindow(frame);
   frame->Show(true);
 
@@ -1098,6 +1091,10 @@ MainFrame::MainFrame(wxWindow *parent,
   sizer_18->Replace(TextCtrlPlaceholder, KeyingCtrl);
   delete TextCtrlPlaceholder;
   sizer_18->Layout();
+
+  #if __DEBUG__==0
+  notebookWindow->RemovePage(3);
+  #endif
 }
 
 MyGLCanvas *MainFrame::GetGLcanvas(unsigned int CanvasInd)
@@ -1413,6 +1410,7 @@ void MainFrame::OnPageChanging(wxNotebookEvent &event)
 // TODO: check
 void MainFrame::SetStatusBoxMessage(std::string MessageText, bool isError)
 {
+#if __DEBUG__==1
   if (StatusBox != NULL)
   {
     if (isError)
@@ -1422,6 +1420,7 @@ void MainFrame::SetStatusBoxMessage(std::string MessageText, bool isError)
 
     StatusBox->AppendText(MessageText);
   }
+#endif  
 }
 
 void MainFrame::OnProcessEnd(wxCommandEvent &event)
