@@ -36,12 +36,12 @@ class MyMorseKey;
 class MainApp : public wxApp
 {
 public:
-  static string HostAddress;
+  static std::string HostAddress;
 
 private:
   static MainFrame *frame;
 
-  static bool LogFunction(const string &source, const string &message, bool IsError);
+  static bool LogFunction(const std::string &source, const std::string &message, bool IsError);
 
 public:
   bool OnInit();
@@ -188,15 +188,15 @@ class T_InterfaceState
     // +++++++++++++++++++++++++ //
     // temporary variables storing current user edited values
     bool run_as_server;
-    string address;
+    std::string address;
 
     bool task_is_running;
     bool task_is_paused;
 
     int WPM;
 
-    string selected_wav_filename;
-    string wav_filename;
+    std::string selected_wav_filename;
+    std::string wav_filename;
 
     bool mike_is_off;
     float local_signal_gain;
@@ -209,7 +209,7 @@ class T_InterfaceState
     float channel_Fd;
     float channel_Fg;
 
-    string ascii_text;
+    std::string ascii_text;
     bool morse_receiver_state;
 
     E_UpdateState userdata_state;

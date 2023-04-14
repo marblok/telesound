@@ -186,7 +186,7 @@ void T_PlotsStack::DrawSpecgram(float C_skala, const CLR_map_type map_type)
   glNewList(GL_list_index, GL_COMPILE_AND_EXECUTE);
 
   //sprintf(tekst, "%i, %i", Nx, Ny);
-  //DSP::log << "DrawSpecgram"<<DSP::e::LogMode::second<< tekst<<endl;
+  //DSP::log << "DrawSpecgram"<<DSP::e::LogMode::second<< tekst<< std::endl;
   for (ind_x = 0; ind_x < NoOfSlots; ind_x++)
   {
     y = GetSlot(ind_x);
@@ -243,7 +243,7 @@ void T_PlotsStack::InitialiseSpectrogram(long double F_min_in, long double F_max
   {
     if ((K % 2) != 0)
     {
-      DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::InitialiseSpectrogram"<< DSP::e::LogMode::second << "WARNING: odd length FFT not supported"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::InitialiseSpectrogram"<< DSP::e::LogMode::second << "WARNING: odd length FFT not supported"<< std::endl;
       return;
     }
 
@@ -368,7 +368,7 @@ void T_PlotsStack::DrawSpecgram2_dB(float dB_max, float dB_range, const CLR_map_
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<< std::endl;
     return;
   }
 
@@ -457,7 +457,7 @@ void T_PlotsStack::DrawSpecgram2_lin(float C_scale, const CLR_map_type map_type)
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<< std::endl;
     return;
   }
 
@@ -581,7 +581,7 @@ void T_PlotsStack::DrawSpecgram2_base(const CLR_map_type map_type)
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_base"<< DSP::e::LogMode::second <<"Spectrogram not initialised"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_base"<< DSP::e::LogMode::second <<"Spectrogram not initialised"<< std::endl;
     return;
   }
 
@@ -684,7 +684,7 @@ void T_PlotsStack::DrawSpecgram3_dB(float dB_max, float dB_range, const CLR_map_
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<< std::endl;
     return;
   }
 
@@ -1200,7 +1200,7 @@ void T_PlotsStack::Set_SlotDataSize(int new_DataSize, int No)
   if (new_DataSize > K)
   {
     new_DataSize = K;
-    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::Set_SlotDataSize"<< DSP::e::LogMode::second << "New data size exceeds allocated memory"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::Set_SlotDataSize"<< DSP::e::LogMode::second << "New data size exceeds allocated memory"<< std::endl;
   }
   SlotDataSize[No]=new_DataSize;
 }
@@ -2302,12 +2302,12 @@ void T_PlotsStack::DrawString(GLfloat x, GLfloat y, char *text,
       if (m_bmf != NULL)
         m_bmf->DrawStringAt(x_norm, y_norm, 0.0, text);
       else
-        DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawString" << DSP::e::LogMode::second <<"WGL bitmap font not set"<<endl;
+        DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawString" << DSP::e::LogMode::second <<"WGL bitmap font not set"<< std::endl;
 
       break;
 
     default:
-      DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawString"<< DSP::e::LogMode::second <<"Unsupported drawing mode"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawString"<< DSP::e::LogMode::second <<"Unsupported drawing mode"<< std::endl;
       break;
   }
 

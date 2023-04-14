@@ -405,7 +405,7 @@ unsigned int T_Test::Process_cplx(E_processing_DIR processing_DIR,
   cplx_buffer = LockCurrentSegment(processing_DIR);
   if (cplx_buffer == NULL)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_Test::Process"<< DSP::e::LogMode::second << "output buffer lock failure"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_Test::Process"<< DSP::e::LogMode::second << "output buffer lock failure"<< std::endl;
     return;
   }
 

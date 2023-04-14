@@ -1026,7 +1026,7 @@ bool GetIIR_coefs(E_filter_type filter_type, float Fp, long sampling_rate, DSP::
           coefs = new T_LPF_IIR_coefs_8000;
           break;
         default:
-          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<< std::endl;
       }
       break;
     case 11025:
@@ -1039,7 +1039,7 @@ bool GetIIR_coefs(E_filter_type filter_type, float Fp, long sampling_rate, DSP::
           coefs = new T_LPF_IIR_coefs_11025;
           break;
         default:
-          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<< endl;
+          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<< std::endl;
       }
       break;
     case 16000:
@@ -1052,7 +1052,7 @@ bool GetIIR_coefs(E_filter_type filter_type, float Fp, long sampling_rate, DSP::
           coefs = new T_LPF_IIR_coefs_16000;
           break;
         default:
-          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<< std::endl;
       }
       break;
     case 22050:
@@ -1065,7 +1065,7 @@ bool GetIIR_coefs(E_filter_type filter_type, float Fp, long sampling_rate, DSP::
           coefs = new T_LPF_IIR_coefs_22050;
           break;
         default:
-          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<< std::endl;
       }
       break;
     case 32000:
@@ -1078,7 +1078,7 @@ bool GetIIR_coefs(E_filter_type filter_type, float Fp, long sampling_rate, DSP::
           coefs = new T_LPF_IIR_coefs_32000;
           break;
         default:
-          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<< std::endl;
       }
       break;
     case 44100:
@@ -1091,7 +1091,7 @@ bool GetIIR_coefs(E_filter_type filter_type, float Fp, long sampling_rate, DSP::
           coefs = new T_LPF_IIR_coefs_44100;
           break;
         default:
-          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<< std::endl;
       }
       break;
     case 48000:
@@ -1104,12 +1104,12 @@ bool GetIIR_coefs(E_filter_type filter_type, float Fp, long sampling_rate, DSP::
           coefs = new T_LPF_IIR_coefs_48000;
           break;
         default:
-          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported filter type"<< std::endl;
       }
       break;
 
     default:
-      DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported sampling rate"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"GetIIR_coefs"<< DSP::e::LogMode::second << "unsupported sampling rate"<< std::endl;
   }
 
 
@@ -1160,7 +1160,7 @@ bool GetIIR_coefs(E_filter_type filter_type, float Fp, long sampling_rate, DSP::
     }
 
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error <<"GetIIR_HPF_coefs"<< DSP::e::LogMode::second << "Fp < minimum_allowed_Fp"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"GetIIR_HPF_coefs"<< DSP::e::LogMode::second << "Fp < minimum_allowed_Fp"<< std::endl;
     #endif
     return false;
   }
@@ -1190,7 +1190,7 @@ bool GetIIR_coefs(E_filter_type filter_type, float Fp, long sampling_rate, DSP::
     }
 
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error <<"GetIIR_HPF_coefs"<< DSP::e::LogMode::second << "Fp > maximum_allowed_Fp"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"GetIIR_HPF_coefs"<< DSP::e::LogMode::second << "Fp > maximum_allowed_Fp"<< std::endl;
     #endif
     return false;
   }

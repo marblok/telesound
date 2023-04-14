@@ -98,7 +98,7 @@ void T_OutputStackElement::SetInputSamplingRate(long double input_sampling_rate)
 void T_OutputStackElement::InitializeElement(
     unsigned int InputSegmentSize, unsigned int NoOfOutputSegments)
 {
-  DSP::log << "T_OutputStackElement::InitializeElement"<< DSP::e::LogMode::second << GetName()<<endl;
+  DSP::log << "T_OutputStackElement::InitializeElement"<< DSP::e::LogMode::second << GetName()<< std::endl;
 
   switch (OutputBufferType)
   {
@@ -109,7 +109,7 @@ void T_OutputStackElement::InitializeElement(
       InitializeElement_<DSP::Complex>(InputSegmentSize, NoOfOutputSegments);
       break;
     default:
-      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::InitializeElement"<< DSP::e::LogMode::second <<"Unsupported OutputBufferType"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::InitializeElement"<< DSP::e::LogMode::second <<"Unsupported OutputBufferType"<< std::endl;
       break;
   }
 }
@@ -150,7 +150,7 @@ void T_OutputStackElement::InitializeElement_(
   if (max_output_segment_size < output_segment_overlap)
   {
     max_output_segment_size = output_segment_overlap;
-    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::InitializeElement_"<< DSP::e::LogMode::second << "max_output_segment_size < output_segment_overlap"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::InitializeElement_"<< DSP::e::LogMode::second << "max_output_segment_size < output_segment_overlap"<< std::endl;
   }
 
   if (output_buffer != NULL)
@@ -297,7 +297,7 @@ unsigned int T_OutputStackElement::Process_cplx(E_processing_DIR processing_DIR,
   char tekst[1024];
 
   sprintf(tekst, "No processing for complex input signal has been implemented for: %s", GetName());
-  DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::Process_cplx"<< DSP::e::LogMode::second << tekst<<endl;
+  DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::Process_cplx"<< DSP::e::LogMode::second << tekst<< std::endl;
 
   return 0;
 }
@@ -307,7 +307,7 @@ unsigned int T_OutputStackElement::Process_real(E_processing_DIR processing_DIR,
   char tekst[1024];
 
   sprintf(tekst, "No processing for real input signal has been implemented for: %s", GetName());
-  DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::Process_real"<< DSP::e::LogMode::second << tekst<<endl;
+  DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::Process_real"<< DSP::e::LogMode::second << tekst<< std::endl;
 
   return 0;
 }
@@ -375,7 +375,7 @@ unsigned int T_OutputStackElement::UnlockCurrentSegment(unsigned int segment_siz
   if (segment_size == MAX_OUTPUT_SEGMENT_SIZE)
     segment_size = max_output_segment_size;
   if (segment_size > max_output_segment_size)
-    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::UnlockCurrentSegment"<< DSP::e::LogMode::second << "segment_size > max_output_segment_size"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::UnlockCurrentSegment"<< DSP::e::LogMode::second << "segment_size > max_output_segment_size"<< std::endl;
 
   // current_output_segment + 1 <== skip first overlap segment
   output_segment_sizes[current_output_segment+1] = segment_size;
@@ -460,7 +460,7 @@ unsigned int T_OutputStackElement::UnlockCurrentSegment(unsigned int segment_siz
       }
       break;
     default:
-      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::UnlockCurrentSegment"<<DSP::e::LogMode::second<<"Unexpected state of previous_lock_processing_DIR variable"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::UnlockCurrentSegment"<<DSP::e::LogMode::second<<"Unexpected state of previous_lock_processing_DIR variable"<< std::endl;
       break;
   }
 
@@ -515,7 +515,7 @@ int T_OutputStackElement::AddOutput(T_OutputStackElement *Element, unsigned int 
 {
   if (OutputIndex >= NoOfStacks)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::AddOutput"<< DSP::e::LogMode::second <<"OutputIndex >= NoOfStacks"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::AddOutput"<< DSP::e::LogMode::second <<"OutputIndex >= NoOfStacks"<< std::endl;
     return -1;
   }
   if (NoOfElementsOnStack[OutputIndex] >= OutputStackSize)
@@ -523,7 +523,7 @@ int T_OutputStackElement::AddOutput(T_OutputStackElement *Element, unsigned int 
 
   if (OutputStacks[OutputIndex][NoOfElementsOnStack[OutputIndex]] != NULL)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::AddOutput"<< DSP::e::LogMode::second << "Output already connected - try other OutputIndex"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::AddOutput"<< DSP::e::LogMode::second << "Output already connected - try other OutputIndex"<< std::endl;
     return -1;
   }
   OutputStacks[OutputIndex][NoOfElementsOnStack[OutputIndex]] = Element;
@@ -540,7 +540,7 @@ int T_OutputStackElement::RemoveOutput(T_OutputStackElement *Element, unsigned i
 
   if (OutputIndex >= NoOfStacks)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::RemoveOutput"<< DSP::e::LogMode::second<< "OutputIndex >= NoOfStacks"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::RemoveOutput"<< DSP::e::LogMode::second<< "OutputIndex >= NoOfStacks"<< std::endl;
     return -1;
   }
 
@@ -554,7 +554,7 @@ int T_OutputStackElement::RemoveOutput(T_OutputStackElement *Element, unsigned i
     }
   if (element_index == UINT_MAX)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::RemoveOutput"<< DSP::e::LogMode::second<< "Element not on the stack"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::RemoveOutput"<< DSP::e::LogMode::second<< "Element not on the stack"<< std::endl;
     return -1;
   }
 
@@ -597,7 +597,7 @@ void *T_OutputStackElement::GetInputData_forward
                  - OutputStacks[OutputIndex][ElementIndex]->ElementOverlapSegmentSize();
       break;
     default:
-      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::GetInputData_forward"<< DSP::e::LogMode::second<<"Unsupported output type"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::GetInputData_forward"<< DSP::e::LogMode::second<<"Unsupported output type"<< std::endl;
       break;
   }
   return InputData;
@@ -629,7 +629,7 @@ void *T_OutputStackElement::GetInputData_backward
       //// overlap segment after the actual current segment data
       break;
     default:
-      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::GetInputData_backward"<< DSP::e::LogMode::second << "Unsupported output type"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::GetInputData_backward"<< DSP::e::LogMode::second << "Unsupported output type"<< std::endl;
       break;
   }
   return InputData;
@@ -651,7 +651,7 @@ bool T_OutputStackElement::ProcessOutputElements(
   result = false;
   if (OutputIndex >= NoOfStacks)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second << "OutputIndex >= NoOfStacks"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second << "OutputIndex >= NoOfStacks"<< std::endl;
     return result;
   }
 
@@ -681,27 +681,27 @@ bool T_OutputStackElement::ProcessOutputElements(
       {
         case E_OBT_complex:
           if (sizeof(DSP::Complex) != sizeof(*InputData))
-            DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second<< "DSP::Complex expected but not encountered"<<endl;
+            DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second<< "DSP::Complex expected but not encountered"<< std::endl;
           else
             NoOfUnprocessedInputSamples[OutputIndex][ind] =
                 OutputStacks[OutputIndex][ind]->Process_cplx(processing_DIR, NoOfSamples, (DSP::Complex_ptr)InputData);
           break;
         case E_OBT_float:
           if (sizeof(DSP::Float) != sizeof(*InputData))
-            DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second<< "DSP::Float expected but not encountered"<<endl;
+            DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second<< "DSP::Float expected but not encountered"<< std::endl;
           else
             NoOfUnprocessedInputSamples[OutputIndex][ind] =
               OutputStacks[OutputIndex][ind]->Process_real(processing_DIR, NoOfSamples, (DSP::Float_ptr)InputData);
           break;
         default:
-          DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second<< "Unrecognized output buffer type"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second<< "Unrecognized output buffer type"<< std::endl;
           break;
       }
     }
     else
     {
       #ifdef __DEBUG__
-        DSP::log << "T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second << "Segment processing has ended"<<endl;
+        DSP::log << "T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second << "Segment processing has ended"<< std::endl;
       #endif
       NoOfUnprocessedInputSamples[OutputIndex][ind] = 0;
       result = false;
@@ -943,7 +943,7 @@ void *T_InputElement::GetInputData_forward
                    + start_correction;
         break;
       default:
-        DSP::log << DSP::e::LogMode::Error <<"T_InputElement::GetInputData_forward"<< DSP::e::LogMode::second <<"Unsupported output type"<<endl;
+        DSP::log << DSP::e::LogMode::Error <<"T_InputElement::GetInputData_forward"<< DSP::e::LogMode::second <<"Unsupported output type"<< std::endl;
         NoOfInputSamples_in = 0;
         break;
     }
@@ -982,7 +982,7 @@ void *T_InputElement::GetInputData_backward
       //// overlap segment after the actual current segment data
       break;
     default:
-      DSP::log << DSP::e::LogMode::Error <<"T_InputElement::GetInputData_backward"<< DSP::e::LogMode::second << "Unsupported output type"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_InputElement::GetInputData_backward"<< DSP::e::LogMode::second << "Unsupported output type"<< std::endl;
       break;
   }
   return InputData;
@@ -1077,7 +1077,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
   char text[1024];
 
   sprintf(text, "  ElementIndex = %i, OutputIndex = %i", ElementIndex, OutputIndex);
-  DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<<endl;
+  DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<< std::endl;
 
   /* 1. check if OutputStack size has changed properly
    *   if size change value is strange then set ElementIndex = -1;
@@ -1092,7 +1092,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
     counter_t += NoOfElementsInSubtables[ind];
 
     sprintf(text, "  NoOfElementsInSubtables[%i] = %i", ind, NoOfElementsInSubtables[ind]);
-    DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<<endl;
+    DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<< std::endl;
   }
   //! count number of entries in elements stacks
   counter_e = 0;
@@ -1101,11 +1101,11 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
     counter_e += NoOfElementsOnStack[ind];
 
     sprintf(text, "  NoOfElementsOnStack[%i] = %i", ind, NoOfElementsOnStack[ind]);
-    DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<<endl;
+    DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<< std::endl;
   }
 
   sprintf(text, "tables sizes %i and %i", counter_e, counter_t);
-  DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<<endl;
+  DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<< std::endl;
 
   if (counter_e != counter_t)
   {
@@ -1114,7 +1114,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
     if (abs(counter_e - counter_t) != 1)
     {
       sprintf(text, "incorrect tables size change detected %i != %i", counter_e, counter_t);
-      DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<< std::endl;
       ElementIndex = -1;
     }
     else
@@ -1123,7 +1123,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
       {
         if (counter_e - counter_t != 1)
         {
-          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second <<"tables size should have increased by one element"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second <<"tables size should have increased by one element"<< std::endl;
           ElementIndex = -1;
         }
       }
@@ -1131,7 +1131,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
       {
         if (counter_e - counter_t != -1)
         {
-          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second <<"tables size should have decreased by one element"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second <<"tables size should have decreased by one element"<< std::endl;
           ElementIndex = -1;
         }
       }
@@ -1143,7 +1143,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
         {
           if (NoOfElementsInSubtables[OutputIndex] == NoOfElementsOnStack[ind]+1)
           {
-            DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "incorrect tables size: size change for wrong output"<<endl;
+            DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "incorrect tables size: size change for wrong output"<< std::endl;
             ElementIndex = -1;
           }
         }
@@ -1151,21 +1151,21 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
         {
           if (NoOfElementsInSubtables[OutputIndex] == NoOfElementsOnStack[ind]-1)
           {
-            DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "incorrect tables size: size change for wrong output"<<endl;
+            DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "incorrect tables size: size change for wrong output"<< std::endl;
             ElementIndex = -1;
           }
         }
       }
       else
       {
-        DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "NoOfOutputStack has changed (this is rather unexpected)"<<endl;
+        DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "NoOfOutputStack has changed (this is rather unexpected)"<< std::endl;
         // though it might be correct ???
       }
     }
   }
   else
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "tables size did not change though it was expected to"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "tables size did not change though it was expected to"<< std::endl;
     return;
   }
 
@@ -1294,7 +1294,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
         }
 
         if (ElementIndex != 0)
-          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes" << DSP::e::LogMode::second << "ElementIndex was expected to be 0"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes" << DSP::e::LogMode::second << "ElementIndex was expected to be 0"<< std::endl;
 
         temp_NoOfElementsInSubtables[OutputIndex] = 1;
         temp_ProcessingFinished[OutputIndex] = new bool[1];
@@ -1325,7 +1325,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
         NoOfElementsInSubtables[OutputIndex]++;
 
         if (ElementIndex != (int)(NoOfElementsInSubtables[OutputIndex])-1)
-          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "ElementIndex was expected to be last in table"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "ElementIndex was expected to be last in table"<< std::endl;
 
         temp_bool = ProcessingFinished[OutputIndex];
         ProcessingFinished[OutputIndex] = new bool[NoOfElementsInSubtables[OutputIndex]];
@@ -1399,7 +1399,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
         }
 
         if (ElementIndex != 0)
-          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second <<"ElementIndex was expected to be 0"<<endl;
+          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second <<"ElementIndex was expected to be 0"<< std::endl;
 
         // replace tables with temporary ones and delete temporary tables
         delete [] NoOfElementsInSubtables;
@@ -1540,7 +1540,7 @@ bool T_InputElement::FillTimeTables(E_processing_DIR process_dir)
 
   if ((default_n_start < 0) || (default_n_end < 0))
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTimeTablesWithOverlap"<< DSP::e::LogMode::second <<"Default start and end times must be with SetInputTimeRange"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTimeTablesWithOverlap"<< DSP::e::LogMode::second <<"Default start and end times must be with SetInputTimeRange"<< std::endl;
   }
 
   // allocate new overlap time tables
@@ -1895,7 +1895,7 @@ bool T_FILEinput::Process(E_processing_DIR processing_DIR)
   cplx_buffer = LockCurrentSegment<DSP::Complex_vector>(processing_DIR);
   if (cplx_buffer == NULL)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process"<< DSP::e::LogMode::second <<"output buffer lock failure"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process"<< DSP::e::LogMode::second <<"output buffer lock failure"<< std::endl;
     return false; // stop processing
   }
 
@@ -1909,7 +1909,7 @@ bool T_FILEinput::Process(E_processing_DIR processing_DIR)
 
     if (no_of_skipped != no_to_skip)
     {
-      DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process"<< DSP::e::LogMode::second << "samples skip failed"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process"<< DSP::e::LogMode::second << "samples skip failed"<< std::endl;
       return false;
     }
     input_discrete_time[(current_segment_ind+1) % no_of_output_segments]
@@ -1919,7 +1919,7 @@ bool T_FILEinput::Process(E_processing_DIR processing_DIR)
     cplx_buffer = LockCurrentSegment<DSP::Complex_vector>(processing_DIR);
     if (cplx_buffer == NULL)
     {
-      DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process"<< DSP::e::LogMode::second << "output buffer lock failure"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process"<< DSP::e::LogMode::second << "output buffer lock failure"<< std::endl;
       return false; // stop processing
     }
   }
@@ -1929,7 +1929,7 @@ bool T_FILEinput::Process(E_processing_DIR processing_DIR)
       // unlock segment with zero samples read
       current_segment_ind = UnlockCurrentSegment<DSP::Complex>(0);
 
-      DSP::log << "T_FILEinput::Process"<< DSP::e::LogMode::second << "segment processing has ended"<<endl;
+      DSP::log << "T_FILEinput::Process"<< DSP::e::LogMode::second << "segment processing has ended"<< std::endl;
       return false;
     }
   // +++++++++++++++++++++++++++++++++++++++++++++++++++ //
@@ -1988,7 +1988,7 @@ for (int i = 0; i < GetMaxInputSegmentSize(); i++) {
            - samples_read;
       break;
     default:
-      DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process" << DSP::e::LogMode::second <<"Unsupported processing dir"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process" << DSP::e::LogMode::second <<"Unsupported processing dir"<< std::endl;
       break;
   }
 
@@ -2112,7 +2112,7 @@ unsigned int T_DDS::log2_ceil(unsigned int L)
     //if (((temp_L&1U) != 0) && (temp_L > 1))
     if ((temp_L&1U) != 0)
     {
-      DSP::log << DSP::e::LogMode::Error <<"T_DDS"<< DSP::e::LogMode::second << "L is not the power of 2"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_DDS"<< DSP::e::LogMode::second << "L is not the power of 2"<< std::endl;
       korekta = 1;
     }
 
@@ -2175,7 +2175,7 @@ void T_DDS::LockLUTtables(unsigned int LUT_size_in, unsigned int LUT2_size_in)
   if ((LUT != NULL) && (LUT2a != NULL) && (LUT2b != NULL))
   { // just increase the lock index
     if ((LUT_size != LUT_size_in) || (LUT2_size != LUT2_size_in))
-      DSP::log << DSP::e::LogMode::Error <<"T_DDS::LockLUTtables"<< DSP::e::LogMode::second <<"LUT tables already locked for different table sizes"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_DDS::LockLUTtables"<< DSP::e::LogMode::second <<"LUT tables already locked for different table sizes"<< std::endl;
     LUT_lock_index++;
 
     //char text[1024];
@@ -2245,7 +2245,7 @@ void T_DDS::ReleaseLUTtables(void)
 
   if (LUT_lock_index <= 0)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_DDS::ReleaseLUTtables"<< DSP::e::LogMode::second << "cannot release: already fully unlocked"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_DDS::ReleaseLUTtables"<< DSP::e::LogMode::second << "cannot release: already fully unlocked"<< std::endl;
     CS_DDS.Leave();
     return;
   }
@@ -2293,7 +2293,7 @@ void T_DDS::SetFreq(double Fo, long double Fs)
 
   char tekst[1024];
   sprintf(tekst, "fo=%f, k=%i, dfo=%f, ko=%i, Fo_err=%f", fo, k, dfo, ko, Fo_err);
-  DSP::log << tekst<<endl;
+  DSP::log << tekst<< std::endl;
 }
 
 
@@ -2323,7 +2323,7 @@ unsigned int T_DDS::Process_cplx(E_processing_DIR processing_DIR,
   cplx_buffer = LockCurrentSegment<DSP::Complex>(processing_DIR);
   if (cplx_buffer == NULL)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_Test::Process"<< DSP::e::LogMode::second <<"output buffer lock failure"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_Test::Process"<< DSP::e::LogMode::second <<"output buffer lock failure"<< std::endl;
     return 0; // not processed but we'd better simulated that all has been done
   }
 
@@ -2398,7 +2398,7 @@ T_QD2_BPF::T_QD2_BPF(double B, double Fo, long double Fs)
     h_BPF[n].multiply_by(h_LPF[n]);
 
     sprintf(tekst, "h(%i) = %.10f + j*%.10f", n+1, h_BPF[n].re, h_BPF[n].im);
-    DSP::log << tekst<<endl;
+    DSP::log << tekst<< std::endl;
   }
 }
 
@@ -2457,7 +2457,7 @@ unsigned int T_QD2_BPF::ElementOutputSegmentSize(unsigned int input_segment_size
 {
   if ((input_segment_size % 2) == 1)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_QDD2::ElementOutputSegmentSize"<< DSP::e::LogMode::second <<"input segment size must be even"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_QDD2::ElementOutputSegmentSize"<< DSP::e::LogMode::second <<"input segment size must be even"<< std::endl;
   }
   return (input_segment_size >> 1); // no segment size change during processing
 }
@@ -2483,7 +2483,7 @@ unsigned int T_QD2_BPF::Process_cplx(E_processing_DIR processing_DIR,
   //no_output_of_samples = GetOutputSegmentSize(-1);
   no_of_output_samples = NoOfSamples >> 1;
   if ((no_of_output_samples << 1) != NoOfSamples )
-    DSP::log << DSP::e::LogMode::Error <<"T_QD2_BPF::Process"<< DSP::e::LogMode::second << "NoOfSamples must be even"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_QD2_BPF::Process"<< DSP::e::LogMode::second << "NoOfSamples must be even"<< std::endl;
   temp_input = InputData;
 
   for (ind = 0; ind < no_of_output_samples; ind++)
@@ -2546,7 +2546,7 @@ void T_QD2_LPF::Init(long double b)
   for (n = 0; n < N_FIR; n++)
   {
     sprintf(tekst, "h(%i) = %.10f", n+1, h_LPF[n]);
-    DSP::log << tekst<<endl;
+    DSP::log << tekst<< std::endl;
   }
 }
 
@@ -2595,7 +2595,7 @@ unsigned int T_QD2_LPF::ElementOutputSegmentSize(unsigned int input_segment_size
 {
   if ((input_segment_size % 2) == 1)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_QDD2::ElementOutputSegmentSize"<<DSP::e::LogMode::second<<"input segment size must be even"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_QDD2::ElementOutputSegmentSize"<<DSP::e::LogMode::second<<"input segment size must be even"<< std::endl;
   }
   return (input_segment_size >> 1); // no segment size change during processing
 }
@@ -2621,7 +2621,7 @@ unsigned int T_QD2_LPF::Process_cplx(E_processing_DIR processing_DIR,
   //no_output_of_samples = GetOutputSegmentSize(-1);
   no_of_output_samples = NoOfSamples >> 1;
   if ((no_of_output_samples << 1) != NoOfSamples )
-    DSP::log << DSP::e::LogMode::Error <<"T_QD2_BPF::Process"<< DSP::e::LogMode::second << "NoOfSamples must be even"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_QD2_BPF::Process"<< DSP::e::LogMode::second << "NoOfSamples must be even"<< std::endl;
   temp_input = InputData;
 
   for (ind = 0; ind < no_of_output_samples; ind++)
@@ -2721,7 +2721,7 @@ T_Spectrogram::~T_Spectrogram(void)
 void T_Spectrogram::PreinitializeElement(unsigned int InputSegmentSize,
                                       unsigned int NoOfOutputSegments)
 {
-  DSP::log << "T_Spectrogram::InitializeElement"<<DSP::e::LogMode::second<<GetName()<<endl;
+  DSP::log << "T_Spectrogram::InitializeElement"<<DSP::e::LogMode::second<<GetName()<< std::endl;
 
   //! \todo Check if input arguments are correct
   PSD_per_segment = InputSegmentSize / window_size;
@@ -2793,7 +2793,7 @@ unsigned int T_Spectrogram::Process_cplx(E_processing_DIR processing_DIR,
   real_buffer = LockCurrentSegment<DSP::Float>(processing_DIR);
   if (real_buffer == NULL)
   {
-    DSP::log << DSP::e::LogMode::Error <<"T_Spectrogram::Process"<< DSP::e::LogMode::second << "output buffer lock failure"<<endl;
+    DSP::log << DSP::e::LogMode::Error <<"T_Spectrogram::Process"<< DSP::e::LogMode::second << "output buffer lock failure"<< std::endl;
     return 0; // nothing done but simulate that all has been done
   }
   // GetSegmentSize()
@@ -2927,14 +2927,14 @@ T_SpectrogramDraw::T_SpectrogramDraw(
 
 T_SpectrogramDraw::~T_SpectrogramDraw(void)
 {
-  DSP::log << "T_SpectrogramDraw::~T_SpectrogramDraw"<< DSP::e::LogMode::second << "start"<<endl;
+  DSP::log << "T_SpectrogramDraw::~T_SpectrogramDraw"<< DSP::e::LogMode::second << "start"<< std::endl;
   GLcanvas->SpecDraw = NULL;
   if (SpectrogramStack != NULL)
   {
     delete SpectrogramStack;
     SpectrogramStack = NULL;
   }
-  DSP::log << "T_SpectrogramDraw::~T_SpectrogramDraw"<< DSP::e::LogMode::second << "end"<<endl;
+  DSP::log << "T_SpectrogramDraw::~T_SpectrogramDraw"<< DSP::e::LogMode::second << "end"<< std::endl;
 }
 
 /*
@@ -3042,7 +3042,7 @@ unsigned int T_SpectrogramDraw::Process_real(E_processing_DIR processing_DIR,
   //! Drawing data updated so unlock it
   GLcanvas->UnlockDrawingData(GLcanvasIndex);
 
-  //DSP::log << "T_SpectrogramDraw::Process"<< DSP::e::LogMode::second << "LockGUI"<<endl;
+  //DSP::log << "T_SpectrogramDraw::Process"<< DSP::e::LogMode::second << "LockGUI"<< std::endl;
 //  if (no_of_output_segments > 0)
   if (no_of_output_segments > 5) // draw every 15 slots
   {

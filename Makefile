@@ -22,12 +22,12 @@ MAIN_APP_NAME = TeleSound
 #DFLAGS         = -DWIN32 -DDEVCPP 
 
 ifeq ($(MODE),Release)
-	CFLAGS = $(comflag) -std=c++0x -O3 -Wall -c -fmessage-length=0 -fno-strict-aliasing -fpermissive
+	CFLAGS = $(comflag) -std=c++17 -O3 -Wall -c -fmessage-length=0 -fno-strict-aliasing -fpermissive
 	LINKER_FLAGS = $(comflag)  -s -static-libgcc -static-libstdc++ $(MISC_LINKER_FLAGS)  -L$(DSPElib_DIR)/rls -L$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll
 	INCLUDES := -Isrc/include -Isrc_support/include -I"$(wxWidgets_DIR)/include" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll/" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll/mswud" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll" -I"$(DSPElib_DIR)/include" -I"$(DSPElib_DIR)/include/rls"
 	MAIN_APP_EXE_FILENAME = $(MAIN_APP_NAME)_rls.exe
 else
-	CFLAGS   = $(comflag) -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -W -Wshadow -Wconversion -fstrict-aliasing -fmax-errors=5 -fpermissive
+	CFLAGS   = $(comflag) -std=c++17 -O0 -g3 -Wall -c -fmessage-length=0 -W -Wshadow -Wconversion -fstrict-aliasing -fmax-errors=5 -fpermissive
 	LINKER_FLAGS   = $(comflag)  -static-libgcc -static-libstdc++ $(MISC_LINKER_FLAGS) -L$(DSPElib_DIR)/dbg -L$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll
 	INCLUDES := -Isrc/include -Isrc_support/include -I"$(wxWidgets_DIR)/include" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll/" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll/mswud" -I"$(wxWidgets_DIR)/lib_dev/$(wxWidgets_gcc)_x64_dll" -I"$(DSPElib_DIR)/include" -I"$(DSPElib_DIR)/include/dbg" 
 	MAIN_APP_EXE_FILENAME = $(MAIN_APP_NAME)_dbg.exe

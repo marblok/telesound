@@ -63,11 +63,11 @@ class T_ProcessingSpec
   public:
     bool run_as_server;
 //    char IP_address[1024];
-    string IP_address;
+    std::string IP_address;
     long SamplingRate;
     float time_span;
 
-    string wav_filename;
+    std::string wav_filename;
 
     int no_of_psd_slots;
 

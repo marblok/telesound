@@ -49,6 +49,9 @@
         "thread": "cpp",
         "type_traits": "cpp",
         "typeinfo": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "hash_set": "cpp",
+        "unordered_set": "cpp",
+        "numeric": "cpp"
     }
 }

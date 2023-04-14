@@ -5,7 +5,7 @@
 
 void CallPauseTaskProcessing(void *task)
 {
-  DSP::log << "CallPauseTaskProcessing"<< DSP::e::LogMode::second << "start"<<endl;
+  DSP::log << "CallPauseTaskProcessing"<< DSP::e::LogMode::second << "start"<< std::endl;
   ((T_TaskElement *)task)->PauseTaskProcessing();
-  DSP::log << "CallPauseTaskProcessing"<< DSP::e::LogMode::second << "end"<<endl;
+  DSP::log << "CallPauseTaskProcessing"<< DSP::e::LogMode::second << "end"<< std::endl;
 }

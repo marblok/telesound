@@ -15,8 +15,8 @@
                 "__DEBUG__=0"
             ],
             "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
-            "cStandard": "c11",
-            "cppStandard": "c++11",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x64",
             "configurationProvider": "ms-vscode.makefile-tools",
         },
@@ -68,8 +68,8 @@
                 "__DEBUG__=1"
             ],
             "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
-            "cStandard": "c11",
-            "cppStandard": "c++11",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x64"
         }
     ],

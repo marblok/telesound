@@ -39,7 +39,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   : T_InputElement(E_OBT_float, 0, 0) // no output elements
 {
   bool run_as_server;
-  string address;
+  std::string address;
   float SNR_lin;
 
   //cycles_per_segment = 1024;
@@ -348,18 +348,18 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
       int ind;
 
       sprintf(text, "LPF_new_Nb = %i", LPF_new_Nb);
-      DSP::log << text<<endl;
+      DSP::log << text<< std::endl;
       for (ind = 0; ind < LPF_new_Nb; ind++)
       {
         sprintf(text, "  LPF_new_coefs_b[%i] = %.6f", ind, LPF_new_coefs_b[ind]);
-        DSP::log << text<<endl;
+        DSP::log << text<< std::endl;
       }
       sprintf(text, "LPF_new_Na = %i", LPF_new_Na);
-      DSP::log << text<<endl;
+      DSP::log << text<< std::endl;
       for (ind = 0; ind < LPF_new_Na; ind++)
       {
         sprintf(text, "  LPF_new_coefs_a[%i] = %.6f", ind, LPF_new_coefs_a[ind]);
-        DSP::log << text<<endl;
+        DSP::log << text<< std::endl;
       }
     }
     #endif
@@ -387,18 +387,18 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
       int ind;
 
       sprintf(text, "HPF_new_Nb = %i", HPF_new_Nb);
-      DSP::log << text<<endl;
+      DSP::log << text<< std::endl;
       for (ind = 0; ind < HPF_new_Nb; ind++)
       {
         sprintf(text, "  HPF_new_coefs_b[%i] = %.6f", ind, HPF_new_coefs_b[ind]);
-         DSP::log << text<<endl;
+         DSP::log << text<< std::endl;
       }
       sprintf(text, "HPF_new_Na = %i", HPF_new_Na);
-      DSP::log << text<<endl;
+      DSP::log << text<< std::endl;
       for (ind = 0; ind < HPF_new_Na; ind++)
       {
         sprintf(text, "  HPF_new_coefs_a[%i] = %.6f", ind, HPF_new_coefs_a[ind]);
-        DSP::log << text<<endl;
+        DSP::log << text<< std::endl;
       }
     }
     #endif
@@ -426,14 +426,14 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
   if (temp_spec->userdata_state != E_US_none)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error <<"T_DSPlib_processing::ProcessUserData"<< DSP::e::LogMode::second << "unsupported userdata state"<<endl;
+      DSP::log << DSP::e::LogMode::Error <<"T_DSPlib_processing::ProcessUserData"<< DSP::e::LogMode::second << "unsupported userdata state"<< std::endl;
     #endif
     temp_spec->userdata_state = E_US_none;
   }
   CS_UserData.Leave();
 }
 
-void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
+void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string address,
                                           long SamplingRate, DSP::e::SampleType sockets_sample_type)
 {
   char tekst[1024];
@@ -467,7 +467,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, string address,
 #endif
   }
 
-  DSP::log << DSP::lib_version_string()<<endl<<endl;
+  DSP::log << DSP::lib_version_string()<< std::endl<< std::endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
@@ -935,7 +935,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
     {
       if (CurrentObject->MorseReceiverState == false)
       { // reset window state
-        //DSP::log << "\002"<< DSP::e::LogMode::second << "\000"<<endl;
+        //DSP::log << "\002"<< DSP::e::LogMode::second << "\000"<< std::endl;
         CurrentObject->LastLockState = E_none;
       }
       //! \todo reset MORSE decoder internal state
@@ -964,7 +964,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
       // reset message buffer
       CurrentObject->morse_text_buffer[0] = 0x00;
 
-      //DSP::log << "MorseDecoder->ProcessSegment"<<endl;
+      //DSP::log << "MorseDecoder->ProcessSegment"<< std::endl;
       CurrentObject->MorseDecoder->ProcessSegment(
           CurrentObject->morse_decoder_slot,
           CurrentObject->morse_text_buffer);
@@ -975,16 +975,16 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
         switch (CurrentObject->MorseDecoder->LockState)
         {
           case E_locked:
-            DSP::log << "\002"<< DSP::e::LogMode::second << "\001"<<endl;
+            DSP::log << "\002"<< DSP::e::LogMode::second << "\001"<< std::endl;
             break;
           case E_locking:
-            DSP::log << "\002"<< DSP::e::LogMode::second << "\002"<<endl;
+            DSP::log << "\002"<< DSP::e::LogMode::second << "\002"<< std::endl;
             break;
           case E_unlocked:
-            DSP::log << "\002"<< DSP::e::LogMode::second << "\003"<<endl;
+            DSP::log << "\002"<< DSP::e::LogMode::second << "\003"<< std::endl;
             break;
           default: // E_none
-            DSP::log << "\002"<< DSP::e::LogMode::second << "\000"<<endl;
+            DSP::log << "\002"<< DSP::e::LogMode::second << "\000"<< std::endl;
             break;
         }
         CurrentObject->LastLockState = CurrentObject->MorseDecoder->LockState;
@@ -992,7 +992,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
 
       if (strlen(CurrentObject->morse_text_buffer) > 0)
       {
-        DSP::log << "\001"<< DSP::e::LogMode::second <<CurrentObject->morse_text_buffer<<endl;
+        DSP::log << "\001"<< DSP::e::LogMode::second <<CurrentObject->morse_text_buffer<< std::endl;
         //CurrentObject->morse_text_buffer[0] = 0x00;
       }
     }
@@ -1367,7 +1367,7 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
     MorseDecoder = NULL;
   }
   LastLockState = E_none;
-  DSP::log << "\002"<< DSP::e::LogMode::second << "\000"<<endl;
+  DSP::log << "\002"<< DSP::e::LogMode::second << "\000"<< std::endl;
   if (MorseDecoder_options != NULL)
   {
     delete MorseDecoder_options;
@@ -1385,12 +1385,12 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
     analysis_buffer = NULL;
   }
 
-  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second << "blocks deleted"<<endl;
+  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second << "blocks deleted"<< std::endl;
   DSP::Clock::FreeClocks();
   MasterClock = NULL;
-  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second << "clocks deleted"<<endl;
+  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second << "clocks deleted"<< std::endl;
   DSP::Component::ListComponents();
-  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second << "Components listed"<<endl;
+  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second << "Components listed"<< std::endl;
 
   if (SignalSegments != NULL)
   {
@@ -1418,7 +1418,7 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
     high_res_PSDs = NULL;
   }
 
-  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second <<"PlotsStacks deleted"<<endl;
+  DSP::log << "T_DSPlib_processing::DestroyAlgorithm"<< DSP::e::LogMode::second <<"PlotsStacks deleted"<< std::endl;
 
   CurrentObject = NULL;
 }
@@ -1435,7 +1435,7 @@ bool T_DSPlib_processing::Process(E_processing_DIR processing_DIR)
   DSP::e::SocketStatus status;
 
 #ifdef __DEBUG__
-  //DSP::log << "Before Exec"<<endl;
+  //DSP::log << "Before Exec"<< std::endl;
 #endif
   DSP::f::Sleep(0);
   DSP::f::Sleep(5);
@@ -1443,7 +1443,7 @@ bool T_DSPlib_processing::Process(E_processing_DIR processing_DIR)
   DSP::f::Sleep(0);
   DSP::f::Sleep(5);
 #ifdef __DEBUG__
-  //DSP::log << "After Exec"<<endl;
+  //DSP::log << "After Exec"<< std::endl;
 #endif
 
 //TODO: check if casting to int is correct and necessary

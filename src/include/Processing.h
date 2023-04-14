@@ -59,13 +59,13 @@ class T_DSPlib_processing : public T_InputElement
 
     DSP::u::DDScos *CarrierIn;
     int WPM;
-    string ascii_text;
+    std::string ascii_text;
     DSP::u::MORSEkey *MorseKey;
     DSP::u::RealMultiplication *MorseMul;
 
     //DSP::u::WaveInput *WaveIn;
     DSP::u::FileInput *WaveIn;
-    string wav_filename;
+    std::string wav_filename;
     DSP::u::Zeroinserter *Zeroinserter;
     DSP::u::IIR *WaveIn_LPF, *WaveIn_sos_LPF[6];
     DSP::u::RawDecimator *Decimator;
@@ -170,12 +170,11 @@ class T_DSPlib_processing : public T_InputElement
     T_PlotsStack *high_res_PSDs;
 
     //! created processing algorithm based on DSPlib
-    void CreateAlgorithm(bool run_as_server, string address,
+    void CreateAlgorithm(bool run_as_server, std::string address,
         long SamplingRate, DSP::e::SampleType sockets_sample_type = DSP::e::SampleType::ST_short);
     void DestroyAlgorithm(void);
 
   public:
-    void copy_7x3_array_to_2d_vector(vector<vector<float>> &v, float a[7][3]);
     void ComputeHighResolutionSpectorgram(void);
 
     T_DSPlib_processing(T_ProcessingSpec *SpecList);

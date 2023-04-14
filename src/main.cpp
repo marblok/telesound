@@ -203,10 +203,10 @@ void MyMorseKey::OnKeyUp(wxKeyEvent &event)
 // MainApp
 // ---------------------------------------------------------------------------
 MainFrame *MainApp::frame = NULL;
-string MainApp::HostAddress;
+std::string MainApp::HostAddress;
 // wxCriticalSection CS_OnLOG;
 
-bool MainApp::LogFunction(const string &source, const string &message, bool IsError)
+bool MainApp::LogFunction(const std::string &source, const std::string &message, bool IsError)
 {
   // CS_OnLOG.Enter();
 
@@ -273,7 +273,7 @@ bool MainApp::LogFunction(const string &source, const string &message, bool IsEr
         break;
       }
 #ifdef __DEBUG__
-    string MessageText;
+    std::string MessageText;
     if (message.length() > 0)
       MessageText = "\n" + source + ": " + message;
     else
@@ -304,7 +304,7 @@ bool MainApp::LogFunction(const string &source, const string &message, bool IsEr
 void T_TaskElement::OnStatusBoxUpdate(wxCommandEvent &event)
 {
   bool IsError = (event.GetInt() == 1);
-  string MessageText = event.GetString().ToStdString();
+  std::string MessageText = event.GetString().ToStdString();
   task_parent_window->SetStatusBoxMessage(MessageText, IsError);
 }
 #endif // __DEBUG__
@@ -319,14 +319,14 @@ bool MainApp::OnInit()
   DSP::log.SetLogState(DSP::e::LogState::file | DSP::e::LogState::user_function);
   DSP::log.SetLogFileName("log_file.log");
   DSP::log.SetLogFunctionPtr(&(MainApp::LogFunction));
-  DSP::log << DSP::lib_version_string() << endl
-           << endl;
+  DSP::log << DSP::lib_version_string() << std::endl
+           << std::endl;
 #else
   DSP::log.SetLogState(DSP::e::LogState::user_function);
   // DSP::f::SetLogFileName("log_file.log");
   DSP::log.SetLogFunctionPtr(&(MainApp::LogFunction));
-  DSP::log << DSP::lib_version_string() << endl
-           << endl;
+  DSP::log << DSP::lib_version_string() << std::endl
+           << std::endl;
 #endif
 
 #ifdef GLUT_API_VERSION
@@ -483,7 +483,7 @@ T_TaskElement::~T_TaskElement(void)
       if (NoOfTasks > 0)
         NoOfTasks--;
       else
-        DSP::log << DSP::e::LogMode::Error << "T_TaskElement::~T_TaskElement" << DSP::e::LogMode::second << "NoOfTasks was already 0" << endl;
+        DSP::log << DSP::e::LogMode::Error << "T_TaskElement::~T_TaskElement" << DSP::e::LogMode::second << "NoOfTasks was already 0" << std::endl;
     }
     else
     {
@@ -495,7 +495,7 @@ T_TaskElement::~T_TaskElement(void)
           if (NoOfTasks > 0)
             NoOfTasks--;
           else
-            DSP::log << DSP::e::LogMode::Error << "T_TaskElement::~T_TaskElement" << DSP::e::LogMode::second << "NoOfTasks was already 0" << endl;
+            DSP::log << DSP::e::LogMode::Error << "T_TaskElement::~T_TaskElement" << DSP::e::LogMode::second << "NoOfTasks was already 0" << std::endl;
           break;
         }
 
@@ -504,13 +504,13 @@ T_TaskElement::~T_TaskElement(void)
 
       if (current_task == NULL)
       {
-        DSP::log << DSP::e::LogMode::Error << "T_TaskElement::~T_TaskElement" << DSP::e::LogMode::second << "delete task was not on the list" << endl;
+        DSP::log << DSP::e::LogMode::Error << "T_TaskElement::~T_TaskElement" << DSP::e::LogMode::second << "delete task was not on the list" << std::endl;
       }
     }
   }
   else
   {
-    DSP::log << DSP::e::LogMode::Error << "T_TaskElement::~T_TaskElement" << DSP::e::LogMode::second << "tasks list already was empty" << endl;
+    DSP::log << DSP::e::LogMode::Error << "T_TaskElement::~T_TaskElement" << DSP::e::LogMode::second << "tasks list already was empty" << std::endl;
   }
 
   // ++++++++++++++++++++++++++++++++++++++++ //
@@ -610,20 +610,20 @@ void T_TaskElement::StopTaskProcessing(void)
     command_data->BranchToClose = ProcessingBranch;
     temp = new T_BranchCommand(E_BC_closing, command_data);
 #ifdef __DEBUG__
-    DSP::log << "T_TaskElement::StopTaskProcessing" << DSP::e::LogMode::second << "PostCommandToBranch" << endl;
+    DSP::log << "T_TaskElement::StopTaskProcessing" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
     ProcessingBranch->PostCommandToBranch(temp);
     ProcessingBranch = NULL; // branch will be deleted in the processing thread
     // ++++++++++++++++++++++++
     // Wait for branch finish
     task_is_running = false;
-    DSP::log << DSP::e::LogMode::Error << "T_TaskElement::StopTaskProcessing" << DSP::e::LogMode::second << "Waiting for thread branch to finish" << endl;
+    DSP::log << DSP::e::LogMode::Error << "T_TaskElement::StopTaskProcessing" << DSP::e::LogMode::second << "Waiting for thread branch to finish" << std::endl;
     // BranchFinished_semaphore->Wait();
     while (BranchFinished_semaphore->TryWait() == wxSEMA_BUSY)
     {
       wxGetApp().Yield(true);
     }
-    DSP::log << DSP::e::LogMode::Error << "T_TaskElement::StopTaskProcessing" << DSP::e::LogMode::second << "!!! Thread branch finished" << endl;
+    DSP::log << DSP::e::LogMode::Error << "T_TaskElement::StopTaskProcessing" << DSP::e::LogMode::second << "!!! Thread branch finished" << std::endl;
   }
   task_is_running = false;
   task_is_paused = false;
@@ -641,7 +641,7 @@ void T_TaskElement::StopTaskProcessing(void)
 
   //! \todo implement task deletion
   //  delete MDI_parent_task;
-  //  DSP::log << DSP::e::LogMode::Error <<"MyChild::OnClose"<< DSP::e::LogMode::second << "MDI_parent_task deleted"<<endl;
+  //  DSP::log << DSP::e::LogMode::Error <<"MyChild::OnClose"<< DSP::e::LogMode::second << "MDI_parent_task deleted"<< std::endl;
 }
 
 bool T_TaskElement::PauseTaskProcessing(void)
@@ -663,7 +663,7 @@ bool T_TaskElement::PauseTaskProcessing(void)
 
         temp = new T_BranchCommand(E_BC_pause);
 #ifdef __DEBUG__
-        DSP::log << "T_TaskElement::PauseTaskProcessing" << DSP::e::LogMode::second << "PostCommandToBranch" << endl;
+        DSP::log << "T_TaskElement::PauseTaskProcessing" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
         ProcessingBranch->PostCommandToBranch(temp);
       }
@@ -673,7 +673,7 @@ bool T_TaskElement::PauseTaskProcessing(void)
 
         temp = new T_BranchCommand(E_BC_continue);
 #ifdef __DEBUG__
-        DSP::log << DSP::e::LogMode::Error << "T_TaskElement::PauseTaskProcessing" << DSP::e::LogMode::second << "PostCommandToBranch" << endl;
+        DSP::log << DSP::e::LogMode::Error << "T_TaskElement::PauseTaskProcessing" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
         ProcessingBranch->PostCommandToBranch(temp);
       }
@@ -993,7 +993,7 @@ int waveInDevNumber = TAudioMixer::GetNoOfWaveInDevices();
 int waveOutDevNumber= TAudioMixer::GetNoOfWaveOutDevices();
 
 if (waveInDevNumber == 0 || waveOutDevNumber == 0) {
-  string ErrorMessage = "Error: ";
+  std::string ErrorMessage = "Error: ";
   if (waveInDevNumber == 0) {
     ErrorMessage += "\nNo input audio device found.";
   }
@@ -1272,7 +1272,7 @@ void MainFrame::FillSettingsInterface(T_TaskElement *selected_task)
 
 void MainFrame::OnClose(wxCloseEvent &event)
 {
-  DSP::log << "MainFrame::OnClose" << DSP::e::LogMode::second << "start" << endl;
+  DSP::log << "MainFrame::OnClose" << DSP::e::LogMode::second << "start" << std::endl;
   /*
   if ( event.CanVeto() && (gs_nFrames > 0) )
   {
@@ -1289,11 +1289,11 @@ void MainFrame::OnClose(wxCloseEvent &event)
   */
   frame_is_closing = true;
 
-  DSP::log << "MainFrame::OnClose" << DSP::e::LogMode::second << "Calling FreeThreads" << endl;
+  DSP::log << "MainFrame::OnClose" << DSP::e::LogMode::second << "Calling FreeThreads" << std::endl;
 
   MyProcessingThread::FreeThreads();
 
-  DSP::log << "MainFrame::OnClose" << DSP::e::LogMode::second << "Finished FreeThreads" << endl;
+  DSP::log << "MainFrame::OnClose" << DSP::e::LogMode::second << "Finished FreeThreads" << std::endl;
 
   event.Skip();
 }
@@ -1305,7 +1305,7 @@ void MainFrame::OnQuit(wxCommandEvent &WXUNUSED(event))
 
 void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
 {
-  string text, text2;
+  std::string text, text2;
 
   text = DSP::lib_version_string();
   text2 = "TeleSound 2020\n\n";
@@ -1325,7 +1325,7 @@ void MainFrame::OnRunTask(wxCommandEvent &event)
 
     if (interface_state.task_is_running == true)
     {
-      DSP::log << DSP::e::LogMode::Error << "MainFrame::OnRunTask" << DSP::e::LogMode::second << "Task is still running" << endl;
+      DSP::log << DSP::e::LogMode::Error << "MainFrame::OnRunTask" << DSP::e::LogMode::second << "Task is still running" << std::endl;
       return;
     }
     parent_task = new T_TaskElement(this);
@@ -1428,7 +1428,7 @@ void MainFrame::SetStatusBoxMessage(std::string MessageText, bool isError)
 
 void MainFrame::OnProcessEnd(wxCommandEvent &event)
 {
-  DSP::log << DSP::e::LogMode::Error << "MainFrame::OnProcessEnd" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MainFrame::OnProcessEnd" << std::endl;
 }
 
 void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
@@ -1599,7 +1599,7 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
         command_data->UserData = (void *)(&interface_state);
         temp = new T_BranchCommand(E_BC_userdata, command_data);
 #ifdef __DEBUG__
-        DSP::log << "ID_MIKE_ON_OFF" << DSP::e::LogMode::second << "PostCommandToBranch" << endl;
+        DSP::log << "ID_MIKE_ON_OFF" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
         parent_task->ProcessingBranch->PostCommandToBranch(temp);
       }
@@ -1657,7 +1657,7 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
         command_data->UserData = (void *)(&interface_state);
         temp = new T_BranchCommand(E_BC_userdata, command_data);
 #ifdef __DEBUG__
-        DSP::log << "ID_LOCAL_SIGNAL_ON_OFF" << DSP::e::LogMode::second << "PostCommandToBranch" << endl;
+        DSP::log << "ID_LOCAL_SIGNAL_ON_OFF" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
         parent_task->ProcessingBranch->PostCommandToBranch(temp);
       }
@@ -1704,14 +1704,14 @@ void MyGLCanvas::OnDrawNow_(void)
   if (temporary_BlockDrawing == true)
   {
 #ifdef __DEBUG__
-    DSP::log << DSP::e::LogMode::Error << "Drawing block (temporary)- skipping" << endl;
+    DSP::log << DSP::e::LogMode::Error << "Drawing block (temporary)- skipping" << std::endl;
 #endif
     return;
   }
   if (BlockDrawing == true)
   {
 #ifdef __DEBUG__
-    DSP::log << DSP::e::LogMode::Error << "Drawing block - clearing" << endl;
+    DSP::log << DSP::e::LogMode::Error << "Drawing block - clearing" << std::endl;
 #endif
     current_mode = E_DM_none;
     // return;
@@ -1795,12 +1795,12 @@ void MyGLCanvas::OnDrawNow_(void)
     if (SocketsAreConnected == true)
     {
       glClearColor(1.0, 1.0, 1.0, 0);
-      // DSP::log << "Connected"<<endl;
+      // DSP::log << "Connected"<< std::endl;
     }
     else
     {
       glClearColor(1.0, 1.0, 0.0, 0);
-      // DSP::log << "Not connected"<<endl;
+      // DSP::log << "Not connected"<< std::endl;
     }
     glClear(GL_COLOR_BUFFER_BIT);
     break;
@@ -2488,7 +2488,7 @@ void MyProcessingThread::Initialize(void)
   if (NoOfCPUs <= 0)
     NoOfCPUs = 1;
   sprintf(tekst, "Number of CPUs detected = %i", NoOfCPUs);
-  DSP::log << tekst << endl;
+  DSP::log << tekst << std::endl;
 
   /*
   if (m_priority <= 20)
@@ -2520,7 +2520,7 @@ MyProcessingThread::~MyProcessingThread(void)
           Branches[ind]->Parent->GetParentTask()->DeleteBranch(Branches[ind]);
         else
         {
-          DSP::log << DSP::e::LogMode::Error << "MyProcessingThread::~MyProcessingThread" << DSP::e::LogMode::second << "GetParentTask() == NULL" << endl;
+          DSP::log << DSP::e::LogMode::Error << "MyProcessingThread::~MyProcessingThread" << DSP::e::LogMode::second << "GetParentTask() == NULL" << std::endl;
           delete Branches[ind];
         }
         // delete Branches[ind];
@@ -2606,16 +2606,16 @@ wxThread::ExitCode MyProcessingThread::Entry(void)
       UpdateBranches_semaphore->WaitTimeout(10); // suspend process until new branches will be available
     }
 
-    // DSP::log << "Yield"<<endl;
+    // DSP::log << "Yield"<< std::endl;
     //! \ bug check if it should be done here (maybe timer in main loop)
     //::wxGetApp().Yield(true);
-    // DSP::log << "Yield2"<<endl;
+    // DSP::log << "Yield2"<< std::endl;
 
-    // DSP::log << "UpdateBranches()"<<endl;
+    // DSP::log << "UpdateBranches()"<< std::endl;
     if (UpdateBranches() == false)
       DoFinish = true;
 
-    // DSP::log << "ProcessBranches()"<<endl;
+    // DSP::log << "ProcessBranches()"<< std::endl;
     //  command can be post before thread start
     NoOfActiveBranches = 0;
     for (ind = 0; ind < NoOfBranches; ind++)
@@ -2628,14 +2628,14 @@ wxThread::ExitCode MyProcessingThread::Entry(void)
     if ((Parent != NULL) && (NoOfActiveBranches != 0))
     {
       // AddPendingEvent
-      // DSP::log << "GLcanvas->Refresh()"<<endl;
+      // DSP::log << "GLcanvas->Refresh()"<< std::endl;
       Parent->GetGLcanvas(0)->Refresh(); // invalidate window
       //! \bug na słabszym sprzęcie bez Update poniżej się potrafi wywalić
       // Parent->GetGLcanvas(0)->Update();  // refresh canvas immediately
     }
 
     /*
-        //DSP::log << "DrawWait()"<<endl;
+        //DSP::log << "DrawWait()"<< std::endl;
         for (ind = 0; ind < NoOfBranches; ind++)
           if (Branches[ind]->DrawIsBlocked == false)
           {
@@ -2652,10 +2652,10 @@ wxThread::ExitCode MyProcessingThread::Entry(void)
     if (TestDestroy() == true)
       break;
 
-    // DSP::log << "DoFinish()"<<endl;
+    // DSP::log << "DoFinish()"<< std::endl;
     if (DoFinish == true)
     {
-      // DSP::log << "DoFinish() == true"<<endl;
+      // DSP::log << "DoFinish() == true"<< std::endl;
       wxCommandEvent event(wxEVT_PROCESS_END, ID_ProcessEnd);
       event.SetClientData(this);
       // Parent->GetEventHandler()->AddPendingEvent( event );
@@ -2668,12 +2668,12 @@ wxThread::ExitCode MyProcessingThread::Entry(void)
   Parent->GetGLcanvas(0)->DisableDrawing();
   CS_OnDraw.Leave();
 
-  DSP::log << DSP::e::LogMode::Error << "Thread loop ended" << endl;
+  DSP::log << DSP::e::LogMode::Error << "Thread loop ended" << std::endl;
 
   ////  not needed for wxTHREAD_JOINABLE
-  DSP::log << DSP::e::LogMode::Error << "ThreadFinished is about to be posted" << endl;
+  DSP::log << DSP::e::LogMode::Error << "ThreadFinished is about to be posted" << std::endl;
   ThreadFinished_semaphore[ThreadIndex]->Post(); // signal finishing
-  DSP::log << DSP::e::LogMode::Error << "ThreadFinished has been posted" << endl;
+  DSP::log << DSP::e::LogMode::Error << "ThreadFinished has been posted" << std::endl;
 
   return 0;
 }
@@ -2712,7 +2712,7 @@ bool MyProcessingThread::UpdateBranches(void)
 
   if (new_branch != NULL)
   {
-    DSP::log << "MyProcessingThread::UpdateBranches" << DSP::e::LogMode::second << "new_branch" << endl;
+    DSP::log << "MyProcessingThread::UpdateBranches" << DSP::e::LogMode::second << "new_branch" << std::endl;
 
     MyProcessingBranch **new_Branches;
     new_Branches = new MyProcessingBranch *[NoOfBranches + 1];
@@ -2740,7 +2740,7 @@ bool MyProcessingThread::UpdateBranches(void)
   {
     if (Branches[ind]->DoFinish == true)
     {
-      DSP::log << "MyProcessingThread::UpdateBranches" << DSP::e::LogMode::second << "branch delete" << endl;
+      DSP::log << "MyProcessingThread::UpdateBranches" << DSP::e::LogMode::second << "branch delete" << std::endl;
 
       CS_OnDraw.Enter();
       Parent->GetGLcanvas(0)->DisableDrawing();
@@ -2750,7 +2750,7 @@ bool MyProcessingThread::UpdateBranches(void)
         Branches[ind]->Parent->GetParentTask()->DeleteBranch(Branches[ind]);
       else
       {
-        DSP::log << DSP::e::LogMode::Error << "MyProcessingThread::UpdateBranches" << DSP::e::LogMode::second << "branch parent task is NULL" << endl;
+        DSP::log << DSP::e::LogMode::Error << "MyProcessingThread::UpdateBranches" << DSP::e::LogMode::second << "branch parent task is NULL" << std::endl;
         delete Branches[ind];
       }
       Branches[ind] = NULL;
@@ -2759,7 +2759,7 @@ bool MyProcessingThread::UpdateBranches(void)
     {
       if (ind > new_NoOfBranches)
       {
-        DSP::log << "MyProcessingThread::UpdateBranches" << DSP::e::LogMode::second << "branch relocated" << endl;
+        DSP::log << "MyProcessingThread::UpdateBranches" << DSP::e::LogMode::second << "branch relocated" << std::endl;
 
         Branches[new_NoOfBranches] = Branches[ind];
       }
@@ -2773,7 +2773,7 @@ bool MyProcessingThread::UpdateBranches(void)
     Branches = NULL;
   }
 
-  // DSP::log << "MyProcessingThread::UpdateBranches"<< DSP::e::LogMode::second <<"update finished"<<endl;
+  // DSP::log << "MyProcessingThread::UpdateBranches"<< DSP::e::LogMode::second <<"update finished"<< std::endl;
   MyProcessingBranch::CS_CommandList.Leave();
   return true; // keep thread working
 }
@@ -2900,7 +2900,7 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
       command_data->UserData = (void *)(&interface_state);
       temp = new T_BranchCommand(E_BC_userdata, command_data);
 #ifdef __DEBUG__
-      DSP::log << "Channel filter settings change" << DSP::e::LogMode::second << "PostCommandToBranch" << endl;
+      DSP::log << "Channel filter settings change" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
       parent_task->ProcessingBranch->PostCommandToBranch(temp);
     }
@@ -2947,7 +2947,7 @@ void MainFrame::OnChannelSNRChange(wxScrollEvent &event)
       command_data->UserData = (void *)(&interface_state);
       temp = new T_BranchCommand(E_BC_userdata, command_data);
 #ifdef __DEBUG__
-      DSP::log << "MainFrame::OnChannelSNRChange" << DSP::e::LogMode::second << "PostCommandToBranch" << endl;
+      DSP::log << "MainFrame::OnChannelSNRChange" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
       parent_task->ProcessingBranch->PostCommandToBranch(temp);
     }
@@ -3053,7 +3053,7 @@ void MainFrame::OnWPMchange(wxScrollEvent &event)
       command_data->UserData = (void *)(&interface_state);
       temp = new T_BranchCommand(E_BC_userdata, command_data);
 #ifdef __DEBUG__
-      DSP::log << "MainFrame::OnSendAsciText" << DSP::e::LogMode::second << "PostCommandToBranch" << endl;
+      DSP::log << "MainFrame::OnSendAsciText" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
       parent_task->ProcessingBranch->PostCommandToBranch(temp);
     }
@@ -3119,12 +3119,11 @@ void MainFrame::OnButtonPress(wxCommandEvent &event)
   case ID_select_voice_file:
   {
     int voice_type, file_no;
-    string index_text;
+    std::string index_text;
     bool is_logatom;
-
     is_logatom = (UseLogatoms->GetValue() == 1);
     // składamy nazwę pliku w interface_state.selected_wav_filename
-    string &temp = interface_state.selected_wav_filename;
+    std::string &temp = interface_state.selected_wav_filename;
     if (is_logatom == true)
     {
       temp = "Logatomy\\";
@@ -3132,7 +3131,7 @@ void MainFrame::OnButtonPress(wxCommandEvent &event)
     }
     else
     {
-      temp, 2047, "Zdania\\";
+      temp = "Zdania\\";
       index_text = 'Z';
     }
 
@@ -3158,17 +3157,17 @@ void MainFrame::OnButtonPress(wxCommandEvent &event)
       break;
     }
 
-    string file_no_str = to_string(file_no);
+    std::string file_no_str = std::to_string(file_no);
     while (file_no_str.length() < 3)
     { // "%03i"
-      file_no_str = string("0") + file_no_str;
+      file_no_str = std::string("0") + file_no_str;
     }
     if (is_logatom == true)
     {
       file_no = 1 + (rand() % 3);
       // snprintf(temp, 2047-size, "lista %i.wav", file_no);
       temp += "lista ";
-      temp += to_string(file_no);
+      temp += std::to_string(file_no);
       temp += ".wav";
     }
     else
@@ -3216,7 +3215,7 @@ void MainFrame::OnButtonPress(wxCommandEvent &event)
       command_data->UserData = (void *)(&interface_state);
       temp = new T_BranchCommand(E_BC_userdata, command_data);
 #ifdef __DEBUG__
-      DSP::log << "MainFrame::OnSendAsciText" << DSP::e::LogMode::second << "PostCommandToBranch" << endl;
+      DSP::log << "MainFrame::OnSendAsciText" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
       parent_task->ProcessingBranch->PostCommandToBranch(temp);
     }

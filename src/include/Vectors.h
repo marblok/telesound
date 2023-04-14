@@ -182,7 +182,7 @@ public:
 //      for (int i = 0; i < C.size; i++)
 //
 //           out_data << "[" << i << "]=" << C.data[i] << "   ";
-//      cout << endl;
+//      cout << std::endl;
 //      return out_data;
 //      };
 //   };
