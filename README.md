@@ -13,9 +13,10 @@ See the [wiki](https://git.pg.edu.pl/dspe/telesound/-/wikis/home) for more infor
 Make sure these files are in PATH, or place them in the same folder as *TeleSound.exe*
 
 ## Known issues:
-- The program may crash when running without audio devices or when audio devices become unavailable during runtime.
+- The program may crash when audio devices become unavailable during runtime.
 
 
 ## TODO:
-- Verify that devices are available before attempting to use them (Fix the "No audio devices found" message box),
-- Validate IP address input (?)
+- Validate IP address input,
+- load list of sound files dynamically,
+- Fix encoding of Polish characters in morse code.

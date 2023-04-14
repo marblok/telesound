@@ -988,20 +988,23 @@ MainFrame::MainFrame(wxWindow *parent,
   task_is_stopping_now = false;
   // FIXME: possible bug - when there is no audio device in the system, an segfault occurs. This should be fixed. Maybe by checking if the audio device is present first?
 
-  // requires testing
-  try
-  {
-    if (TAudioMixer::GetWaveInDevName().empty())
-      throw std::invalid_argument("No input audio device found.");
-    if (TAudioMixer::GetWaveOutDevName().empty())
-      throw std::invalid_argument("No output audio device found.");
+
+int waveInDevNumber = TAudioMixer::GetNoOfWaveInDevices();
+int waveOutDevNumber= TAudioMixer::GetNoOfWaveOutDevices();
+
+if (waveInDevNumber == 0 || waveOutDevNumber == 0) {
+  string ErrorMessage = "Error: ";
+  if (waveInDevNumber == 0) {
+    ErrorMessage += "\nNo input audio device found.";
   }
-  catch (std::invalid_argument &e)
-  {
-    DSP::log << DSP::e::LogMode::Error << (string)e.what() << std::endl;
-    wxMessageBox(wxString::FromUTF8("Nie wykryto urządzenia wyjściowego lub wejściowego. Sprawdź połączenie głośników i mikrofonu"), wxString::FromUTF8("Błąd: " + (string)e.what()), wxOK | wxICON_ERROR);
-    exit(1);
+  if (waveOutDevNumber == 0) {
+    ErrorMessage += "\nNo output audio device found.";
   }
+
+  DSP::log << DSP::e::LogMode::Error << ErrorMessage << std::endl;
+  wxMessageBox(wxString::FromUTF8("Sprawdź połączenie głośników i mikrofonu, następnie uruchom program ponownie. \n\n")+ErrorMessage, wxString::FromUTF8("Błąd urządzeń we/wy"), wxOK | wxICON_ERROR);
+  exit(1);
+}
 
   AudioMixer = new TAudioMixer;
   AudioMixer->MemorizeMixerSettings_WAVEIN();
