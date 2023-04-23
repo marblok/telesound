@@ -17,6 +17,3 @@ Make sure these files are in PATH, or place them in the same folder as *TeleSoun
 
 
 ## TODO:
-- Validate IP address input,
-- load list of sound files dynamically,
-- Fix encoding of Polish characters in morse code.
