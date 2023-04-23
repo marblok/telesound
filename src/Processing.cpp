@@ -334,6 +334,8 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
     // compute new LPF filter coefs
     ChannelFg = temp_spec->channel_Fg;
     GetIIR_LPF_coefs(ChannelFg, Fp, LPF_new_coefs_b, LPF_new_coefs_a);
+    LPF_new_Nb = LPF_new_coefs_b.size();
+    LPF_new_Na = LPF_new_coefs_a.size();
     if (LPF_new_Na <= 0)
     {
       LPF_new_coefs_a.resize(1);
@@ -373,8 +375,9 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
     // compute new HPF filter coefs
     ChannelFd = temp_spec->channel_Fd;
     GetIIR_HPF_coefs(ChannelFd, Fp, HPF_new_coefs_b, HPF_new_coefs_a);
-
-    if (HPF_new_coefs_a.size() == 0)
+    HPF_new_Na = HPF_new_coefs_a.size(); 
+    HPF_new_Nb = HPF_new_coefs_b.size(); 
+    if ( HPF_new_Na == 0)
     {
       HPF_new_coefs_a.resize(1);
       HPF_new_coefs_a[0] = 1.0;

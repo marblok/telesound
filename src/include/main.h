@@ -16,6 +16,7 @@
 #include <DSP_modules_misc.h>
 #include "DSP.h"
 #include "MyGLCanvas.h"
+#include "VoiceFileManager.h"
 
 wxDECLARE_EVENT(wxEVT_DRAW_NOW, wxCommandEvent);
 wxDECLARE_EVENT(wxEVT_PROCESS_END, wxCommandEvent);
@@ -196,6 +197,7 @@ class T_InterfaceState
     int WPM;
 
     std::string selected_wav_filename;
+    VoiceFileInfo selected_wav_info;
     std::string wav_filename;
 
     bool mike_is_off;
@@ -241,7 +243,8 @@ class MainFrame : public GUIFrame
 
 
     TAudioMixer *AudioMixer;
-      MyMorseKey *KeyingCtrl;
+    MyMorseKey *KeyingCtrl;
+    VoiceFileManager *fileManager;
 
 
     MainFrame(wxWindow *parent, const wxWindowID id, const wxString& title,
@@ -281,7 +284,7 @@ class MainFrame : public GUIFrame
     void OnPSDparamsChange(wxScrollEvent& event);
 
     void OnProcessEnd(wxCommandEvent &event );
-
+    void OnSelectVoiceType(wxCommandEvent& event);
     // ++++++++++++++++++++++++++++++++++++++++++++++ //
     // + GUI procedures                             + //
     // ++++++++++++++++++++++++++++++++++++++++++++++ //

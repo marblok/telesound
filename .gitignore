@@ -9,3 +9,4 @@
 *.dot
 *.pyc
 *autosave*.wxg#
+/audio*

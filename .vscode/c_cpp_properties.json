@@ -11,8 +11,7 @@
                 "${workspaceFolder}/wxWidgets-3.2.2/lib/gcc1220_x64_dll"
             ],
             "defines": [
-                "WIN32",
-                "__DEBUG__=0"
+                "WIN32"
             ],
             "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
             "cStandard": "c17",
@@ -28,8 +27,7 @@
                 "${workspaceFolder}/wxWidgets-3.2.2/include/**"
             ],
             "defines": [
-                "WIN32",
-                "__DEBUG__=0"
+                "WIN32"
             ],
             "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
             "cStandard": "c11",
@@ -48,10 +46,10 @@
             ],
             "defines": [
                 "WIN32",
-                "__DEBUG__=1"
+                "__DEBUG__"
             ],
-            "cStandard": "c11",
-            "cppStandard": "c++11",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x64",
             "configurationProvider": "ms-vscode.makefile-tools",
             "compilerPath": "C:/msys64/mingw64/bin/g++.exe"
@@ -65,7 +63,7 @@
             ],
             "defines": [
                 "WIN32",
-                "__DEBUG__=1"
+                "__DEBUG__"
             ],
             "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
             "cStandard": "c17",

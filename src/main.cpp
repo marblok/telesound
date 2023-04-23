@@ -24,13 +24,6 @@ wxDEFINE_EVENT(wxEVT_STATUSBOX_UPDATE, wxCommandEvent);
 IMPLEMENT_APP(MainApp)
 
 // ---------------------------------------------------------------------------
-// global variables
-// ---------------------------------------------------------------------------
-
-// MainFrame *frame = (MainFrame *) NULL;
-// wxList my_children;
-
-// ---------------------------------------------------------------------------
 // event tables
 // ---------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -59,6 +52,10 @@ EVT_COMMAND(ID_ProcessEnd, wxEVT_PROCESS_END, MainFrame::OnProcessEnd)
 
 EVT_RADIOBUTTON(ID_work_as_server, MainFrame::OnSettingsInterfaceChange)
 EVT_RADIOBUTTON(ID_work_as_client, MainFrame::OnSettingsInterfaceChange)
+
+EVT_RADIOBUTTON(ID_use_sentences, MainFrame::OnSettingsInterfaceChange)
+EVT_RADIOBUTTON(ID_use_logatoms, MainFrame::OnSettingsInterfaceChange)
+
 EVT_TEXT(ID_server_address, MainFrame::OnSettingsInterfaceChange)
 
 EVT_COMBOBOX(ID_SELECT_SAMPLING_RATE, MainFrame::OnSettingsInterfaceChange)
@@ -81,6 +78,8 @@ EVT_COMMAND_SCROLL(ID_LPF_SLIDER, MainFrame::OnChannelFilterChange)
 EVT_BUTTON(ID_send_ascii_text, MainFrame::OnButtonPress)
 EVT_CHECKBOX(ID_morse_receiver_state, MainFrame::OnSettingsInterfaceChange)
 
+EVT_CHECKBOX(ID_show_text_checkbox, MainFrame::OnSettingsInterfaceChange)
+EVT_COMBOBOX(ID_voice_type, MainFrame::OnSelectVoiceType)
 EVT_BUTTON(ID_select_voice_file, MainFrame::OnButtonPress)
 EVT_BUTTON(ID_open_wav_file, MainFrame::OnButtonPress)
 EVT_BUTTON(ID_stop_wav_file, MainFrame::OnButtonPress)
@@ -94,32 +93,6 @@ EVT_MENU(ID_draw_spectrogram, MainFrame::OnDrawModeChange)
 EVT_MENU(ID_draw_none, MainFrame::OnDrawModeChange)
 
 END_EVENT_TABLE()
-
-// Note that MDI_NEW_WINDOW and MDI_ABOUT commands get passed
-// to the parent window for processing, so no need to
-// duplicate event handlers here.
-/*
-BEGIN_EVENT_TABLE(MyChild, wxMDIChildFrame)
-    EVT_MENU(MDI_CHILD_QUIT, MyChild::OnQuit)
-    //EVT_MENU(MDI_REFRESH, MyChild::OnRefresh)
-    EVT_MENU(MDI_CHANGE_TITLE, MyChild::OnChangeTitle)
-    EVT_MENU(MDI_CHANGE_POSITION, MyChild::OnChangePosition)
-    EVT_MENU(MDI_CHANGE_SIZE, MyChild::OnChangeSize)
-
-#if wxUSE_CLIPBOARD
-    EVT_MENU(wxID_PASTE, MyChild::OnPaste)
-    EVT_UPDATE_UI(wxID_PASTE, MyChild::OnUpdatePaste)
-#endif // wxUSE_CLIPBOARD
-
-    //EVT_PAINT(MyChild::OnPaint)
-    EVT_SIZE(MyChild::OnSize)
-//    EVT_MOVE(MyChild::OnMove)
-
-    EVT_SET_FOCUS(MyChild::OnSetFocus)
-
-    EVT_CLOSE(MyChild::OnClose)
-END_EVENT_TABLE()
-*/
 
 BEGIN_EVENT_TABLE(MyGLCanvas, wxGLCanvas)
 EVT_SIZE(MyGLCanvas::OnSize)
@@ -962,6 +935,11 @@ T_InterfaceState::~T_InterfaceState(void)
 
 MainFrame::~MainFrame(void)
 {
+  if (fileManager != NULL)
+  {
+    delete fileManager;
+    fileManager = NULL;
+  }
   if (AudioMixer != NULL)
   {
     AudioMixer->RestoreMixerSettings_WAVEIN();
@@ -986,25 +964,26 @@ MainFrame::MainFrame(wxWindow *parent,
 {
   frame_is_closing = false;
   task_is_stopping_now = false;
-  // FIXME: possible bug - when there is no audio device in the system, an segfault occurs. This should be fixed. Maybe by checking if the audio device is present first?
 
+  int waveInDevNumber = TAudioMixer::GetNoOfWaveInDevices();
+  int waveOutDevNumber = TAudioMixer::GetNoOfWaveOutDevices();
 
-int waveInDevNumber = TAudioMixer::GetNoOfWaveInDevices();
-int waveOutDevNumber= TAudioMixer::GetNoOfWaveOutDevices();
+  if (waveInDevNumber == 0 || waveOutDevNumber == 0)
+  {
+    std::string ErrorMessage = "Error: ";
+    if (waveInDevNumber == 0)
+    {
+      ErrorMessage += "\nNo input audio device found.";
+    }
+    if (waveOutDevNumber == 0)
+    {
+      ErrorMessage += "\nNo output audio device found.";
+    }
 
-if (waveInDevNumber == 0 || waveOutDevNumber == 0) {
-  std::string ErrorMessage = "Error: ";
-  if (waveInDevNumber == 0) {
-    ErrorMessage += "\nNo input audio device found.";
+    DSP::log << DSP::e::LogMode::Error << ErrorMessage << std::endl;
+    wxMessageBox(wxString::FromUTF8("Sprawdź połączenie głośników i mikrofonu, następnie uruchom program ponownie. \n\n") + ErrorMessage, wxString::FromUTF8("Błąd urządzeń we/wy"), wxOK | wxICON_ERROR);
+    exit(1);
   }
-  if (waveOutDevNumber == 0) {
-    ErrorMessage += "\nNo output audio device found.";
-  }
-
-  DSP::log << DSP::e::LogMode::Error << ErrorMessage << std::endl;
-  wxMessageBox(wxString::FromUTF8("Sprawdź połączenie głośników i mikrofonu, następnie uruchom program ponownie. \n\n")+ErrorMessage, wxString::FromUTF8("Błąd urządzeń we/wy"), wxOK | wxICON_ERROR);
-  exit(1);
-}
 
   AudioMixer = new TAudioMixer;
   AudioMixer->MemorizeMixerSettings_WAVEIN();
@@ -1015,6 +994,28 @@ if (waveInDevNumber == 0 || waveOutDevNumber == 0) {
 
   FillSettingsInterface(NULL);
   UpdateGUI();
+
+  // Create Voice File Manager object, lock the file selection if the directories do not exist
+  try
+  {
+    fileManager = new VoiceFileManager("audio_wzor_44100", "Logatomy", "Zdania");
+    DSP::log << DSP::e::LogMode::Info << "VoiceFileManager" << DSP::e::LogMode::second << "created successfully" << std::endl;
+    std::vector<wxString> voiceTypes = fileManager->listVoiceTypes(VoiceFileTypes::Logatoms);
+    voiceTypes.push_back(_T("losowy"));
+    VoiceTypeBox->Set(voiceTypes);
+    VoiceTypeBox->Select(voiceTypes.size() - 1);
+  }
+  catch (std::invalid_argument const &e)
+  {
+    DSP::log << DSP::e::LogMode::Error << "VoiceFileManager" << DSP::e::LogMode::second << e.what() << "; disabling GUI elements. " << std::endl;
+    UseLogatoms->Disable();
+    UseSentences->Disable();
+    VoiceTypeBox->Disable();
+    VoiceFileIndex->Disable();
+    SelectVoiceFile->Disable();
+    OpenWAVEfile->Disable();
+    StopWAVEfile->Disable();
+  }
 
   // Accelerators
   wxAcceleratorEntry entries[8];
@@ -1095,9 +1096,16 @@ if (waveInDevNumber == 0 || waveOutDevNumber == 0) {
   delete TextCtrlPlaceholder;
   sizer_18->Layout();
 
-  #if __DEBUG__==0
+#ifndef __DEBUG__
+  // remove log page in release version
   notebookWindow->RemovePage(3);
-  #endif
+#endif
+  // TODO: validate ip (regex?) after 'processing start' button is pressed.
+  // allow only numbers and dots
+  wxString allowedChars = "0123456789.";
+  wxTextValidator IPValidator(wxFILTER_INCLUDE_CHAR_LIST);
+  IPValidator.SetCharIncludes(allowedChars);
+  ServerAddressEdit->SetValidator(IPValidator);
 }
 
 MyGLCanvas *MainFrame::GetGLcanvas(unsigned int CanvasInd)
@@ -1145,7 +1153,7 @@ void MainFrame::UpdateGUI(void)
     // update toolbar
     if (interface_state.task_is_running == true)
     {
-      //TODO: move to updategui
+      // TODO: move to updategui (?)
       RunProcessingButton->Enable(false);
       PauseProcessingButton->Enable(true);
       PauseProcessingButton->SetToolTip(_T("Wstrzymaj przetwarzanie"));
@@ -1333,6 +1341,11 @@ void MainFrame::OnRunTask(wxCommandEvent &event)
     interface_state.task_is_running = true;
     interface_state.task_is_paused = false;
     parent_task->RunTaskProcessing();
+
+    // Disable switching between client/server modes when processing starts.
+    WorksAsServer->Disable();
+    WorksAsClient->Disable();
+    ServerAddressEdit->Disable();
   }
 }
 
@@ -1389,6 +1402,14 @@ void MainFrame::OnStopTask(wxCommandEvent &event)
     GetGLcanvas(0)->Refresh(); // invalidate window
     GetGLcanvas(0)->Update();  // refresh canvas immediately
   }
+
+  // Enable switching between client/server modes when processing stops.
+  WorksAsServer->Enable();
+  WorksAsClient->Enable();
+  if (WorksAsClient->GetValue())
+  {
+    ServerAddressEdit->Enable();
+  }
 }
 
 void MainFrame::OnPageChanging(wxNotebookEvent &event)
@@ -1413,7 +1434,7 @@ void MainFrame::OnPageChanging(wxNotebookEvent &event)
 // TODO: check
 void MainFrame::SetStatusBoxMessage(std::string MessageText, bool isError)
 {
-#if __DEBUG__==1
+#ifdef __DEBUG__
   if (StatusBox != NULL)
   {
     if (isError)
@@ -1423,7 +1444,7 @@ void MainFrame::SetStatusBoxMessage(std::string MessageText, bool isError)
 
     StatusBox->AppendText(MessageText);
   }
-#endif  
+#endif
 }
 
 void MainFrame::OnProcessEnd(wxCommandEvent &event)
@@ -1663,7 +1684,43 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
       }
     }
     break;
-
+  case ID_use_logatoms:
+    SentenceTranscription->ChangeValue("");
+    VoiceFileIndex->ChangeValue("");
+    if (fileManager != NULL)
+    {
+      wxString currentSelection = VoiceTypeBox->GetStringSelection();
+      std::vector<wxString> voiceTypes = fileManager->listVoiceTypes(VoiceFileTypes::Logatoms);
+      voiceTypes.push_back(_T("losowy"));
+      VoiceTypeBox->Set(voiceTypes);
+      int index = VoiceTypeBox->FindString(currentSelection);
+      if (index != wxNOT_FOUND)
+        VoiceTypeBox->Select(index);
+      else
+        VoiceTypeBox->Select(voiceTypes.size() - 1);
+    }
+    break;
+  case ID_use_sentences:
+  {
+    SentenceTranscription->ChangeValue("");
+    VoiceFileIndex->ChangeValue("");
+    if (fileManager != NULL)
+    {
+      wxString currentSelection = VoiceTypeBox->GetStringSelection();
+      std::vector<wxString> voiceTypes = fileManager->listVoiceTypes(VoiceFileTypes::Sentences);
+      voiceTypes.push_back(_T("losowy"));
+      VoiceTypeBox->Set(voiceTypes);
+      int index = VoiceTypeBox->FindString(currentSelection);
+      if (index != wxNOT_FOUND)
+        VoiceTypeBox->Select(index);
+      else
+        VoiceTypeBox->Select(voiceTypes.size() - 1);
+    }
+    break;
+  }
+  case ID_show_text_checkbox:
+    SentenceTranscription->Show(showSentenceText->GetValue());
+    break;
   default:
     return;
   }
@@ -3118,70 +3175,18 @@ void MainFrame::OnButtonPress(wxCommandEvent &event)
 
   case ID_select_voice_file:
   {
-    int voice_type, file_no;
-    std::string index_text;
-    bool is_logatom;
-    is_logatom = (UseLogatoms->GetValue() == 1);
-    // składamy nazwę pliku w interface_state.selected_wav_filename
-    std::string &temp = interface_state.selected_wav_filename;
-    if (is_logatom == true)
+    VoiceFileTypes fileType;
+    std::string voiceType;
+    voiceType = VoiceTypeBox->GetStringSelection().ToStdString();
+    if (voiceType == "losowy")
     {
-      temp = "Logatomy\\";
-      index_text = 'L';
+      int randomInd = (rand() % (VoiceTypeBox->GetCount() - 2));
+      voiceType = VoiceTypeBox->GetString(randomInd).ToStdString();
     }
-    else
-    {
-      temp = "Zdania\\";
-      index_text = 'Z';
-    }
-
-    voice_type = VoiceTypeBox->GetCurrentSelection();
-    if (voice_type == 0)
-      voice_type = 1 + (rand() % 4);
-    index_text += char('0' + voice_type - 1);
-    switch (voice_type)
-    {
-    case 1:
-      temp += "male1\\";
-      break;
-    case 2:
-      temp += "male2\\";
-      break;
-    case 3:
-      temp += "female1\\";
-      break;
-    case 4:
-      temp += "female2\\";
-      break;
-    default:
-      break;
-    }
-
-    std::string file_no_str = std::to_string(file_no);
-    while (file_no_str.length() < 3)
-    { // "%03i"
-      file_no_str = std::string("0") + file_no_str;
-    }
-    if (is_logatom == true)
-    {
-      file_no = 1 + (rand() % 3);
-      // snprintf(temp, 2047-size, "lista %i.wav", file_no);
-      temp += "lista ";
-      temp += std::to_string(file_no);
-      temp += ".wav";
-    }
-    else
-    {
-      file_no = 1 + (rand() % 500);
-      // snprintf(temp, 2047-size, "%03i.wav", file_no);
-
-      temp += file_no_str;
-      temp += ".wav";
-    }
-    // snprintf(index_text+2, 1023-2, "%03i", file_no);
-    index_text += file_no_str;
-
-    VoiceFileIndex->ChangeValue(index_text);
+    fileType = (UseLogatoms->GetValue() == 1) ? VoiceFileTypes::Logatoms : VoiceFileTypes::Sentences;
+    fileManager->getRandomFileInfo(fileType, voiceType, interface_state.selected_wav_info);
+    VoiceFileIndex->SetValue(interface_state.selected_wav_info.shortName);
+    SentenceTranscription->ChangeValue(wxString::FromUTF8(interface_state.selected_wav_info.transcription));
   }
     return;
     break;
@@ -3193,7 +3198,7 @@ void MainFrame::OnButtonPress(wxCommandEvent &event)
     break;
 
   case ID_open_wav_file:
-    interface_state.wav_filename = interface_state.selected_wav_filename;
+    interface_state.wav_filename = interface_state.selected_wav_info.path.string();
 
     interface_state.userdata_state = E_US_wav_file_open;
     break;
@@ -3247,6 +3252,30 @@ void MainFrame::OnDrawModeChange(wxCommandEvent &event)
   event.SetId(ID_SELECT_DRAW_MODE);
   OnSettingsInterfaceChange(event);
 }
+
+void MainFrame::OnSelectVoiceType(wxCommandEvent &event)
+{
+  VoiceFileTypes fileType;
+  std::string voiceType;
+  voiceType = VoiceTypeBox->GetStringSelection().ToStdString();
+  if (voiceType == "losowy")
+  {
+    int randomInd = (rand() % (VoiceTypeBox->GetCount() - 2));
+    voiceType = VoiceTypeBox->GetString(randomInd).ToStdString();
+  }
+  fileType = (UseLogatoms->GetValue() == 1) ? VoiceFileTypes::Logatoms : VoiceFileTypes::Sentences;
+  if (VoiceFileIndex->GetValue() == _T(""))
+    fileManager->getRandomFileInfo(fileType, voiceType, interface_state.selected_wav_info);
+  else
+    fileManager->getSelectedFileInfo(fileType, voiceType, interface_state.selected_wav_info);
+
+  SentenceTranscription->ChangeValue(wxString::FromUTF8(interface_state.selected_wav_info.transcription));
+  VoiceFileIndex->SetValue(interface_state.selected_wav_info.shortName);
+}
+
+// ----------------------------------------------------------------
+// Morse Validator
+// ----------------------------------------------------------------
 
 BEGIN_EVENT_TABLE(wxMorseValidator, wxValidator)
 EVT_CHAR(wxMorseValidator::OnChar)
@@ -3383,4 +3412,132 @@ void wxMorseValidator::OnChar(wxKeyEvent &event)
   }
 
   event.Skip();
+}
+
+// ----------------------------------------------------------------
+// Voice File Manager
+// ----------------------------------------------------------------
+
+VoiceFileManager::VoiceFileManager(std::string parentPath, std::string logatomsDirName, std::string sentencesDirName, std::string fileExtension)
+{
+  fs::path tmp_path({parentPath});
+
+  if (fs::exists(tmp_path) && fs::is_directory(tmp_path))
+  {
+    this->parentPath = tmp_path;
+
+    if (fs::exists(tmp_path / logatomsDirName) && fs::is_directory(tmp_path / logatomsDirName))
+      this->logatomsDirName = logatomsDirName;
+    else
+      throw std::invalid_argument((tmp_path / logatomsDirName).string() + " directory does not exist");
+
+    if (fs::exists(tmp_path / sentencesDirName) && fs::is_directory(tmp_path / sentencesDirName))
+      this->sentencesDirName = sentencesDirName;
+    else
+      throw std::invalid_argument((tmp_path / sentencesDirName).string() + " directory does not exist");
+    this->selectedFileExtension = fileExtension;
+  }
+  else
+    throw std::invalid_argument("Parent path: " + tmp_path.string() + " is not a directory or does not exist.");
+}
+
+std::vector<wxString> VoiceFileManager::listVoiceTypes(VoiceFileTypes FileType) const
+{
+  std::vector<wxString> types;
+  fs::path directoryPath;
+
+  if (FileType == VoiceFileTypes::Logatoms)
+    directoryPath = parentPath / logatomsDirName;
+  else
+    directoryPath = parentPath / sentencesDirName;
+
+  for (const auto &entry : std::filesystem::directory_iterator(directoryPath))
+  {
+    if (entry.is_directory())
+    {
+      wxString subfolder_name(entry.path().filename().string());
+      types.push_back(subfolder_name);
+    }
+  }
+  return types;
+}
+
+std::vector<std::string> VoiceFileManager::listFiles(VoiceFileTypes fileType, std::string voiceType) const
+{
+  fs::path subDirectory = (fileType == VoiceFileTypes::Logatoms) ? logatomsDirName : sentencesDirName;
+  subDirectory = subDirectory / voiceType;
+  std::vector<std::string> fileList;
+  for (const auto &entry : std::filesystem::directory_iterator(parentPath / subDirectory))
+  {
+    if (entry.is_regular_file() && entry.path().extension() == selectedFileExtension)
+    {
+      std::string fileName = entry.path().filename().string();
+      fileList.push_back(fileName);
+    }
+  }
+
+  return fileList;
+}
+
+void VoiceFileManager::getRandomFileInfo(VoiceFileTypes fileType, std::string voiceType, VoiceFileInfo &fileInfo) const
+{
+  VoiceFileInfo result;
+  std::vector<std::string> fileList = listFiles(fileType, voiceType);
+  std::string line;
+  fs::path randomFile;
+  fs::path tmpPath = makePath(fileType, voiceType, false);
+  int randomIndex;
+  randomIndex = (rand() % fileList.size());
+  randomFile = tmpPath / fileList[randomIndex];
+
+  fileInfo.shortName = randomFile.stem().string();
+  fileInfo.fullName = randomFile.filename().string();
+  fileInfo.path = randomFile.relative_path().string();
+
+  if (fs::exists(parentPath / randomFile.relative_path().parent_path() / "list.txt"))
+  {
+    std::ifstream p(parentPath / randomFile.relative_path().parent_path() / "list.txt");
+    if (!p)
+    {
+#ifdef __DEBUG__
+      DSP::log << "VoiceFileManager" << DSP::e::LogMode::second << "list.txt exists but is not readable.";
+#endif
+    }
+    else
+    {
+
+      while (getline(p, line))
+      {
+        if (line.find(fileInfo.shortName + "-") != std::string::npos)
+        {
+          fileInfo.transcription = line.substr(fileInfo.shortName.length() + 2, line.length() - fileInfo.shortName.length() - 2 - selectedFileExtension.length()); // ignore the first segment of the transcription e.g. "500- "
+          break;
+        }
+      }
+      p.close();
+    }
+  }
+  else
+  {
+#ifdef __DEBUG__
+    DSP::log << "VoiceFileManager" << DSP::e::LogMode::second << "list.txt not found in the current directory. Skipping";
+#endif
+  }
+}
+
+void VoiceFileManager::getSelectedFileInfo(VoiceFileTypes fileType, std::string voiceType, VoiceFileInfo &fileInfo) const
+{
+  fs::path selectedFile;
+
+  selectedFile = makePath(fileType, voiceType, fileInfo.fullName, false);
+  if (fs::exists(parentPath / selectedFile))
+  {
+    fileInfo.shortName = selectedFile.stem().string();
+    fileInfo.fullName = selectedFile.filename().string();
+    fileInfo.path = selectedFile.relative_path().string();
+  }
+  else
+  {
+    getRandomFileInfo(fileType, voiceType, fileInfo);
+  }
 }

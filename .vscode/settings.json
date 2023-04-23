@@ -52,6 +52,10 @@
         "utility": "cpp",
         "hash_set": "cpp",
         "unordered_set": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "codecvt": "cpp",
+        "iomanip": "cpp",
+        "filesystem": "cpp",
+        "random": "cpp"
     }
 }

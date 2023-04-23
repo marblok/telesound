@@ -54,6 +54,7 @@ enum
     ID_voice_file_index = 135,
     ID_open_wav_file = 136,
     ID_stop_wav_file = 137,
+    ID_show_text_checkbox = 138,
 
     ID_RUN_TASK = 201,
     ID_PAUSE_TASK = 202,
