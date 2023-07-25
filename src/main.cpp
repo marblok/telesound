@@ -79,6 +79,9 @@ EVT_BUTTON(ID_send_ascii_text, MainFrame::OnButtonPress)
 EVT_CHECKBOX(ID_morse_receiver_state, MainFrame::OnSettingsInterfaceChange)
 
 EVT_CHECKBOX(ID_show_text_checkbox, MainFrame::OnSettingsInterfaceChange)
+EVT_CHECKBOX(ID_modulator_state, MainFrame::OnSettingsInterfaceChange)
+
+
 EVT_COMBOBOX(ID_voice_type, MainFrame::OnSelectVoiceType)
 EVT_BUTTON(ID_select_voice_file, MainFrame::OnButtonPress)
 EVT_BUTTON(ID_open_wav_file, MainFrame::OnButtonPress)
@@ -755,7 +758,7 @@ void T_InterfaceState::Reset(void)
 
   ascii_text = "";
   morse_receiver_state = false;
-
+  modulator_state = false;
   wav_filename[0] = 0x00;
 
   userdata_state = E_US_none;
@@ -811,6 +814,7 @@ void T_InterfaceState::TransferDataToTask(
 
     do_transfer |= (morse_receiver_state != selected_task->FirstProcessingSpec->morse_receiver_state);
 
+    do_transfer |= (modulator_state != selected_task->FirstProcessingSpec->modulator_state);
     do_transfer |= (wav_filename.compare(selected_task->FirstProcessingSpec->wav_filename) != 0);
 
     if (do_transfer == false)
@@ -894,6 +898,7 @@ void T_InterfaceState::TransferDataToTask(
     selected_task->FirstProcessingSpec->SNR_dB = SNR_dB;
 
     selected_task->FirstProcessingSpec->morse_receiver_state = morse_receiver_state;
+    selected_task->FirstProcessingSpec->modulator_state = modulator_state;
 
     selected_task->FirstProcessingSpec->wav_filename = wav_filename;
 
@@ -1679,6 +1684,27 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
         temp = new T_BranchCommand(E_BC_userdata, command_data);
 #ifdef __DEBUG__
         DSP::log << "ID_LOCAL_SIGNAL_ON_OFF" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
+#endif
+        parent_task->ProcessingBranch->PostCommandToBranch(temp);
+      }
+    }
+    break;
+  case ID_modulator_state:
+    interface_state.modulator_state = ModulatorState->GetValue();
+
+    if (parent_task != NULL)
+    {
+      if (parent_task->ProcessingBranch != NULL)
+      {
+        T_BranchCommand *temp;
+        TCommandData *command_data;
+
+        interface_state.userdata_state = E_US_modulator_state;
+        command_data = new TCommandData;
+        command_data->UserData = (void *)(&interface_state);
+        temp = new T_BranchCommand(E_BC_userdata, command_data);
+#ifdef __DEBUG__
+        DSP::log << "ID_MODULATOR_ON_OFF" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
         parent_task->ProcessingBranch->PostCommandToBranch(temp);
       }
@@ -2488,8 +2514,8 @@ void MyGLCanvas::OnMouseMotion(wxMouseEvent &event)
 
 // +++++++++++++++++++++++++++++++++++++++ //
 // +++++++++++++++++++++++++++++++++++++++ //
-int MyProcessingThread::NoOfCPUs = 0;
-int MyProcessingThread::NoOfProcessingThreads = 0;
+int MyProcessingThread::NoOfCPUs = 4;
+int MyProcessingThread::NoOfProcessingThreads =40;
 MyProcessingThread **MyProcessingThread::ProcessingThreads = NULL;
 
 MyProcessingThread::MyProcessingThread(MainFrame *Parent_in)

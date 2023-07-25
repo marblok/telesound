@@ -12,6 +12,7 @@ enum E_PageIDs
   E_PID_CHANNEL = 1,
   E_PID_MORSE = 2,
   E_PID_status = 3,
+  E_PID_MODULATOR = 4,
   E_PID_default = 1000
 };
 
@@ -55,6 +56,12 @@ enum
     ID_open_wav_file = 136,
     ID_stop_wav_file = 137,
     ID_show_text_checkbox = 138,
+    
+    
+    
+    ID_modulator_state = 139,
+
+
 
     ID_RUN_TASK = 201,
     ID_PAUSE_TASK = 202,

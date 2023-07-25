@@ -213,7 +213,7 @@ class T_InterfaceState
 
     std::string ascii_text;
     bool morse_receiver_state;
-
+    bool modulator_state; // true - modulator ON, false - modulator OFF
     E_UpdateState userdata_state;
 
     // +++++++++++++++++++++++++ //

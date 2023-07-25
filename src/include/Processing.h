@@ -97,10 +97,26 @@ class T_DSPlib_processing : public T_InputElement
     DSP::u::Addition *NoiseAdd;
     DSP::u::AudioOutput *AudioOut;
     //DSP::Component *AudioOut;
-
+    
+    //        Modulator components           //
+    bool ModulatorState;
+    DSP::Clock_ptr SymbolClock, Interpol1Clock, Interpol2Clock;
+    DSP::u::BinRand *ModBits;
+    DSP::u::Serial2Parallel *ModS2P;
+    DSP::u::SymbolMapper *ModMapper;
+    DSP::u::Const *ModZero;
+    DSP::u::Zeroinserter *ModZeroInserter;
+    DSP::u::FIR *ModFIR;
+    DSP::u::SamplingRateConversion *ModConverter;
+    DSP::u::DDScos *ModDDS;
+    DSP::u::Multiplication *ModMul;
+    DSP::u::Amplifier *ModAmp;
+    DSP::u::Vacuum *ModVac;
+    //**************************************//
     DSP::u::OutputBuffer *analysis_buffer;
     TOptions *MorseDecoder_options;
     bool MorseReceiverState;
+  
     T_MorseDecoder *MorseDecoder;
     TE_LockState LastLockState;
     DSP::Float *morse_decoder_slot;
