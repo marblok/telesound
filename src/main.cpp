@@ -2514,8 +2514,8 @@ void MyGLCanvas::OnMouseMotion(wxMouseEvent &event)
 
 // +++++++++++++++++++++++++++++++++++++++ //
 // +++++++++++++++++++++++++++++++++++++++ //
-int MyProcessingThread::NoOfCPUs = 4;
-int MyProcessingThread::NoOfProcessingThreads =40;
+int MyProcessingThread::NoOfCPUs = 0;
+int MyProcessingThread::NoOfProcessingThreads = 0;
 MyProcessingThread **MyProcessingThread::ProcessingThreads = NULL;
 
 MyProcessingThread::MyProcessingThread(MainFrame *Parent_in)

@@ -168,7 +168,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   alfa_s = 1 - 3*alfa_n;
 
   MorseReceiverState = SpecList->morse_receiver_state;
-
+  ModulatorState   = SpecList->modulator_state;
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
   MasterClock = NULL;
@@ -609,17 +609,17 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   // wejscie 4 : modulator
   unsigned int L1 = 5;  // interpolacja 1. stopień
   unsigned int M1 = 1;  // decymacja 1. stopień
-  unsigned int L2 = 16; // interpolacja 2. stopień
-  unsigned int M2 = 3;  // decymacja 2. stopień
+  unsigned int L2 = 8; // interpolacja 2. stopień
+  unsigned int M2 = 1;  // decymacja 2. stopień
 
-  unsigned int bits_per_symbol = 2; // QPSK - 2 bity na symbol
+  unsigned int bits_per_symbol = 3; //BPSK- 1 bit na symbol, QPSK - 2 bity na symbol, 8-PSK - 3 bity na symbol
 
   DSP::Float F_p = 48000;                    // szybkosc próbkowania sygnału wyjsciowego: 48 kSa/s
   DSP::Float F_0 = 3600;                     // szybkosc transmisji: 3,6 kbit/s
-  DSP::Float F_symb = F_0 / bits_per_symbol; // 1800 ksymb/s
+  DSP::Float F_symb = F_0 / bits_per_symbol; // 1800 ksymb/s - QPSK, 1200 ksymb/s - 8-PSK
   DSP::Float F_centr = 19000;                // czestotliwosc srodkowa pasma kanalu 19 kHz
 
-  // wcczytanie wspolczynników filtrow
+  // wczytanie wspolczynników filtrow
   DSP::LoadCoef coef_info_stage1, coef_info_stage2;
   int N_LPF_stage1, N_LPF_stage2;
   DSP::Float_vector h_LPF_stage1, h_LPF_stage2;
@@ -658,7 +658,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::PSK, bits_per_symbol);
   ModMapper->SetName("SymbolMapper", false);
   bool are_symbols_real = ModMapper->isOutputReal();
-  
+  ModZero = NULL;//?
   if (are_symbols_real)
   {
     ModZero = new DSP::u::Const(SymbolClock, 0.0);
