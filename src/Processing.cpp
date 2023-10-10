@@ -577,7 +577,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   }
 
   DigitalSignalsAdd = new DSP::u::Addition(3U, 0U);
-  DigitalSignalsAdd->SetName("Add", false);
+  DigitalSignalsAdd->SetName("Add(digital_signals)", false);
   MorseMul->Output("out")>> DigitalSignalsAdd->Input("in1");
 
   if (Decimator == NULL)
@@ -596,7 +596,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
     Decimator->Output("out")>> DigitalSignalsAdd->Input("in2");
 
   AllSignalsAdd = new DSP::u::Addition(2U, 0U);
-  AllSignalsAdd->SetName("Add", false);
+  AllSignalsAdd->SetName("Add(All_signals)", false);
   AudioInGain->Output("out")>> AllSignalsAdd->Input("in1");
   DigitalSignalsAdd->Output("out")>> AllSignalsAdd->Input("in2");
 
@@ -672,7 +672,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   ModMul = new DSP::u::Multiplication(0U, 2U);
   ModVac = new DSP::u::Vacuum(false, 1U);
   ModAmp = new DSP::u::Amplifier(0.0, 1U, false);
-  ModAmp->SetName("Amplifier", false);
+  ModAmp->SetName("Amplifier_(modulator)", false);
 
   // polaczenia
   ModBits->Output("out") >> ModS2P->Input("in");
@@ -705,7 +705,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   LocalSignalGain = new DSP::u::Amplifier(local_signal_gain);
   LocalSignalAdd = new DSP::u::Addition(2U, 0U);
-  LocalSignalAdd->SetName("Add", false);
+  LocalSignalAdd->SetName("LocalSignalAdd", false);
   LocalSignalGain->SetName("Amplifier_(local_signal)", false);
   DigitalSignalsAdd->Output("out") >> LocalSignalGain->Input("in1");
   LocalSignalGain->Output("out") >> LocalSignalAdd->Input("in1");
@@ -759,10 +759,11 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   NoiseBuffer->Output("out") >> NoiseGain->Input("in");
 
   SignalGain = new DSP::u::Amplifier(alfa_s);
+  SignalGain->SetName("Amplifier(local_signal)");
   LocalSignalAdd->Output("out") >> SignalGain->Input("in");
 
   NoiseAdd = new DSP::u::Addition(2U, 0U);
-  NoiseAdd->SetName("Add", false);
+  NoiseAdd->SetName("Add(noise)", false);
 
   AudioOut = new DSP::u::AudioOutput(Fp, 1, 16);
   // AudioOut = new DSP::u::Vacuum;

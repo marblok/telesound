@@ -989,6 +989,26 @@ MainFrame::MainFrame(wxWindow *parent,
     wxMessageBox(wxString::FromUTF8("Sprawdź połączenie głośników i mikrofonu, następnie uruchom program ponownie. \n\n") + ErrorMessage, wxString::FromUTF8("Błąd urządzeń we/wy"), wxOK | wxICON_ERROR);
     exit(1);
   }
+  //Check if config folder and all required files exist.
+  bool configFileError = false;
+  const std::vector<fs::path> requiredFolders = {"./config","./matlab"};
+  const std::vector<fs::path> requiredFiles = {"./config/Polish.mct","./matlab/srRC_stage1.coef","./matlab/srRc_stage2.coef"};
+
+    for (const fs::path& folder : requiredFolders) {//loop through folder list
+      if (!fs::exists(folder)) {
+        configFileError = true;
+        wxMessageBox(wxString::FromUTF8("Nie znaleziono katalogu " + folder.filename().string() + " zawierającego pliki wymagane do poprawnej pracy programu."), wxString::FromUTF8("Błąd"), wxOK | wxICON_ERROR);   
+    };}
+
+  if(!configFileError){
+    //loop through file list and check for existence
+     for (const fs::path& file : requiredFiles) {
+      if(!fs::exists(file)){
+        wxMessageBox(wxString::FromUTF8("Nie znaleziono pliku " + file.filename().string() + " wymaganego do poprawnej pracy programu."), wxString::FromUTF8("Błąd"), wxOK | wxICON_ERROR);
+        configFileError = true;
+      }
+     }
+  };
 
   AudioMixer = new TAudioMixer;
   AudioMixer->MemorizeMixerSettings_WAVEIN();
@@ -1012,6 +1032,7 @@ MainFrame::MainFrame(wxWindow *parent,
   }
   catch (std::invalid_argument const &e)
   {
+    fileManager=nullptr;
     DSP::log << DSP::e::LogMode::Error << "VoiceFileManager" << DSP::e::LogMode::second << e.what() << "; disabling GUI elements. " << std::endl;
     UseLogatoms->Disable();
     UseSentences->Disable();
