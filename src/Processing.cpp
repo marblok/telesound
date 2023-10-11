@@ -647,10 +647,10 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
 
 
   // zegary
-  SymbolClock = DSP::Clock::GetClock(MasterClock, 1, bits_per_symbol);
-  Interpol1Clock = DSP::Clock::GetClock(SymbolClock, L1, M1);
-  Interpol2Clock = DSP::Clock::GetClock(Interpol1Clock, L2, M2);
-
+  Interpol2Clock = MasterClock;
+  Interpol1Clock = DSP::Clock::GetClock(Interpol2Clock, M2, L2);
+  SymbolClock = DSP::Clock::GetClock(Interpol1Clock, M1, L1);
+  
   // bloki
   ModBits = new DSP::u::BinRand(MasterClock, -1.0f, 1.0f);
   ModS2P = new DSP::u::Serial2Parallel(MasterClock, bits_per_symbol);
