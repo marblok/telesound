@@ -650,7 +650,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   Interpol2Clock = MasterClock;
   Interpol1Clock = DSP::Clock::GetClock(Interpol2Clock, M2, L2);
   SymbolClock = DSP::Clock::GetClock(Interpol1Clock, M1, L1);
- BitClock = DSP::Clock::GetClock(SymbolClock,bits_per_symbol,1);
+  BitClock = DSP::Clock::GetClock(SymbolClock,bits_per_symbol,1);
 
   // bloki
   ModBits = new DSP::u::BinRand(BitClock, -1.0f, 1.0f);
