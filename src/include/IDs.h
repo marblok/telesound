@@ -15,6 +15,14 @@ enum E_PageIDs
   E_PID_MODULATOR = 4,
   E_PID_default = 1000
 };
+//TODO:Currently not in use
+enum E_ModulatorTypes{
+  E_MT_ASK = 0,
+  E_MT_PSK = 1,
+  E_MT_FSK = 2,
+  E_MT_QAM = 3
+};
+
 
 #define MAX_SLIDER_VALUE 100
 #define WPM_20_SLIDER_VALUE  3
@@ -60,8 +68,8 @@ enum
     
     
     ID_modulator_state = 139,
-
-
+    ID_carrier_freq_SLIDER=140,
+    ID_modulation_type = 141, 
 
     ID_RUN_TASK = 201,
     ID_PAUSE_TASK = 202,

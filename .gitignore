@@ -10,3 +10,5 @@
 *.pyc
 *autosave*.wxg#
 /audio*
+out.svg
+out.png

@@ -36,7 +36,8 @@ enum E_UpdateState
   E_US_local_signal = 128,
   E_US_morse_receiver_state = 256,
   E_US_high_res_psd = 512,
-  E_US_modulator_state = 1024
+  E_US_modulator_state = 1024,
+  E_US_carrier_freq = 2048
 };
 E_UpdateState& operator|= (E_UpdateState& left, const E_UpdateState& right);
 E_UpdateState& operator&= (E_UpdateState& left, const E_UpdateState& right);
@@ -84,6 +85,8 @@ class T_ProcessingSpec
 
     bool morse_receiver_state;
     bool modulator_state;
+    float carrier_freq;
+    
     const E_DrawModes Get_draw_mode(void);
     void Set_draw_mode(E_DrawModes new_draw_mode);
 

@@ -214,6 +214,8 @@ class T_InterfaceState
     std::string ascii_text;
     bool morse_receiver_state;
     bool modulator_state; // true - modulator ON, false - modulator OFF
+    float carrier_freq;
+    
     E_UpdateState userdata_state;
 
     // +++++++++++++++++++++++++ //
@@ -264,7 +266,6 @@ class MainFrame : public GUIFrame
     bool frame_is_closing;
     void OnQuit(wxCommandEvent& event);
     void OnClose(wxCloseEvent& event);
-
     void OnPickFileStartTime(wxCommandEvent& event);
 
     void OnNotebookSashDragged(wxSashEvent& event);
@@ -282,6 +283,8 @@ class MainFrame : public GUIFrame
     void OnButtonPress(wxCommandEvent& event);
     void OnWPMchange(wxScrollEvent& event);
     void OnPSDparamsChange(wxScrollEvent& event);
+
+    void OnCarrierFreqChange(wxScrollEvent& event);
 
     void OnProcessEnd(wxCommandEvent &event );
     void OnSelectVoiceType(wxCommandEvent& event);

@@ -423,7 +423,15 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
     UpdateState |= E_US_modulator_state;
     temp_spec->userdata_state ^= E_US_modulator_state;
   }
-
+    if ((temp_spec->userdata_state & E_US_carrier_freq) != 0)
+  {
+    if(ModDDS!=NULL){
+    ModDDS->SetAngularFrequency(DSP::M_PIx2 * temp_spec->carrier_freq/temp_spec->sampling_rate);
+    UpdateState |= E_US_carrier_freq;
+    temp_spec->userdata_state ^= E_US_carrier_freq;
+    }
+    
+  }
   if ((temp_spec->userdata_state & E_US_high_res_psd) != 0)
   {
     ComputeHighResolutionSpectorgram();
@@ -617,7 +625,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   DSP::Float F_p = 48000;                    // szybkosc próbkowania sygnału wyjsciowego: 48 kSa/s
   DSP::Float F_0 = 3600;                     // szybkosc transmisji: 3,6 kbit/s
   DSP::Float F_symb = F_0 / bits_per_symbol; // 1800 ksymb/s - QPSK, 1200 ksymb/s - 8-PSK
-  DSP::Float F_centr = 19000;                // czestotliwosc srodkowa pasma kanalu 19 kHz
+  DSP::Float F_centr = 1000;                // czestotliwosc srodkowa pasma kanalu
 
   // wczytanie wspolczynników filtrow
   DSP::LoadCoef coef_info_stage1, coef_info_stage2;
@@ -1040,17 +1048,15 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
     
     if ((CurrentObject->UpdateState & E_US_modulator_state) != 0)
     {
-      if(CurrentObject->ModulatorState == false)
-      { // reset window state
-      CurrentObject->ModAmp->SetGain(0.0);
-      CurrentObject->UpdateState &= (~E_US_modulator_state);
-
-      }else{
-        CurrentObject->ModAmp->SetGain(1.0);
-        CurrentObject->UpdateState &= (~E_US_modulator_state);
-      }
-
+      if(CurrentObject->ModulatorState == false){
+        if (CurrentObject->ModAmp != NULL)
+          CurrentObject->ModAmp->SetGain(0.0);
+        } 
+      else{
+        if (CurrentObject->ModAmp != NULL)
+            CurrentObject->ModAmp->SetGain(1.0);} 
     }
+    CurrentObject->UpdateState &= (~E_US_modulator_state);
   }
   // -------------------------------------------------------- //
 

@@ -74,6 +74,8 @@ EVT_COMMAND_SCROLL(ID_SNR_SLIDER, MainFrame::OnChannelSNRChange)
 //    EVT_COMMAND_SCROLL_THUMBTRACK(ID_SNR_SLIDER, MainFrame::OnChannelSNRChange)
 EVT_COMMAND_SCROLL(ID_HPF_SLIDER, MainFrame::OnChannelFilterChange)
 EVT_COMMAND_SCROLL(ID_LPF_SLIDER, MainFrame::OnChannelFilterChange)
+EVT_COMMAND_SCROLL(ID_carrier_freq_SLIDER, MainFrame::OnCarrierFreqChange)
+
 
 EVT_BUTTON(ID_send_ascii_text, MainFrame::OnButtonPress)
 EVT_CHECKBOX(ID_morse_receiver_state, MainFrame::OnSettingsInterfaceChange)
@@ -360,7 +362,8 @@ T_ProcessingSpec::T_ProcessingSpec(void)
   ChannelFilterON = false;
   ChannelFd = 0;
   ChannelFg = 0;
-
+  modulator_state = false;
+  carrier_freq = 4000;
   morse_receiver_state = false;
 
   Next = NULL;
@@ -759,6 +762,7 @@ void T_InterfaceState::Reset(void)
   ascii_text = "";
   morse_receiver_state = false;
   modulator_state = false;
+  carrier_freq = sampling_rate/4;
   wav_filename[0] = 0x00;
 
   userdata_state = E_US_none;
@@ -815,6 +819,7 @@ void T_InterfaceState::TransferDataToTask(
     do_transfer |= (morse_receiver_state != selected_task->FirstProcessingSpec->morse_receiver_state);
 
     do_transfer |= (modulator_state != selected_task->FirstProcessingSpec->modulator_state);
+    do_transfer |=(carrier_freq != selected_task->FirstProcessingSpec->carrier_freq);
     do_transfer |= (wav_filename.compare(selected_task->FirstProcessingSpec->wav_filename) != 0);
 
     if (do_transfer == false)
@@ -899,7 +904,7 @@ void T_InterfaceState::TransferDataToTask(
 
     selected_task->FirstProcessingSpec->morse_receiver_state = morse_receiver_state;
     selected_task->FirstProcessingSpec->modulator_state = modulator_state;
-
+    selected_task->FirstProcessingSpec->carrier_freq=carrier_freq;
     selected_task->FirstProcessingSpec->wav_filename = wav_filename;
 
     switch (draw_mode)
@@ -1298,7 +1303,6 @@ void MainFrame::FillSettingsInterface(T_TaskElement *selected_task)
   OnChannelFilterChange(event);
   // LPF_slider->SetValue((int)(interface_state.channel_Fg/100));
   // HPF_slider->SetValue((int)(interface_state.channel_Fd/100));
-
   wxScrollEvent temp_event;
   temp_event.SetId(ID_SELECT_SAMPLING_RATE);
   OnChannelFilterChange(temp_event);
@@ -2884,7 +2888,7 @@ bool MyProcessingThread::UpdateBranches(void)
 
 void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
 {
-  float Fd, Fg;
+  float Fd, Fg, Carrier_freq;
   bool Fd_fix = false;
   bool Fg_fix = false;
   bool keep_Fg = false;
@@ -2895,12 +2899,14 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
     Fg = LPF_slider->GetValue();
     Fg *= 100;
     Fd = interface_state.channel_Fd;
+    Carrier_freq = interface_state.carrier_freq;
     keep_Fg = true;
     break;
   case ID_HPF_SLIDER:
     Fd = HPF_slider->GetValue();
     Fd *= 100;
     Fg = interface_state.channel_Fg;
+    Carrier_freq = interface_state.carrier_freq;
     keep_Fg = false;
     break;
 
@@ -2911,11 +2917,19 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
     LPF_slider->SetRange(0, (int)(interface_state.sampling_rate / 200));
     HPF_slider->SetValue(0);
     LPF_slider->SetValue((int)(interface_state.sampling_rate / 200));
+    
+    CarrierFreqSlider-> SetRange(0,(int)(interface_state.sampling_rate / 200));
+    CarrierFreqSlider->SetValue((int)(interface_state.sampling_rate / 400));
+
     interface_state.channel_Fd = 0;
     interface_state.channel_Fg = interface_state.sampling_rate / 2;
+    
+    interface_state.carrier_freq =  interface_state.sampling_rate / 4;
+
 
     Fd = interface_state.channel_Fd;
-    Fg = interface_state.channel_Fg;
+    Fg = interface_state.channel_Fg; 
+    Carrier_freq = interface_state.carrier_freq;
     break;
   }
 
@@ -2965,6 +2979,7 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
   { // only show current position but do not update
     HPF_text->ChangeValue(wxString::Format("%.0f Hz", Fd));
     LPF_text->ChangeValue(wxString::Format("%.0f Hz", Fg));
+    CarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (Carrier_freq/interface_state.sampling_rate),Carrier_freq));
     return;
   }
 
@@ -3012,6 +3027,39 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
   // UpdateGUI();
 }
 
+void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
+{
+  float Carrier_freq;
+
+    Carrier_freq = CarrierFreqSlider->GetValue();
+    Carrier_freq*=100;
+    CarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (Carrier_freq/interface_state.sampling_rate),Carrier_freq));
+    if (event.GetEventType() != wxEVT_SCROLL_CHANGED)
+    { // only show current position but do not update
+      return;
+    }
+    interface_state.carrier_freq = Carrier_freq;
+    interface_state.userdata_state = E_US_carrier_freq;
+
+  if (parent_task != NULL)
+  {
+    interface_state.TransferDataToTask(NULL, parent_task, false);
+
+    if (parent_task->ProcessingBranch != NULL)
+    {
+      T_BranchCommand *temp;
+      TCommandData *command_data;
+
+      command_data = new TCommandData;
+      command_data->UserData = (void *)(&interface_state);
+      temp = new T_BranchCommand(E_BC_userdata, command_data);
+#ifdef __DEBUG__
+      DSP::log << "MainFrame::OnCarrierFreqChange" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
+#endif
+      parent_task->ProcessingBranch->PostCommandToBranch(temp);
+    }
+}
+}
 void MainFrame::OnChannelSNRChange(wxScrollEvent &event)
 {
   float SNR_dB;
