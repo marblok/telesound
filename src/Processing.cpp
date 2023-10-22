@@ -623,11 +623,6 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
 
   unsigned int bits_per_symbol = 3; //BPSK- 1 bit na symbol, QPSK - 2 bity na symbol, 8-PSK - 3 bity na symbol
 
-  DSP::Float F_p = 48000;                    // szybkosc próbkowania sygnału wyjsciowego: 48 kSa/s
-  DSP::Float F_0 = 3600;                     // szybkosc transmisji: 3,6 kbit/s
-  DSP::Float F_symb = F_0 / bits_per_symbol; // 1800 ksymb/s - QPSK, 1200 ksymb/s - 8-PSK
-  DSP::Float F_centr = 1000;                // czestotliwosc srodkowa pasma kanalu
-
   // wczytanie wspolczynników filtrow
   DSP::LoadCoef coef_info_stage1, coef_info_stage2;
   int N_LPF_stage1, N_LPF_stage2;
