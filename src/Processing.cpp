@@ -169,6 +169,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
 
   MorseReceiverState = SpecList->morse_receiver_state;
   ModulatorState   = SpecList->modulator_state;
+  CarrierFreq  = SpecList->carrier_freq;
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
   MasterClock = NULL;
@@ -678,10 +679,19 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   ModFIR = new DSP::u::FIR(Interpol1Clock, h_LPF_stage1);
   ModConverter = new DSP::u::SamplingRateConversion(true, Interpol1Clock, L2, M2, h_LPF_stage2);
 
-  ModDDS = new DSP::u::DDScos(Interpol2Clock, true, 1.0, DSP::M_PIx2 * F_centr / F_p);
+  ModDDS = new DSP::u::DDScos(Interpol2Clock, true, 1.0,DSP::M_PIx2 * CurrentObject->CarrierFreq/SamplingRate );
   ModMul = new DSP::u::Multiplication(0U, 2U);
-  ModVac = new DSP::u::Vacuum(false, 1U);
-  ModAmp = new DSP::u::Amplifier(0.0, 1U, false);
+  ModVac = new DSP::u::Vacuum(false);
+
+  if (CurrentObject->ModulatorState == true)
+  {
+    ModAmp = new DSP::u::Amplifier(1.0);
+  }
+  else
+  {
+    ModAmp = new DSP::u::Amplifier(0.0);
+  }
+
   ModAmp->SetName("Amplifier_(modulator)", false);
 
   // polaczenia

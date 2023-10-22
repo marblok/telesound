@@ -819,7 +819,7 @@ void T_InterfaceState::TransferDataToTask(
     do_transfer |= (morse_receiver_state != selected_task->FirstProcessingSpec->morse_receiver_state);
 
     do_transfer |= (modulator_state != selected_task->FirstProcessingSpec->modulator_state);
-    do_transfer |=(carrier_freq != selected_task->FirstProcessingSpec->carrier_freq);
+    do_transfer |= (carrier_freq != selected_task->FirstProcessingSpec->carrier_freq);
     do_transfer |= (wav_filename.compare(selected_task->FirstProcessingSpec->wav_filename) != 0);
 
     if (do_transfer == false)
@@ -904,7 +904,7 @@ void T_InterfaceState::TransferDataToTask(
 
     selected_task->FirstProcessingSpec->morse_receiver_state = morse_receiver_state;
     selected_task->FirstProcessingSpec->modulator_state = modulator_state;
-    selected_task->FirstProcessingSpec->carrier_freq=carrier_freq;
+    selected_task->FirstProcessingSpec->carrier_freq = carrier_freq;
     selected_task->FirstProcessingSpec->wav_filename = wav_filename;
 
     switch (draw_mode)
@@ -2919,7 +2919,7 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
     LPF_slider->SetValue((int)(interface_state.sampling_rate / 200));
     
     CarrierFreqSlider-> SetRange(0,(int)(interface_state.sampling_rate / 200));
-    CarrierFreqSlider->SetValue((int)(interface_state.sampling_rate / 400));
+    CarrierFreqSlider-> SetValue((int)(interface_state.sampling_rate / 400));
 
     interface_state.channel_Fd = 0;
     interface_state.channel_Fg = interface_state.sampling_rate / 2;
@@ -2996,7 +2996,12 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
     interface_state.userdata_state |= E_US_channel_LPF_coefs;
     LPF_text->ChangeValue(wxString::Format("%.0f Hz", Fg));
   }
-
+  if (interface_state.carrier_freq != Carrier_freq)
+  {
+    interface_state.carrier_freq = Carrier_freq;
+    interface_state.userdata_state |= E_US_carrier_freq;
+    CarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (Carrier_freq / interface_state.sampling_rate), Carrier_freq));
+  }
   if (Fg_fix == true)
   {
     LPF_slider->SetValue((int)(Fg / 100));
@@ -3030,17 +3035,20 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
 void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
 {
   float Carrier_freq;
-
+  switch (event.GetId())
+  {
+  case ID_carrier_freq_SLIDER:
     Carrier_freq = CarrierFreqSlider->GetValue();
-    Carrier_freq*=100;
-    CarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (Carrier_freq/interface_state.sampling_rate),Carrier_freq));
+    Carrier_freq *= 100;
+    CarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (Carrier_freq / interface_state.sampling_rate), Carrier_freq));
     if (event.GetEventType() != wxEVT_SCROLL_CHANGED)
     { // only show current position but do not update
       return;
     }
     interface_state.carrier_freq = Carrier_freq;
-    interface_state.userdata_state = E_US_carrier_freq;
-
+    interface_state.userdata_state |= E_US_carrier_freq;
+    break;
+  }
   if (parent_task != NULL)
   {
     interface_state.TransferDataToTask(NULL, parent_task, false);

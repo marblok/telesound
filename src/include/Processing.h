@@ -100,6 +100,7 @@ class T_DSPlib_processing : public T_InputElement
     
     //        Modulator components           //
     bool ModulatorState;
+    float CarrierFreq;
     DSP::Clock_ptr BitClock, SymbolClock, Interpol1Clock, Interpol2Clock;
     DSP::u::BinRand *ModBits;
     DSP::u::Serial2Parallel *ModS2P;
