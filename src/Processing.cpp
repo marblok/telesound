@@ -169,6 +169,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
 
   MorseReceiverState = SpecList->morse_receiver_state;
   ModulatorState   = SpecList->modulator_state;
+  ModulatorType = SpecList->modulator_type;
   CarrierFreq  = SpecList->carrier_freq;
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
@@ -622,7 +623,13 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   unsigned int M2 = 1;  // decymacja 2. stopień
 
   unsigned int bits_per_symbol = 3; //BPSK- 1 bit na symbol, QPSK - 2 bity na symbol, 8-PSK - 3 bity na symbol
-
+ switch (ModulatorType)
+  { 
+    case E_MT_QAM:
+    bits_per_symbol = 4;
+  break;
+  }
+  
   // wczytanie wspolczynników filtrow
   DSP::LoadCoef coef_info_stage1, coef_info_stage2;
   int N_LPF_stage1, N_LPF_stage2;
@@ -661,8 +668,26 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   ModBits = new DSP::u::BinRand(BitClock, -1.0f, 1.0f);
   ModS2P = new DSP::u::Serial2Parallel(BitClock, bits_per_symbol);
   ModS2P->SetName("S2P", false);
-  ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::PSK, bits_per_symbol);
+  switch (ModulatorType){
+  case E_MT_ASK:
+    ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::ASK, bits_per_symbol);
+    break;
+  case E_MT_PSK:
+    ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::PSK, bits_per_symbol);
+    break;
+  case E_MT_QAM:
+    ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::QAM, bits_per_symbol);
+    break;
+  case E_MT_FSK:
+  //currently use PSK as a placeholder
+    ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::PSK, bits_per_symbol);
+    break;
+  
+  }
+
+  //ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::PSK, bits_per_symbol);
   ModMapper->SetName("SymbolMapper", false);
+
   bool are_symbols_real = ModMapper->isOutputReal();
   ModZero = NULL;//?
   if (are_symbols_real)

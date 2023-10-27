@@ -143,7 +143,6 @@ class T_TaskElement : public wxEvtHandler
     void SetSamplingRate(long double Fs);
     const long double GetCenterFrequency(void);
     void SetCenterFrequency(long double Fo);
-
     T_ProcessingSpec *GetProcessingSpec(int index = 0);
 
   public:
@@ -214,6 +213,7 @@ class T_InterfaceState
     std::string ascii_text;
     bool morse_receiver_state;
     bool modulator_state; // true - modulator ON, false - modulator OFF
+    E_ModulatorTypes modulator_type;
     float carrier_freq;
     
     E_UpdateState userdata_state;
@@ -260,6 +260,7 @@ class MainFrame : public GUIFrame
     void OnRunTask(wxCommandEvent& event);
     void OnPauseTask(wxCommandEvent& event);
     void OnStopTask(wxCommandEvent& event);
+    void InitGUI();
     bool task_is_stopping_now;
 
     //! true if window if about to close
@@ -285,6 +286,8 @@ class MainFrame : public GUIFrame
     void OnPSDparamsChange(wxScrollEvent& event);
 
     void OnCarrierFreqChange(wxScrollEvent& event);
+    void UpdateModulatorParametersText(void);
+
 
     void OnProcessEnd(wxCommandEvent &event );
     void OnSelectVoiceType(wxCommandEvent& event);

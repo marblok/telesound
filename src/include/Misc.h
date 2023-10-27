@@ -10,7 +10,7 @@
 
 #include <DSP_lib.h>
 #include <DSP_modules_misc.h>
-
+#include "IDs.h"
 #include <wxAddons.h>
 
 //! \todo implement other modes
@@ -85,8 +85,8 @@ class T_ProcessingSpec
 
     bool morse_receiver_state;
     bool modulator_state;
+    E_ModulatorTypes modulator_type;
     float carrier_freq;
-    
     const E_DrawModes Get_draw_mode(void);
     void Set_draw_mode(E_DrawModes new_draw_mode);
 

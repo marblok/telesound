@@ -16,4 +16,5 @@
 #include "../../bitmaps/paste.xpm"
 #include "../../bitmaps/print.xpm"
 #include "../../bitmaps/help.xpm"
+#include "../../bitmaps/reset.xpm"
 #endif

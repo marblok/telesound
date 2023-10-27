@@ -35,6 +35,7 @@ EVT_BUTTON(ID_STOP_TASK, MainFrame::OnStopTask)
 
 EVT_BUTTON(ID_MIKE_ON_OFF, MainFrame::OnSettingsInterfaceChange)
 EVT_BUTTON(ID_LOCAL_SIGNAL_ON_OFF, MainFrame::OnSettingsInterfaceChange)
+EVT_BUTTON(ID_RESET_SETTINGS, MainFrame::OnSettingsInterfaceChange)
 
 EVT_COMMAND(ID_BranchEnd, wxEVT_BRANCH_END, T_TaskElement::OnBranchEnd)
 #ifdef __DEBUG__
@@ -61,6 +62,8 @@ EVT_TEXT(ID_server_address, MainFrame::OnSettingsInterfaceChange)
 EVT_COMBOBOX(ID_SELECT_SAMPLING_RATE, MainFrame::OnSettingsInterfaceChange)
 EVT_COMBOBOX(ID_SELECT_MIXER_SOURCE_LINE, MainFrame::OnSettingsInterfaceChange)
 EVT_COMBOBOX(ID_SELECT_MIXER_DEST_LINE, MainFrame::OnSettingsInterfaceChange)
+EVT_COMBOBOX(ID_SELECT_MODULATOR_TYPE, MainFrame::OnSettingsInterfaceChange)
+
 EVT_COMMAND_SCROLL(ID_SourceLine_SLIDER, MainFrame::OnMixerVolumeChange)
 EVT_COMMAND_SCROLL(ID_DestLine_SLIDER, MainFrame::OnMixerVolumeChange)
 EVT_COMMAND_SCROLL(ID_MasterLine_SLIDER, MainFrame::OnMixerVolumeChange)
@@ -363,6 +366,7 @@ T_ProcessingSpec::T_ProcessingSpec(void)
   ChannelFd = 0;
   ChannelFg = 0;
   modulator_state = false;
+  modulator_type= E_MT_PSK;
   carrier_freq = 4000;
   morse_receiver_state = false;
 
@@ -762,6 +766,7 @@ void T_InterfaceState::Reset(void)
   ascii_text = "";
   morse_receiver_state = false;
   modulator_state = false;
+  modulator_type = E_MT_PSK;
   carrier_freq = sampling_rate/4;
   wav_filename[0] = 0x00;
 
@@ -819,6 +824,7 @@ void T_InterfaceState::TransferDataToTask(
     do_transfer |= (morse_receiver_state != selected_task->FirstProcessingSpec->morse_receiver_state);
 
     do_transfer |= (modulator_state != selected_task->FirstProcessingSpec->modulator_state);
+    do_transfer |= (modulator_type != selected_task->FirstProcessingSpec->modulator_type);
     do_transfer |= (carrier_freq != selected_task->FirstProcessingSpec->carrier_freq);
     do_transfer |= (wav_filename.compare(selected_task->FirstProcessingSpec->wav_filename) != 0);
 
@@ -904,6 +910,7 @@ void T_InterfaceState::TransferDataToTask(
 
     selected_task->FirstProcessingSpec->morse_receiver_state = morse_receiver_state;
     selected_task->FirstProcessingSpec->modulator_state = modulator_state;
+    selected_task->FirstProcessingSpec->modulator_type = modulator_type;
     selected_task->FirstProcessingSpec->carrier_freq = carrier_freq;
     selected_task->FirstProcessingSpec->wav_filename = wav_filename;
 
@@ -1376,6 +1383,7 @@ void MainFrame::OnRunTask(wxCommandEvent &event)
     WorksAsServer->Disable();
     WorksAsClient->Disable();
     ServerAddressEdit->Disable();
+    ResetSettingsButton->Disable();
   }
 }
 
@@ -1440,6 +1448,7 @@ void MainFrame::OnStopTask(wxCommandEvent &event)
   {
     ServerAddressEdit->Enable();
   }
+  ResetSettingsButton->Enable();
 }
 
 void MainFrame::OnPageChanging(wxNotebookEvent &event)
@@ -1656,6 +1665,12 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
       }
     }
     break;
+  case ID_RESET_SETTINGS:
+  interface_state.Reset();
+  FillSettingsInterface(NULL);
+  UpdateGUI();
+  //InitGUI();
+  break;
 
   case ID_morse_receiver_state:
     interface_state.morse_receiver_state = MorseReceiverState->GetValue();
@@ -1735,6 +1750,18 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
       }
     }
     break;
+  case ID_SELECT_MODULATOR_TYPE:
+      interface_state.modulator_type = (E_ModulatorTypes)(ModulationTypeBox->GetSelection());
+      {
+      wxCommandEvent evt,evt2;
+      //TODO: Add a slight delay between stop and start, so that when the client changes modulator type, the server has enough time to stop processing?  
+      UpdateModulatorParametersText();
+      evt.SetId(ID_STOP_TASK);
+      OnStopTask(evt);
+      evt2.SetId(ID_RUN_TASK);
+      OnRunTask(evt);
+      }
+      break;
   case ID_use_logatoms:
     SentenceTranscription->ChangeValue("");
     VoiceFileIndex->ChangeValue("");
@@ -2885,6 +2912,14 @@ bool MyProcessingThread::UpdateBranches(void)
   MyProcessingBranch::CS_CommandList.Leave();
   return true; // keep thread working
 }
+void MainFrame::InitGUI(){
+//TODO: Fill settings
+
+
+
+
+
+}
 
 void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
 {
@@ -2930,6 +2965,7 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
     Fd = interface_state.channel_Fd;
     Fg = interface_state.channel_Fg; 
     Carrier_freq = interface_state.carrier_freq;
+    UpdateModulatorParametersText();
     break;
   }
 
@@ -3068,6 +3104,41 @@ void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
     }
 }
 }
+void MainFrame::UpdateModulatorParametersText(){
+  double N_symb, f_symb, bit_per_sample, Tsymb, F_symb, bps;
+  int M;
+  switch (interface_state.modulator_type){//parameters based on modulation type.
+  // TODO: parameters based on type+ variant.
+  
+  case E_MT_ASK:
+  F_symb = interface_state.sampling_rate/40.0;
+  M = 8;
+  break;
+  case E_MT_PSK:
+  M = 8;
+  F_symb = interface_state.sampling_rate/40.0;
+  break;
+  case E_MT_QAM:
+  case E_MT_FSK:
+  default:
+  F_symb = -1;
+  break;
+  }
+ 
+  f_symb = F_symb/interface_state.sampling_rate;
+  N_symb = interface_state.sampling_rate/F_symb;
+  Tsymb = 1.0/F_symb;
+  bit_per_sample = M*f_symb;
+  bps = M*F_symb;
+
+  NsymbText->SetValue(wxString::FromDouble(N_symb) +" [Sa]");
+  f_symb1Text->SetValue(wxString::FromDouble(f_symb) + " [Sa/symb]");
+  BitPerSampleText->SetValue(wxString::FromDouble(bit_per_sample)+" [bit/Sa]");
+  TsymbText->SetValue(wxString::FromDouble(Tsymb)+" [s]");
+  F_symb2Text->SetValue(wxString::FromDouble(F_symb)+" [bod]");
+  bpsText->SetValue(wxString::FromDouble(bps)+" [bit/s]");
+}
+
 void MainFrame::OnChannelSNRChange(wxScrollEvent &event)
 {
   float SNR_dB;
