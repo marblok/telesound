@@ -17,6 +17,7 @@
 #include "DSP.h"
 #include "MyGLCanvas.h"
 #include "VoiceFileManager.h"
+#include "wxAddons.h"
 
 wxDECLARE_EVENT(wxEVT_DRAW_NOW, wxCommandEvent);
 wxDECLARE_EVENT(wxEVT_PROCESS_END, wxCommandEvent);
@@ -214,6 +215,7 @@ class T_InterfaceState
     bool morse_receiver_state;
     bool modulator_state; // true - modulator ON, false - modulator OFF
     E_ModulatorTypes modulator_type;
+    unsigned short modulator_variant;
     float carrier_freq;
     
     E_UpdateState userdata_state;

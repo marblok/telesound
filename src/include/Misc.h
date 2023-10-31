@@ -20,7 +20,9 @@ enum E_DrawModes
   E_DM_signal = 1,
   E_DM_histogram = 2,
   E_DM_psd = 4,
-  E_DM_spectrogram = 8
+  E_DM_spectrogram = 8,
+  E_DM_scatterplot = 16,
+  E_DM_eyediagram = 32
 };
 
 enum E_UpdateState
@@ -86,6 +88,7 @@ class T_ProcessingSpec
     bool morse_receiver_state;
     bool modulator_state;
     E_ModulatorTypes modulator_type;
+    unsigned short modulator_variant;
     float carrier_freq;
     const E_DrawModes Get_draw_mode(void);
     void Set_draw_mode(E_DrawModes new_draw_mode);

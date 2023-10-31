@@ -42,6 +42,8 @@ enum
     ID_SourceLine_SLIDER = 108,
     ID_DestLine_SLIDER = 109,
     ID_MasterLine_SLIDER = 110,
+    ID_Lang_PL = 111,
+    ID_Lang_EN = 112,
 
     ID_SELECT_DRAW_MODE = 121,
     ID_PSD_SLOTS_SLIDER = 122,
@@ -70,6 +72,7 @@ enum
     ID_modulator_state = 139,
     ID_carrier_freq_SLIDER=140,
     ID_SELECT_MODULATOR_TYPE = 141, 
+    ID_SELECT_MODULATOR_VARIANT = 142,
 
     ID_RUN_TASK = 201,
     ID_PAUSE_TASK = 202,

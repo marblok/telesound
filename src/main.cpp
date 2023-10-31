@@ -63,6 +63,7 @@ EVT_COMBOBOX(ID_SELECT_SAMPLING_RATE, MainFrame::OnSettingsInterfaceChange)
 EVT_COMBOBOX(ID_SELECT_MIXER_SOURCE_LINE, MainFrame::OnSettingsInterfaceChange)
 EVT_COMBOBOX(ID_SELECT_MIXER_DEST_LINE, MainFrame::OnSettingsInterfaceChange)
 EVT_COMBOBOX(ID_SELECT_MODULATOR_TYPE, MainFrame::OnSettingsInterfaceChange)
+EVT_CHOICE(ID_SELECT_MODULATOR_VARIANT, MainFrame::OnSettingsInterfaceChange)
 
 EVT_COMMAND_SCROLL(ID_SourceLine_SLIDER, MainFrame::OnMixerVolumeChange)
 EVT_COMMAND_SCROLL(ID_DestLine_SLIDER, MainFrame::OnMixerVolumeChange)
@@ -190,7 +191,6 @@ std::string MainApp::HostAddress;
 bool MainApp::LogFunction(const std::string &source, const std::string &message, bool IsError)
 {
   // CS_OnLOG.Enter();
-
   if (frame != NULL)
   {
     if (source.length() > 0)
@@ -366,7 +366,8 @@ T_ProcessingSpec::T_ProcessingSpec(void)
   ChannelFd = 0;
   ChannelFg = 0;
   modulator_state = false;
-  modulator_type= E_MT_PSK;
+  modulator_type = E_MT_PSK;
+  modulator_variant = 1;
   carrier_freq = 4000;
   morse_receiver_state = false;
 
@@ -767,6 +768,7 @@ void T_InterfaceState::Reset(void)
   morse_receiver_state = false;
   modulator_state = false;
   modulator_type = E_MT_PSK;
+  modulator_variant = 1;
   carrier_freq = sampling_rate/4;
   wav_filename[0] = 0x00;
 
@@ -825,6 +827,7 @@ void T_InterfaceState::TransferDataToTask(
 
     do_transfer |= (modulator_state != selected_task->FirstProcessingSpec->modulator_state);
     do_transfer |= (modulator_type != selected_task->FirstProcessingSpec->modulator_type);
+    do_transfer |= (modulator_variant != selected_task->FirstProcessingSpec->modulator_variant);
     do_transfer |= (carrier_freq != selected_task->FirstProcessingSpec->carrier_freq);
     do_transfer |= (wav_filename.compare(selected_task->FirstProcessingSpec->wav_filename) != 0);
 
@@ -911,6 +914,7 @@ void T_InterfaceState::TransferDataToTask(
     selected_task->FirstProcessingSpec->morse_receiver_state = morse_receiver_state;
     selected_task->FirstProcessingSpec->modulator_state = modulator_state;
     selected_task->FirstProcessingSpec->modulator_type = modulator_type;
+    selected_task->FirstProcessingSpec->modulator_variant = modulator_variant;
     selected_task->FirstProcessingSpec->carrier_freq = carrier_freq;
     selected_task->FirstProcessingSpec->wav_filename = wav_filename;
 
@@ -1004,7 +1008,7 @@ MainFrame::MainFrame(wxWindow *parent,
   //Check if config folder and all required files exist.
   bool configFileError = false;
   const std::vector<fs::path> requiredFolders = {"./config","./matlab"};
-  const std::vector<fs::path> requiredFiles = {"./config/Polish.mct","./matlab/srRC_stage1.coef","./matlab/srRc_stage2.coef"};
+  const std::vector<fs::path> requiredFiles = {"./config/Polish.mct","./matlab/ASK_PSK_1_stage1.coef","./matlab/ASK_PSK_1_stage2.coef"};
 
     for (const fs::path& folder : requiredFolders) {//loop through folder list
       if (!fs::exists(folder)) {
@@ -1293,6 +1297,12 @@ void MainFrame::FillSettingsInterface(T_TaskElement *selected_task)
         break;
       case E_DM_spectrogram:
         DrawModeBox->SetSelection(4);
+        break;
+      case E_DM_scatterplot:
+        DrawModeBox->SetSelection(5);
+        break;
+      case E_DM_eyediagram:
+        DrawModeBox->SetSelection(6);
         break;
       case E_DM_none:
       default:
@@ -1623,6 +1633,14 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
         interface_state.draw_mode = E_DM_spectrogram;
         break;
 
+      case 5:
+        interface_state.draw_mode = E_DM_scatterplot;
+        break;
+
+      case 6:
+        interface_state.draw_mode = E_DM_eyediagram;
+        break; 
+
       case 0:
       default: // E_DM_none
         interface_state.draw_mode = E_DM_none;
@@ -1752,7 +1770,21 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
     break;
   case ID_SELECT_MODULATOR_TYPE:
       interface_state.modulator_type = (E_ModulatorTypes)(ModulationTypeBox->GetSelection());
+      interface_state.modulator_variant=1;
+      ModulatorVariantSelect->SetSelection(0);
       {
+      wxCommandEvent evt,evt2;
+      //TODO: Add a slight delay between stop and start, so that when the client changes modulator type, the server has enough time to stop processing?  
+      UpdateModulatorParametersText();
+      evt.SetId(ID_STOP_TASK);
+      OnStopTask(evt);
+      evt2.SetId(ID_RUN_TASK);
+      OnRunTask(evt);
+      }
+      break;
+  case ID_SELECT_MODULATOR_VARIANT:
+  interface_state.modulator_variant= (unsigned short)(ModulatorVariantSelect->GetSelection()+1);
+        {
       wxCommandEvent evt,evt2;
       //TODO: Add a slight delay between stop and start, so that when the client changes modulator type, the server has enough time to stop processing?  
       UpdateModulatorParametersText();
@@ -1919,7 +1951,12 @@ void MyGLCanvas::OnDrawNow_(void)
   case E_DM_signal:
     DrawSignal(w, h);
     break;
-
+  //TODO:
+  case E_DM_scatterplot:
+    DrawScatter(w,h);
+    break;
+  case E_DM_eyediagram:
+    break;
   case E_DM_none:
   default:
     glViewport(0, 0, w, h);
@@ -2198,7 +2235,20 @@ void MyGLCanvas::DrawSignal(int width, int height)
     // ++++++++++++++++++++++++++++++++++++++++ //
   }
 }
+void MyGLCanvas::DrawScatter(int width, int height)
+{
+  if (T_DSPlib_processing::CurrentObject == NULL)
+    return;
 
+  glLoadIdentity();
+  T_DSPlib_processing::CurrentObject->SignalSegments->SetBackgroundColor(1.0, 1.0, 1.0);
+  T_DSPlib_processing::CurrentObject->SignalSegments->SubPlot(1, 1, -1, width, height, true);
+  SetColor(0.0, CLR_gray);
+  DrawScatterPlot(T_DSPlib_processing::CurrentObject->constellation_buffer_size, T_DSPlib_processing::CurrentObject->tmp_constellation_buffer.data(), 3, 3);
+  // ++++++++++++++++++++++++++++++++++++++++ //
+  // ++++++++++++++++++++++++++++++++++++++++ //
+  
+}
 void MyGLCanvas::DrawHistogram(int width, int height)
 {
   if (T_DSPlib_processing::CurrentObject == NULL)
@@ -3107,24 +3157,66 @@ void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
 void MainFrame::UpdateModulatorParametersText(){
   double N_symb, f_symb, bit_per_sample, Tsymb, F_symb, bps;
   int M;
-  switch (interface_state.modulator_type){//parameters based on modulation type.
-  // TODO: parameters based on type+ variant.
-  
+  switch (interface_state.modulator_type)
+  { // parameters based on modulation type & variant
   case E_MT_ASK:
-  F_symb = interface_state.sampling_rate/40.0;
-  M = 8;
-  break;
+    switch (interface_state.modulator_variant)
+    {
+    case 1:
+      F_symb = interface_state.sampling_rate / 40.0;
+      M = 8;
+      break;
+    case 2:
+      F_symb = interface_state.sampling_rate / 20.0;
+      M = 8;
+      break;
+    }
+    break;
   case E_MT_PSK:
-  M = 8;
-  F_symb = interface_state.sampling_rate/40.0;
-  break;
+    switch (interface_state.modulator_variant)
+    {
+    case 1:
+      F_symb = interface_state.sampling_rate / 40.0;
+      M = 8;
+      break;
+    case 2:
+      F_symb = interface_state.sampling_rate / 80.0;
+      M = 8;
+      break;
+    }
+    break;
   case E_MT_QAM:
+    switch (interface_state.modulator_variant)
+    {
+    case 1:
+      F_symb = interface_state.sampling_rate / 40.0;
+      M = 8;
+      break;
+    case 2:
+      F_symb = interface_state.sampling_rate / 80.0;
+      M = 8;
+      break;
+    }
+    break;
   case E_MT_FSK:
+    switch (interface_state.modulator_variant)
+    {
+    case 1:
+      F_symb = interface_state.sampling_rate / 40.0;
+      M = 8;
+      break;
+    case 2:
+      F_symb = interface_state.sampling_rate / 80.0;
+      M = 8;
+      break;
+    }
+    break;
   default:
-  F_symb = -1;
-  break;
+    F_symb = -1;
+    M = 0;
+    break;
   }
- 
+
   f_symb = F_symb/interface_state.sampling_rate;
   N_symb = interface_state.sampling_rate/F_symb;
   Tsymb = 1.0/F_symb;

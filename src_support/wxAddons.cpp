@@ -3157,18 +3157,12 @@ void MoveImage_Left(float move_factor)
   glCopyPixels(MW, y, W-MW, H, GL_COLOR);
 }
 
-void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float size,
-                     T_ChannelParams *ChannelInfo)
+void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float size)
 {
-//  float BPSKmark, QPSKmark;
   float x, y;
   int ind;
 
-//  BPSKmark=1.0; QPSKmark=4.5;
-//  BPSKmark=fabs(XYdata[0])*5; QPSKmark=fabs(XYdata[12])*5;
-  //glColor3f(0.0, 1.0, 1.0);
   // Line antialiasing is controlled by calling glEnable and glDisable with argument GL_LINE_SMOOTH
-
   // axis
   glLineWidth(1.0);
   glColor3f(1.0, 1.0, 1.0);
@@ -3191,49 +3185,6 @@ void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float siz
   glVertex2f(+1.0, -1.0);
   glEnd();
 
-
-
-  // SER indicator
-  float temp_SER;
-  if (ChannelInfo->BPSK_mark > ChannelInfo->QPSK_mark)
-  {
-    //BPSK modulation
-    temp_SER = ChannelInfo->BPSK_SER_log;
-  }
-  else
-  {
-    //QPSK modulation
-    temp_SER = ChannelInfo->QPSK_SER_log;
-  }
-  temp_SER -= 1;
-  if (temp_SER < 0)
-    temp_SER = 0;
-  if (temp_SER > 20)
-    temp_SER = 20;
-  temp_SER /= 20;
-
-  //indicator background
-  glBegin(GL_POLYGON);
-  glColor3f(0.0, 0.0, 0.5);
-  glVertex2f(0.91, -1.0);
-  glVertex2f(0.97, -1.0);
-  glVertex2f(0.97, +1.0);
-  glVertex2f(0.91, +1.0);
-  glEnd();
-
-  //indicator itself
-  glBegin(GL_POLYGON);
-  glColor3f(1.0, 0.0, 0.0);
-  glVertex2f(0.91, -1.0);
-  glVertex2f(0.97, -1.0);
-
-  glColor3f(0.5+temp_SER/2, temp_SER, temp_SER);
-  temp_SER *= 2; temp_SER -= 1;
-  glVertex2f(0.97, temp_SER);
-  glVertex2f(0.91, temp_SER);
-  glEnd();
-
-  //indicator axis
   glColor3f(1.0, 1.0, 1.0);
   glBegin(GL_LINE_LOOP);
   glVertex2f(0.91, -1.0);
@@ -3242,22 +3193,9 @@ void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float siz
   glVertex2f(0.91, +1.0);
   glEnd();
 
-  glBegin(GL_LINES);
-  for (ind=1; ind<20; ind++)
-  {
-    glVertex2f(0.89, -1.0+ind*2.0/20);
-    glVertex2f(0.99, -1.0+ind*2.0/20);
-  }
-  glEnd();
 
-
-  // modulation indicators
-  // BPSK
   glBegin(GL_POLYGON);
 //  glColor3f(0.0, 1.0, 1.0);
-  glColor3f(0.0, ChannelInfo->BPSK_mark/5.0, 0.5+ChannelInfo->BPSK_mark/10.0);
-  glVertex2f(-0.94*ChannelInfo->BPSK_mark/5.0, 0.97);
-  glVertex2f(-0.94*ChannelInfo->BPSK_mark/5.0, 0.97-0.07*ChannelInfo->BPSK_mark/5.0);
   glColor3f(0.0, 0.0, 0.5);
   glVertex2f(0.0, 0.90);
   glVertex2f(0.0, 0.97);
@@ -3265,10 +3203,6 @@ void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float siz
 
   // QPSK
   glBegin(GL_POLYGON);
-  glColor3f(0.5*ChannelInfo->QPSK_mark/5.0, 0.3+0.7*ChannelInfo->QPSK_mark/5.0, 0.5*ChannelInfo->QPSK_mark/5.0);
-//  glColor3f(0.5+ChannelInfo->QPSK_mark/10.0, 0.7*ChannelInfo->QPSK_mark/5.0, 0.7*ChannelInfo->QPSK_mark/5.0);
-  glVertex2f(+0.95*ChannelInfo->QPSK_mark/5.0, 0.98);
-  glVertex2f(+0.95*ChannelInfo->QPSK_mark/5.0, 0.98-0.07*ChannelInfo->QPSK_mark/5.0);
   glColor3f(0.0, 0.3, 0.0);
 //  glColor3f(0.5, 0.0, 0.0);
   glVertex2f(0.0, 0.91);
@@ -3283,40 +3217,7 @@ void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float siz
   {
     x=XYdata[ind]*skala;
     y=XYdata[ind+1]*skala;
-
-    if ((ChannelInfo->BPSK_mark < 1.0) && (ChannelInfo->QPSK_mark < 1.0))
-    {
-      glColor3f(1.0, 1.0, 1.0);
-    }
-    else
-    {
-      if (ChannelInfo->BPSK_mark > ChannelInfo->QPSK_mark)
-      {
-        //BPSK modulation
-        if (x<0)
-          glColor3f(0.0, 0.0, 1.0);
-        else
-          glColor3f(1.0, 0.5, 0.5);
-      }
-      else
-      {
-        //QPSK modulation
-        if (x<0)
-        {
-          if (y<0)
-            glColor3f(0.2, 0.8, 1.0);
-          else
-            glColor3f(1.0, 0.8, 0.2);
-        }
-        else
-        {
-          if (y<0)
-            glColor3f(0.0, 1.0, 0.0);
-          else
-            glColor3f(1.0, 0.5, 0.5);
-        }
-      }
-    }
+    glColor3f(0.0, 0.0, 1.0);
     glVertex2f(x, y);
   }
 

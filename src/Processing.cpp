@@ -170,6 +170,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   MorseReceiverState = SpecList->morse_receiver_state;
   ModulatorState   = SpecList->modulator_state;
   ModulatorType = SpecList->modulator_type;
+  ModulatorVariant = SpecList->modulator_variant;
   CarrierFreq  = SpecList->carrier_freq;
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
@@ -617,45 +618,151 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   AllSignalsAdd->Output("out")>> out_socket->Input("in");
 
   // wejscie 4 : modulator
-  unsigned int L1 = 5;  // interpolacja 1. stopień
-  unsigned int M1 = 1;  // decymacja 1. stopień
-  unsigned int L2 = 8; // interpolacja 2. stopień
-  unsigned int M2 = 1;  // decymacja 2. stopień
+  unsigned int L1, M1, L2 , M2, L3, M3;
+  DSP::e::ModulationType mod_type;
+  unsigned int bits_per_symbol;
 
-  unsigned int bits_per_symbol = 3; //BPSK- 1 bit na symbol, QPSK - 2 bity na symbol, 8-PSK - 3 bity na symbol
- switch (ModulatorType)
-  { 
-    case E_MT_QAM:
-    bits_per_symbol = 4;
-  break;
+  std::string coef_name_stage1, coef_name_stage2, coef_name_stage3;
+
+  switch (ModulatorType)
+  {
+  case E_MT_ASK:
+    mod_type=DSP::e::ModulationType::ASK;
+    switch (ModulatorVariant)
+    {
+    case 1:// ASK v1
+      L1 = 5;
+      M1 = 1;
+      L2 = 8;
+      M2 = 1;
+      bits_per_symbol = 3;
+      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      coef_name_stage3 = "";
+      break;
+    case 2: //ASK v2
+      L1 = 5;
+      M1 = 1;
+      L2 = 16;
+      M2 = 3;
+      bits_per_symbol = 2;
+      coef_name_stage1 = "ASK_PSK_2_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_2_stage2.coef";
+      coef_name_stage3 = "";
+      break;
+    }
+    break;
+
+  case E_MT_PSK:
+    mod_type=DSP::e::ModulationType::PSK;
+    switch (ModulatorVariant)
+    {
+    case 1:// PSK v1 - NSymb = 40,
+      L1 = 5;
+      M1 = 1;
+      L2 = 8;
+      M2 = 1;
+      bits_per_symbol = 3;
+      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      coef_name_stage3 = "";
+      break;
+    case 2: //PSK v2   Nsymb = 80;
+      L1 = 5;
+      M1 = 1;
+      L2 = 16;
+      M2 = 3;
+      bits_per_symbol = 2;
+      coef_name_stage1 = "ASK_PSK_2_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_2_stage2.coef";
+      coef_name_stage3 = "";
+      break;
+    }
+    break;
+
+  case E_MT_FSK:
+    switch (ModulatorVariant)
+    {
+    case 1:
+      L1 = 1;
+      M1 = 1;
+      L2 = 1;
+      M2 = 1;
+      bits_per_symbol = 4;
+      coef_name_stage1 = "srRC_stage1.coef";
+      coef_name_stage2 = "srRC_stage2.coef";
+      coef_name_stage3 = "";
+      break;
+    case 2:
+      L1 = 1;
+      M1 = 1;
+      L2 = 1;
+      M2 = 1;
+      bits_per_symbol = 4;
+      coef_name_stage1 = "srRC_stage1.coef";
+      coef_name_stage2 = "srRC_stage2.coef";
+      coef_name_stage3 = "";
+      break;
+    }
+    break;
+
+  case E_MT_QAM:
+    mod_type=DSP::e::ModulationType::QAM;
+    switch (ModulatorVariant)
+    {
+    case 1:
+      L1 = 1;
+      M1 = 1;
+      L2 = 1;
+      M2 = 1;
+      bits_per_symbol = 4;
+      coef_name_stage1 = "srRC_stage1.coef";
+      coef_name_stage2 = "srRC_stage2.coef";
+
+      break;
+    case 2:
+      L1 = 1;
+      M1 = 1;
+      L2 = 1;
+      M2 = 1;
+      bits_per_symbol = 4;
+      coef_name_stage1 = "srRC_stage1.coef";
+      coef_name_stage2 = "srRC_stage2.coef";
+      break;
+    }
+    break;
   }
-  
+
   // wczytanie wspolczynników filtrow
-  DSP::LoadCoef coef_info_stage1, coef_info_stage2;
-  int N_LPF_stage1, N_LPF_stage2;
-  DSP::Float_vector h_LPF_stage1, h_LPF_stage2;
-  //filtr dla 1. stopnia
-  coef_info_stage1.Open("srRC_stage1.coef", "matlab");
+  DSP::LoadCoef coef_info_stage1, coef_info_stage2, coef_info_stage3;
+  int N_LPF_stage1, N_LPF_stage2, N_LPF_stage3;
+  DSP::Float_vector h_LPF_stage1, h_LPF_stage2, h_LPF_stage3;
+
+  // filtr dla 1. stopnia
+  coef_info_stage1.Open(coef_name_stage1, "matlab");//TODO:change directory to /config.
   N_LPF_stage1 = coef_info_stage1.GetSize(0);
-  if (N_LPF_stage1 < 1) {  
+  if (N_LPF_stage1 < 1)
+  {
     DSP::log << DSP::e::LogMode::Error << "No filter coeeficients: aborting" << std::endl;
     return;
   }
-  else {
+  else
+  {
     coef_info_stage1.Load(h_LPF_stage1);
   }
-  //filtr dla 2. stopnia
-  coef_info_stage2.Open("srRC_stage2.coef", "matlab");
+
+  // filtr dla 2. stopnia
+  coef_info_stage2.Open(coef_name_stage2, "matlab");
   N_LPF_stage2 = coef_info_stage2.GetSize(0);
-  if (N_LPF_stage2 < 1) {  
+  if (N_LPF_stage2 < 1)
+  {
     DSP::log << DSP::e::LogMode::Error << "No filter coeeficients: aborting" << std::endl;
     return;
   }
-  else {
+  else
+  {
     coef_info_stage2.Load(h_LPF_stage2);
   }
-
-
 
   // zegary
   Interpol2Clock = MasterClock;
@@ -668,24 +775,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   ModBits = new DSP::u::BinRand(BitClock, -1.0f, 1.0f);
   ModS2P = new DSP::u::Serial2Parallel(BitClock, bits_per_symbol);
   ModS2P->SetName("S2P", false);
-  switch (ModulatorType){
-  case E_MT_ASK:
-    ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::ASK, bits_per_symbol);
-    break;
-  case E_MT_PSK:
-    ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::PSK, bits_per_symbol);
-    break;
-  case E_MT_QAM:
-    ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::QAM, bits_per_symbol);
-    break;
-  case E_MT_FSK:
-  //currently use PSK as a placeholder
-    ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::PSK, bits_per_symbol);
-    break;
-  
-  }
-
-  //ModMapper = new DSP::u::SymbolMapper(DSP::e::ModulationType::PSK, bits_per_symbol);
+  ModMapper = new DSP::u::SymbolMapper(mod_type, bits_per_symbol);
   ModMapper->SetName("SymbolMapper", false);
 
   bool are_symbols_real = ModMapper->isOutputReal();
@@ -885,6 +975,8 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
     window[ind] *= sqrt(PSD_scaling_factor);
 
   tmp_FFT_buffer = DSP::Float_vector(FFT_size, 0);
+
+  tmp_constellation_buffer=DSP::Float_vector(constellation_buffer_size,0);
   // memset(tmp_FFT_buffer, 0, FFT_size*sizeof(float));
 
   SignalSegments = new T_PlotsStack(NoOfPSDslots, BufferStep);
@@ -953,12 +1045,14 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   analysis_buffer = new DSP::u::OutputBuffer(BufferSize, 1U,
                                              DSP::e::BufferType::stop_when_full, MasterClock, BufferStep, // int NotificationsStep_in=,
                                              T_DSPlib_processing::AnalysisBufferCallback                  // DSP::u::notify_callback_ptr func_ptr=NULL,
-  );                                                                                                      // int CallbackIdentifier=0);
-
+  );                                                                                                 // int CallbackIdentifier=0);
+  constellation_buffer = new DSP::u::OutputBuffer(constellation_buffer_size, 1U, DSP::e::BufferType::stop_when_full, MasterClock, -1, T_DSPlib_processing::ConstellationBufferCallback);
 #ifdef __TEST_CHANNEL_FILTER__
   ChannelFilter_HPF->Output("out") >> analysis_buffer->Input("in");
+  ChannelFilter_HPF->Output("out") >> constellation_buffer->Input("in");
 #else
   NoiseAdd->Output("out") >> analysis_buffer->Input("in");
+  NoiseAdd->Output("out") >> constellation_buffer->Input("in");
 #endif
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
@@ -1275,6 +1369,16 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
   //! \todo get time slot mask (for signal drawing)
   CS_OnDraw.Leave();
 }
+void T_DSPlib_processing::ConstellationBufferCallback(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier)
+{
+  DSP::u::OutputBuffer *buffer;
+  if (UserDefinedIdentifier && DSP::CallbackID_signal_mask != 0)
+  { // ignore start / stop signaling
+    return;
+  }
+  buffer = (DSP::u::OutputBuffer *)(Caller->Convert2Block());
+  buffer->ReadBuffer(CurrentObject->tmp_constellation_buffer.data(), CurrentObject->constellation_buffer_size * sizeof(float), -1, DSP::e::SampleType::ST_float);
+}
 
 void T_DSPlib_processing::ComputeHighResolutionSpectorgram(void)
 {
@@ -1586,7 +1690,11 @@ if (ModAmp !=NULL){
     delete analysis_buffer;
     analysis_buffer = NULL;
   }
-
+  if (constellation_buffer != NULL)
+  {
+    delete constellation_buffer;
+    constellation_buffer = NULL;
+  }
   DSP::log << "T_DSPlib_processing::DestroyAlgorithm" << DSP::e::LogMode::second << "blocks deleted" << std::endl;
   DSP::Clock::FreeClocks();
   SymbolClock=NULL;

@@ -57,8 +57,7 @@
 
   enum DS_type {DS_unsigned, DS_signed};
 
-  void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float size,
-                       T_ChannelParams *ChannelInfo);
+  void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float size);
   void DrawEyeDiagram(int SegmentSize, DSP::Float *Xdata, DSP::Float *Ydata,
                       bool IsDataComplex, int SymbolPeriod,
                       float skala_x, float skala_y,

@@ -74,6 +74,7 @@ class MyGLCanvas: public wxGLCanvas
     void DrawPSD(int width, int height);
     void DrawSpectrogram(int width, int height);
     void DrawSignal(int width, int height);
+    void DrawScatter(int width, int height);
     void DrawHistogram(int width, int height);
 
     void OnPaint(wxPaintEvent& event);
