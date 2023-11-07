@@ -1,0 +1,396 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2023-11-07 18:33+0100\n"
+"PO-Revision-Date: 2023-11-07 18:34+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.1\n"
+"X-Poedit-Basepath: ../../src\n"
+"X-Poedit-KeywordsList: _\n"
+"X-Poedit-SourceCharset: CP1250\n"
+"X-Poedit-SearchPath-0: TeleSound_wxGlade.cpp\n"
+"X-Poedit-SearchPath-1: TeleSound_wxGlade.h\n"
+"X-Poedit-SearchPath-2: main.cpp\n"
+
+#: TeleSound_wxGlade.cpp:21
+msgid "TeleSound ver. 1.1 (Marek.Blok@eti.pg.edu.pl)"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:25
+msgid "PL"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:27
+msgid "ENG"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:29
+msgid "Language"
+msgstr "Language"
+
+#: TeleSound_wxGlade.cpp:41
+msgid "Konfiguracja"
+msgstr "Configuration"
+
+#: TeleSound_wxGlade.cpp:43
+msgid "Kontrola przetwarzania"
+msgstr "Processing control"
+
+#: TeleSound_wxGlade.cpp:46
+msgid "Status poĹ‚Ä…czenia"
+msgstr "Connection status"
+
+#: TeleSound_wxGlade.cpp:53
+msgid "Rozpocznij przetwarzanie"
+msgstr "Start processing"
+
+#: TeleSound_wxGlade.cpp:57
+msgid "Wstrzymaj przetwarzanie"
+msgstr "Pause processing"
+
+#: TeleSound_wxGlade.cpp:61
+msgid "ZakoĹ„cz przetwarzanie"
+msgstr "Stop processing"
+
+#: TeleSound_wxGlade.cpp:67
+msgid "Status mikrofonu (wyĹ‚Ä…czony)"
+msgstr "Microphone (off)"
+
+#: TeleSound_wxGlade.cpp:71
+msgid "SygnaĹ‚ lokalny (wyĹ‚Ä…czony)"
+msgstr "Local signal (off)"
+
+#: TeleSound_wxGlade.cpp:77
+msgid "PrzywrĂłÄ‡ ustawienia domyĹ›lne"
+msgstr "Restore default settings"
+
+#: TeleSound_wxGlade.cpp:80
+msgid "Konfiguracja poĹ‚Ä…czenia"
+msgstr "Connection settings"
+
+#: TeleSound_wxGlade.cpp:84
+msgid "serwer"
+msgstr "server"
+
+#: TeleSound_wxGlade.cpp:86
+msgid "klient"
+msgstr "client"
+
+#: TeleSound_wxGlade.cpp:88
+msgid "xxx"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:92
+msgid "SzybkoĹ›Ä‡ prĂłbkowania:"
+msgstr "Sampling rate:"
+
+#: TeleSound_wxGlade.cpp:95
+msgid "8000"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:96
+msgid "11025"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:97
+msgid "16000"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:98
+msgid "22050"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:99
+msgid "32000"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:100
+msgid "44100"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:101
+msgid "48000"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:106
+msgid "Konfiguracja wykresĂłw"
+msgstr "Graphs"
+
+#: TeleSound_wxGlade.cpp:109
+msgid "Bez wykresĂłw"
+msgstr "No graphs"
+
+#: TeleSound_wxGlade.cpp:110
+msgid "Przebieg czasowy"
+msgstr "Signal"
+
+#: TeleSound_wxGlade.cpp:111
+msgid "Histogram"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:112
+msgid "Periodogram"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:113
+msgid "Spektrogram"
+msgstr "Spectrogram"
+
+#: TeleSound_wxGlade.cpp:114
+msgid "Konstelacja"
+msgstr "Constellation"
+
+#: TeleSound_wxGlade.cpp:115
+msgid "Wykres oczkowy"
+msgstr "Eye diagram"
+
+#: TeleSound_wxGlade.cpp:120
+msgid "200"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:124
+msgid "Ustawienia karty dĹşwiÄ™kowej"
+msgstr "Sound card settings"
+
+#: TeleSound_wxGlade.cpp:128
+msgid "Nagrywanie:"
+msgstr "Recording:"
+
+#: TeleSound_wxGlade.cpp:137
+msgid "Odtwarzanie:"
+msgstr "Playback:"
+
+#: TeleSound_wxGlade.cpp:148
+msgid "GĹ‚oĹ›noĹ›Ä‡ gĹ‚Ăłwna:"
+msgstr "Master volume:"
+
+#: TeleSound_wxGlade.cpp:153 TeleSound_wxGlade.cpp:155
+msgid "Model kanaĹ‚u"
+msgstr "Channel"
+
+#: TeleSound_wxGlade.cpp:157
+msgid "80 dB"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:167
+msgid "0 Hz"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:169
+msgid "8000 Hz"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:174
+msgid "SygnaĹ‚ mowy"
+msgstr "Speech signal"
+
+#: TeleSound_wxGlade.cpp:178
+msgid "Logatomy"
+msgstr "Logatoms"
+
+#: TeleSound_wxGlade.cpp:180
+msgid "Zdania"
+msgstr "Sentences"
+
+#: TeleSound_wxGlade.cpp:184
+msgid "GĹ‚os:"
+msgstr "Voice:"
+
+#: TeleSound_wxGlade.cpp:187
+msgid "losowo"
+msgstr "random"
+
+#: TeleSound_wxGlade.cpp:188
+msgid "mÄ™ski 1"
+msgstr "male 1"
+
+#: TeleSound_wxGlade.cpp:189
+msgid "mÄ™ski 2 "
+msgstr "male 2 "
+
+#: TeleSound_wxGlade.cpp:190
+msgid "ĹĽeĹ„ski 1 "
+msgstr "female 1 "
+
+#: TeleSound_wxGlade.cpp:191
+msgid "ĹĽeĹ„ski 2"
+msgstr "female 2"
+
+#: TeleSound_wxGlade.cpp:198
+msgid "Losuj"
+msgstr "Random"
+
+#: TeleSound_wxGlade.cpp:212
+msgid "PokaĹĽ tekst"
+msgstr "Show text"
+
+#: TeleSound_wxGlade.cpp:219
+msgid "Telegraf"
+msgstr "Telegraph"
+
+#: TeleSound_wxGlade.cpp:221
+msgid "SzybkoĹ›Ä‡ kluczowania"
+msgstr "Keying speed"
+
+#: TeleSound_wxGlade.cpp:223
+msgid "20 WPM"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:227
+msgid "Nadajnik"
+msgstr "Transmitter"
+
+#: TeleSound_wxGlade.cpp:229
+msgid "Nadawany tekst:"
+msgstr "Transmitted text:"
+
+#: TeleSound_wxGlade.cpp:235
+msgid "RÄ™czne nadawanie:"
+msgstr "Manual transmission:"
+
+#: TeleSound_wxGlade.cpp:239
+msgid "WyĹ›lij"
+msgstr "Send"
+
+#: TeleSound_wxGlade.cpp:241
+msgid "Odbiornik"
+msgstr "Receiver"
+
+#: TeleSound_wxGlade.cpp:243
+msgid "wĹ‚Ä…czony"
+msgstr "enabled"
+
+#: TeleSound_wxGlade.cpp:248
+msgid "Status programu"
+msgstr "Program status"
+
+#: TeleSound_wxGlade.cpp:253
+msgid "Modulacja"
+msgstr "Modulation"
+
+#: TeleSound_wxGlade.cpp:255
+msgid "WybĂłr modulacji"
+msgstr "Modulation"
+
+#: TeleSound_wxGlade.cpp:258
+msgid "ASK"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:259
+msgid "PSK"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:260
+msgid "FSK"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:261
+msgid "QAM"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:266
+msgid "Modulator"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:268
+msgid "WĹ‚Ä…cz modulator"
+msgstr "Enable modulator"
+
+#: TeleSound_wxGlade.cpp:270
+msgid "Parametry modulatora"
+msgstr "Parameters"
+
+#: TeleSound_wxGlade.cpp:272
+msgid "SzybkoĹ›Ä‡ prĂłbkowania nie jest wielokrotnoĹ›ciÄ… szybkoĹ›ci symbolowej!"
+msgstr "Sampling rate is not compatible with selected modulator!"
+
+#: TeleSound_wxGlade.cpp:279
+msgid "Wariant: "
+msgstr "Variant: "
+
+#: TeleSound_wxGlade.cpp:282
+msgid "1"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:283
+msgid "2"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:288
+msgid "N_symb:"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:292
+msgid "f_symb"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:296
+msgid "bit_per_sample"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:304
+msgid "T_symb"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:308
+msgid "F_symb"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:312
+msgid "bps"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:320
+msgid "CzÄ™stotliwoĹ›Ä‡ noĹ›na (f_o / F_o):"
+msgstr "Carrier frequency (f_o / F_o):"
+
+#: TeleSound_wxGlade.cpp:325
+msgid "WybĂłr czÄ™stotliwoĹ›ci noĹ›nej"
+msgstr "Carrier frequency select"
+
+#: TeleSound_wxGlade.cpp:327
+msgid "Demodulator"
+msgstr ""
+
+#: main.cpp:766
+msgid "Processing specification not ready"
+msgstr ""
+
+#: main.cpp:767
+msgid "Run Task Problem"
+msgstr ""
+
+#: main.cpp:926
+msgid "Task parameters changed"
+msgstr ""
+
+#: main.cpp:1342
+msgid "Aby zastosowac nowy jezyk nalezy uruchomic program ponownie"
+msgstr "To apply the selected language, please restart the program"
+
+#: main.cpp:1342
+msgid "Zmiana jezyka"
+msgstr "Language change"
+
+#~ msgid "Głośność główna:"
+#~ msgstr "Master volume:"
+
+#~ msgid "Głos:"
+#~ msgstr "Voice"
+
+#~ msgid "żeński 1 "
+#~ msgstr "female 1"
+
+#~ msgid "żeński 2"
+#~ msgstr "female 2"
+
+#~ msgid "Wyślij"
+#~ msgstr "Send"
+
+#~ msgid "włączony"
+#~ msgstr "enabled"

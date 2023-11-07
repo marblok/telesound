@@ -32,6 +32,7 @@ E_UpdateState operator~ (const E_UpdateState& right)
   return left;
 }
 
+
 T_DSPlib_processing *T_DSPlib_processing::CurrentObject = NULL;
 wxCriticalSection CS_OnDraw;
 
@@ -239,6 +240,272 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   DSP::Component::ListComponents(MasterClock);
   DSP::Clock::SchemeToDOTfile(MasterClock, "processing_scheme.dot");
 }
+void Modulator::create_branch(DSP::Clock_ptr Clock_in, DSP::input &Output_signal, E_ModulatorTypes Modulator_type, float Carrier_freq, unsigned short variant, bool Enable_output){ 
+  unsigned int L1, M1, L2 , M2;
+  DSP::e::ModulationType mod_type;
+  unsigned int bits_per_symbol;
+
+  std::string coef_name_stage1, coef_name_stage2;
+  switch (Modulator_type)
+  {
+  case E_MT_ASK:
+    mod_type=DSP::e::ModulationType::ASK;
+    switch (variant)
+    {
+    case 1:// ASK v1
+      L1 = 5;
+      M1 = 1;
+      L2 = 8;
+      M2 = 1;
+      bits_per_symbol = 2;
+      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      break;
+    case 2: //ASK v2
+      L1 = 5;
+      M1 = 1;
+      L2 = 16;
+      M2 = 3;
+      bits_per_symbol = 2;
+      coef_name_stage1 = "ASK_PSK_2_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_2_stage2.coef";
+
+      break;
+    }
+    break;
+
+  case E_MT_PSK:
+    mod_type=DSP::e::ModulationType::PSK;
+    switch (variant)
+    {
+    case 1:// 8-PSK v1 - NSymb = 40,
+      L1 = 5;
+      M1 = 1;
+      L2 = 8;
+      M2 = 1;
+      bits_per_symbol = 3;
+      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      break;
+    case 2: //QPSK v2   Nsymb = 80;
+      L1 = 5;
+      M1 = 1;
+      L2 = 8;
+      M2 = 1;
+      bits_per_symbol = 2;
+      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      break;
+    }
+    break;
+
+  case E_MT_FSK:
+    switch (variant)
+    {
+    case 1:
+      L1 = 5;
+      M1 = 1;
+      L2 = 8;
+      M2 = 1;
+      bits_per_symbol = 1;
+      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      break;
+    case 2:
+      L1 = 5;
+      M1 = 1;
+      L2 = 8;
+      M2 = 1;
+      bits_per_symbol = 1;
+      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      break;
+    }
+    break;
+
+  case E_MT_QAM:
+    mod_type=DSP::e::ModulationType::QAM;
+    switch (variant)
+    {
+    case 1:
+      L1 = 5;
+      M1 = 1;
+      L2 = 8;
+      M2 = 1;
+      bits_per_symbol = 2;
+      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      break;
+    case 2:
+      L1 = 5;
+      M1 = 1;
+      L2 = 8;
+      M2 = 1;
+      bits_per_symbol = 4;
+      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
+      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      break;
+    }
+    break;
+  }
+
+  Interpol2Clock = Clock_in;
+  Interpol1Clock = DSP::Clock::GetClock(Interpol2Clock, M2, L2);
+  SymbolClock = DSP::Clock::GetClock(Interpol1Clock, M1, L1);
+  BitClock = DSP::Clock::GetClock(SymbolClock, bits_per_symbol, 1);
+
+  if (Modulator_type == E_MT_FSK)
+  {   
+  DSP::LoadCoef coef_info_stage1, coef_info_stage2, coef_info_stage3;
+  int N_LPF_stage1, N_LPF_stage2, N_LPF_stage3;
+  DSP::Float_vector h_LPF_stage1, h_LPF_stage2, h_LPF_stage3;
+
+    // filtr dla 1. stopnia
+    coef_info_stage1.Open(coef_name_stage1, "matlab"); // TODO:change directory to /config.
+    N_LPF_stage1 = coef_info_stage1.GetSize(0);
+    if (N_LPF_stage1 < 1)
+    {
+      DSP::log << DSP::e::LogMode::Error << "No filter coeeficients: aborting" << std::endl;
+      return;
+    }
+    else
+    {
+      coef_info_stage1.Load(h_LPF_stage1);
+    }
+
+    // filtr dla 2. stopnia
+    coef_info_stage2.Open(coef_name_stage2, "matlab");
+    N_LPF_stage2 = coef_info_stage2.GetSize(0);
+    if (N_LPF_stage2 < 1)
+    {
+      DSP::log << DSP::e::LogMode::Error << "No filter coeeficients: aborting" << std::endl;
+      return;
+    }
+    else
+    {
+      coef_info_stage2.Load(h_LPF_stage2);
+    }
+    ModS2P.reset(nullptr);
+    ModMapper.reset(nullptr);
+    ModDDS.reset(nullptr);
+    ModMul.reset(nullptr);
+    ModBits.reset(new DSP::u::BinRand(SymbolClock, DSP::M_PIx2 * Carrier_freq, DSP::M_PIx2 * (Carrier_freq + 0.2)));
+    ModZeroInserter.reset(new DSP::u::Zeroinserter(true, SymbolClock, L1));
+    ModZero.reset(new DSP::u::Const(BitClock, 0));
+    ModVac.reset(new DSP::u::Vacuum(false, 1U));
+    ModFIR.reset(new DSP::u::FIR(Interpol1Clock, h_LPF_stage1));
+    ModConverter.reset(new DSP::u::SamplingRateConversion(true, Interpol1Clock, L2, M2, h_LPF_stage2));
+    ModDDS.reset(new DSP::u::DDScos(Interpol2Clock));
+    ModAmp.reset(new DSP::u::Amplifier((Enable_output) ? 1.0f : 0.0f));
+    ModDDS->SetConstInput("ampl", 0.25);
+    ModDDS->SetConstInput("phase", 0);
+    ModZero->Output("out") >> ModZeroInserter->Input("in.im");
+    ModBits->Output("out") >> ModZeroInserter->Input("in.re");
+    ModZeroInserter->Output("out") >> ModFIR->Input("in");
+    ModFIR->Output("out") >> ModConverter->Input("in");
+    ModConverter->Output("out.re") >> ModDDS->Input("puls");
+    ModConverter->Output("out.im") >> ModVac->Input("in");
+    ModDDS->Output("out") >> ModAmp->Input("in");
+    ModAmp->Output("out") >> Output_signal;
+  }
+  else
+  {
+    // wczytanie wspolczynników filtrow
+    DSP::LoadCoef coef_info_stage1, coef_info_stage2, coef_info_stage3;
+    int N_LPF_stage1, N_LPF_stage2, N_LPF_stage3;
+    DSP::Float_vector h_LPF_stage1, h_LPF_stage2, h_LPF_stage3;
+
+    // filtr dla 1. stopnia
+    coef_info_stage1.Open(coef_name_stage1, "matlab"); // TODO:change directory to /config.
+    N_LPF_stage1 = coef_info_stage1.GetSize(0);
+    if (N_LPF_stage1 < 1)
+    {
+      DSP::log << DSP::e::LogMode::Error << "No filter coeeficients: aborting" << std::endl;
+      return;
+    }
+    else
+    {
+      coef_info_stage1.Load(h_LPF_stage1);
+    }
+
+    // filtr dla 2. stopnia
+    coef_info_stage2.Open(coef_name_stage2, "matlab");
+    N_LPF_stage2 = coef_info_stage2.GetSize(0);
+    if (N_LPF_stage2 < 1)
+    {
+      DSP::log << DSP::e::LogMode::Error << "No filter coeeficients: aborting" << std::endl;
+      return;
+    }
+    else
+    {
+      coef_info_stage2.Load(h_LPF_stage2);
+    }
+
+    // bloki
+    ModBits.reset(new DSP::u::BinRand(BitClock, -1.0f, 1.0f));
+    ModS2P.reset(new DSP::u::Serial2Parallel(BitClock, bits_per_symbol));
+    ModS2P->SetName("S2P", false);
+    ModMapper.reset(new DSP::u::SymbolMapper(mod_type, bits_per_symbol));
+    ModMapper->SetName("SymbolMapper", false);
+
+    bool are_symbols_real = ModMapper->isOutputReal();
+    ModZero.reset(nullptr);
+    if (are_symbols_real)
+    {
+      ModZero.reset(new DSP::u::Const(SymbolClock, 0.0));
+    }
+
+    ModZeroInserter.reset(new DSP::u::Zeroinserter(true, SymbolClock, L1));
+    ModFIR.reset(new DSP::u::FIR(Interpol1Clock, h_LPF_stage1));
+    ModConverter.reset(new DSP::u::SamplingRateConversion(true, Interpol1Clock, L2, M2, h_LPF_stage2));
+
+    ModDDS.reset(new DSP::u::DDScos(Interpol2Clock, true, 1.0, DSP::M_PIx2 * Carrier_freq));
+    ModMul.reset(new DSP::u::Multiplication(0U, 2U));
+    ModVac.reset(new DSP::u::Vacuum(false));
+    ModAmp.reset(new DSP::u::Amplifier((Enable_output) ? 1.0f : 0.0f));
+    // polaczenia
+    ModBits->Output("out") >> ModS2P->Input("in");
+    ModS2P->Output("out") >> ModMapper->Input("in");
+    if (are_symbols_real)
+    {
+      ModMapper->Output("out") >> ModZeroInserter->Input("in.re");
+      ModZero->Output("out") >> ModZeroInserter->Input("in.im");
+    }
+    else
+    {
+      ModMapper->Output("out") >> ModZeroInserter->Input("in");
+    }
+    ModZeroInserter->Output("out") >> ModFIR->Input("in");
+    ModFIR->Output("out") >> ModConverter->Input("in");
+    ModConverter->Output("out") >> ModMul->Input("in1");
+    ModDDS->Output("out") >> ModMul->Input("in2");
+    ModMul->Output("out.re") >> ModAmp->Input("in");
+    ModMul->Output("out.im") >> ModVac->Input("in");
+    ModAmp->Output("out") >> Output_signal;
+  }
+}
+
+void Modulator::clear_branch(){
+  ModBits.reset(nullptr);
+  ModS2P.reset(nullptr);
+  ModMapper.reset(nullptr);
+  ModZero.reset(nullptr);
+  ModZeroInserter.reset(nullptr);
+  ModFIR.reset(nullptr);
+  ModConverter.reset(nullptr);
+  ModDDS.reset(nullptr);
+  ModMul.reset(nullptr);
+  ModAmp.reset(nullptr);
+  ModVac.reset(nullptr);
+  Interpol2Clock = NULL;
+  Interpol1Clock=NULL;
+  SymbolClock=NULL;
+  BitClock=NULL;
+  
+  // #ifdef __DEBUG__
+  //   DSP::Component::ListOfAllComponents(true);
+  // #endif
+  }
 
 T_DSPlib_processing::~T_DSPlib_processing(void)
 {
@@ -428,13 +695,26 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
   }
     if ((temp_spec->userdata_state & E_US_carrier_freq) != 0)
   {
-    if(ModDDS!=NULL){
-    ModDDS->SetAngularFrequency(DSP::M_PIx2 * temp_spec->carrier_freq/temp_spec->sampling_rate);
+    CarrierFreq = temp_spec->carrier_freq;
+    modulator.setCarrierFrequency(temp_spec->carrier_freq/temp_spec->sampling_rate);
     UpdateState |= E_US_carrier_freq;
     temp_spec->userdata_state ^= E_US_carrier_freq;
-    }
-    
   }
+    
+    if ((temp_spec->userdata_state & E_US_modulator_type) != 0)
+  {
+    ModulatorType=temp_spec->modulator_type;
+    ModulatorVariant=temp_spec->modulator_variant;
+    UpdateState |= E_US_modulator_type;
+    temp_spec->userdata_state ^= E_US_modulator_type;
+    reloadModulator=true;
+    tmp_constellation_buffer=DSP::Float_vector(constellation_buffer_size,0);
+    
+    if (constellation_buffer!=NULL)
+      constellation_buffer->Reset();
+    tmp_constellation_buffer.assign(constellation_buffer_size,0);
+  }
+
   if ((temp_spec->userdata_state & E_US_high_res_psd) != 0)
   {
     ComputeHighResolutionSpectorgram();
@@ -618,213 +898,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   AllSignalsAdd->Output("out")>> out_socket->Input("in");
 
   // wejscie 4 : modulator
-  unsigned int L1, M1, L2 , M2, L3, M3;
-  DSP::e::ModulationType mod_type;
-  unsigned int bits_per_symbol;
-
-  std::string coef_name_stage1, coef_name_stage2, coef_name_stage3;
-
-  switch (ModulatorType)
-  {
-  case E_MT_ASK:
-    mod_type=DSP::e::ModulationType::ASK;
-    switch (ModulatorVariant)
-    {
-    case 1:// ASK v1
-      L1 = 5;
-      M1 = 1;
-      L2 = 8;
-      M2 = 1;
-      bits_per_symbol = 3;
-      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
-      coef_name_stage3 = "";
-      break;
-    case 2: //ASK v2
-      L1 = 5;
-      M1 = 1;
-      L2 = 16;
-      M2 = 3;
-      bits_per_symbol = 2;
-      coef_name_stage1 = "ASK_PSK_2_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_2_stage2.coef";
-      coef_name_stage3 = "";
-      break;
-    }
-    break;
-
-  case E_MT_PSK:
-    mod_type=DSP::e::ModulationType::PSK;
-    switch (ModulatorVariant)
-    {
-    case 1:// PSK v1 - NSymb = 40,
-      L1 = 5;
-      M1 = 1;
-      L2 = 8;
-      M2 = 1;
-      bits_per_symbol = 3;
-      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
-      coef_name_stage3 = "";
-      break;
-    case 2: //PSK v2   Nsymb = 80;
-      L1 = 5;
-      M1 = 1;
-      L2 = 16;
-      M2 = 3;
-      bits_per_symbol = 2;
-      coef_name_stage1 = "ASK_PSK_2_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_2_stage2.coef";
-      coef_name_stage3 = "";
-      break;
-    }
-    break;
-
-  case E_MT_FSK:
-    switch (ModulatorVariant)
-    {
-    case 1:
-      L1 = 1;
-      M1 = 1;
-      L2 = 1;
-      M2 = 1;
-      bits_per_symbol = 4;
-      coef_name_stage1 = "srRC_stage1.coef";
-      coef_name_stage2 = "srRC_stage2.coef";
-      coef_name_stage3 = "";
-      break;
-    case 2:
-      L1 = 1;
-      M1 = 1;
-      L2 = 1;
-      M2 = 1;
-      bits_per_symbol = 4;
-      coef_name_stage1 = "srRC_stage1.coef";
-      coef_name_stage2 = "srRC_stage2.coef";
-      coef_name_stage3 = "";
-      break;
-    }
-    break;
-
-  case E_MT_QAM:
-    mod_type=DSP::e::ModulationType::QAM;
-    switch (ModulatorVariant)
-    {
-    case 1:
-      L1 = 1;
-      M1 = 1;
-      L2 = 1;
-      M2 = 1;
-      bits_per_symbol = 4;
-      coef_name_stage1 = "srRC_stage1.coef";
-      coef_name_stage2 = "srRC_stage2.coef";
-
-      break;
-    case 2:
-      L1 = 1;
-      M1 = 1;
-      L2 = 1;
-      M2 = 1;
-      bits_per_symbol = 4;
-      coef_name_stage1 = "srRC_stage1.coef";
-      coef_name_stage2 = "srRC_stage2.coef";
-      break;
-    }
-    break;
-  }
-
-  // wczytanie wspolczynników filtrow
-  DSP::LoadCoef coef_info_stage1, coef_info_stage2, coef_info_stage3;
-  int N_LPF_stage1, N_LPF_stage2, N_LPF_stage3;
-  DSP::Float_vector h_LPF_stage1, h_LPF_stage2, h_LPF_stage3;
-
-  // filtr dla 1. stopnia
-  coef_info_stage1.Open(coef_name_stage1, "matlab");//TODO:change directory to /config.
-  N_LPF_stage1 = coef_info_stage1.GetSize(0);
-  if (N_LPF_stage1 < 1)
-  {
-    DSP::log << DSP::e::LogMode::Error << "No filter coeeficients: aborting" << std::endl;
-    return;
-  }
-  else
-  {
-    coef_info_stage1.Load(h_LPF_stage1);
-  }
-
-  // filtr dla 2. stopnia
-  coef_info_stage2.Open(coef_name_stage2, "matlab");
-  N_LPF_stage2 = coef_info_stage2.GetSize(0);
-  if (N_LPF_stage2 < 1)
-  {
-    DSP::log << DSP::e::LogMode::Error << "No filter coeeficients: aborting" << std::endl;
-    return;
-  }
-  else
-  {
-    coef_info_stage2.Load(h_LPF_stage2);
-  }
-
-  // zegary
-  Interpol2Clock = MasterClock;
-  Interpol1Clock = DSP::Clock::GetClock(Interpol2Clock, M2, L2);
-  SymbolClock = DSP::Clock::GetClock(Interpol1Clock, M1, L1);
-  BitClock = DSP::Clock::GetClock(SymbolClock,bits_per_symbol,1);
-
-
-  // bloki
-  ModBits = new DSP::u::BinRand(BitClock, -1.0f, 1.0f);
-  ModS2P = new DSP::u::Serial2Parallel(BitClock, bits_per_symbol);
-  ModS2P->SetName("S2P", false);
-  ModMapper = new DSP::u::SymbolMapper(mod_type, bits_per_symbol);
-  ModMapper->SetName("SymbolMapper", false);
-
-  bool are_symbols_real = ModMapper->isOutputReal();
-  ModZero = NULL;//?
-  if (are_symbols_real)
-  {
-    ModZero = new DSP::u::Const(SymbolClock, 0.0);
-  }
-
-  ModZeroInserter = new DSP::u::Zeroinserter(true, SymbolClock, L1);
-  ModFIR = new DSP::u::FIR(Interpol1Clock, h_LPF_stage1);
-  ModConverter = new DSP::u::SamplingRateConversion(true, Interpol1Clock, L2, M2, h_LPF_stage2);
-
-  ModDDS = new DSP::u::DDScos(Interpol2Clock, true, 1.0,DSP::M_PIx2 * CurrentObject->CarrierFreq/SamplingRate );
-  ModMul = new DSP::u::Multiplication(0U, 2U);
-  ModVac = new DSP::u::Vacuum(false);
-
-  if (CurrentObject->ModulatorState == true)
-  {
-    ModAmp = new DSP::u::Amplifier(1.0);
-  }
-  else
-  {
-    ModAmp = new DSP::u::Amplifier(0.0);
-  }
-
-  ModAmp->SetName("Amplifier_(modulator)", false);
-
-  // polaczenia
-  ModBits->Output("out") >> ModS2P->Input("in");
-  ModS2P->Output("out") >> ModMapper->Input("in");
-  if (are_symbols_real)
-  {
-    ModMapper->Output("out") >> ModZeroInserter->Input("in.re");
-    ModZero->Output("out") >> ModZeroInserter->Input("in.im");
-  }
-  else
-  {
-    ModMapper->Output("out") >> ModZeroInserter->Input("in");
-  }
-  ModZeroInserter->Output("out") >> ModFIR->Input("in");
-  ModFIR->Output("out") >> ModConverter->Input("in");
-  ModConverter->Output("out") >> ModMul->Input("in1");
-  ModDDS->Output("out") >> ModMul->Input("in2");
-
-  ModMul -> Output("out.re") >> ModAmp-> Input("in");
-  ModMul->Output("out.im") >> ModVac->Input("in");
-  ModAmp->Output("out") >> DigitalSignalsAdd->Input("in3");
-
+  modulator.create_branch(MasterClock, DigitalSignalsAdd->Input("in3"), CurrentObject->ModulatorType, CurrentObject->CarrierFreq/Fp, CurrentObject->ModulatorVariant, CurrentObject->ModulatorState);
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   if (run_as_server == true)
@@ -1172,13 +1246,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
     
     if ((CurrentObject->UpdateState & E_US_modulator_state) != 0)
     {
-      if(CurrentObject->ModulatorState == false){
-        if (CurrentObject->ModAmp != NULL)
-          CurrentObject->ModAmp->SetGain(0.0);
-        } 
-      else{
-        if (CurrentObject->ModAmp != NULL)
-            CurrentObject->ModAmp->SetGain(1.0);} 
+      CurrentObject->modulator.enableOutput(CurrentObject->ModulatorState);
     }
     CurrentObject->UpdateState &= (~E_US_modulator_state);
   }
@@ -1528,66 +1596,6 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
     delete Decimator;
     Decimator = NULL;
   }
-
-if (ModBits !=NULL){
-  delete ModBits;
-  ModBits = NULL;
-}
-
-if(ModS2P !=NULL){
-  delete ModS2P;
-  ModS2P = NULL;
-}
-
-if (ModMapper !=NULL){
-  delete ModMapper;
-  ModMapper = NULL;
-}
-
-if (ModZero !=NULL){
-  delete ModZero;
-  ModZero = NULL;
-}
-
-if (ModZeroInserter !=NULL){
-  delete ModZeroInserter;
-  ModZeroInserter = NULL;
-}
-
-if(ModFIR !=NULL){
-  delete ModFIR;
-  ModFIR = NULL;
-}
-
-if(ModConverter !=NULL){
-  delete ModConverter;
-  ModConverter = NULL;
-}
-
-if(ModDDS !=NULL){
-  delete ModDDS;
-  ModDDS = NULL;
-}
-
-if(ModMul !=NULL){
-  delete ModMul;
-  ModMul = NULL;
-}
-
-if(ModVac !=NULL){
-  delete ModVac;
-  ModVac = NULL;
-}
-
-if (ModAmp !=NULL){
-  delete ModAmp;
-  ModAmp = NULL;
-}
-
-
-
-
-
   if (DigitalSignalsAdd != NULL)
   {
     delete DigitalSignalsAdd;
@@ -1696,10 +1704,9 @@ if (ModAmp !=NULL){
     constellation_buffer = NULL;
   }
   DSP::log << "T_DSPlib_processing::DestroyAlgorithm" << DSP::e::LogMode::second << "blocks deleted" << std::endl;
+
   DSP::Clock::FreeClocks();
-  SymbolClock=NULL;
-  Interpol1Clock=NULL;
-  Interpol2Clock=NULL;
+  modulator.clear_branch();
   MasterClock = NULL;
 
 
@@ -1761,6 +1768,11 @@ bool T_DSPlib_processing::Process(E_processing_DIR processing_DIR)
   DSP::f::Sleep(0);
   DSP::f::Sleep(5);
   DSP::Clock::Execute(MasterClock, cycles_per_segment);
+  if(reloadModulator){
+    modulator.clear_branch();
+    modulator.create_branch(MasterClock, DigitalSignalsAdd->Input("in3"), CurrentObject->ModulatorType, CurrentObject->CarrierFreq/Fp, CurrentObject->ModulatorVariant, CurrentObject->ModulatorState);
+    reloadModulator=false;
+  }
   DSP::f::Sleep(0);
   DSP::f::Sleep(5);
 #ifdef __DEBUG__

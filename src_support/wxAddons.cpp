@@ -766,7 +766,67 @@ void T_PlotsStack::DrawSpecgram3_dB(float dB_max, float dB_range, const CLR_map_
   //  glDisableClientState(GL_COLOR_ARRAY);
   glDeleteTextures( 1, &texture );
 }
+void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float size)
+{
+  float x, y;
+  int ind;
 
+  // Line antialiasing is controlled by calling glEnable and glDisable with argument GL_LINE_SMOOTH
+  // axis
+  glLineWidth(1.0);
+  glColor3f(0.0, 0.0, 0.0);
+  glLineStipple(1, 0x0FF0);
+  glEnable(GL_LINE_STIPPLE);
+  glBegin(GL_LINES);
+
+  glVertex2f(-1.0, 0.0);
+  glVertex2f(+1.0, 0.0);
+
+
+  glVertex2f(-1.0,+1.0);
+  glVertex2f(+1.0,-1.0);
+  glVertex2f(-1.0,-1.0);
+  glVertex2f(+1.0,+1.0);
+
+
+
+  glVertex2f(0.0, -1.0);
+  glVertex2f(0.0, +1.0);
+  glEnd();
+  glDisable(GL_LINE_STIPPLE);
+
+
+
+  glColor3f(1.0, 1.0, 1.0);
+
+
+  glBegin(GL_POLYGON);
+//  glColor3f(0.0, 1.0, 1.0);
+  glColor3f(0.0, 0.0, 0.5);
+  glVertex2f(0.0, 0.90);
+  glVertex2f(0.0, 0.97);
+  glEnd();
+
+  // QPSK
+  glBegin(GL_POLYGON);
+  glColor3f(0.0, 0.3, 0.0);
+//  glColor3f(0.5, 0.0, 0.0);
+  glVertex2f(0.0, 0.91);
+  glVertex2f(0.0, 0.98);
+  glEnd();
+  
+  glPointSize(size);
+  glBegin(GL_POINTS);
+
+  for (ind=0; ind<SegmentSize; ind+=20)
+  {
+    x=XYdata[ind]*skala;
+    y=XYdata[ind+1]*skala;
+    glColor3f(0.0, 0.0, 1.0);
+    glVertex2f(x, y);
+  }
+  glEnd();
+}
 void T_PlotsStack::DrawSignal(float skala, DS_type type, float width)
 {
   float x_offset;
@@ -3157,73 +3217,7 @@ void MoveImage_Left(float move_factor)
   glCopyPixels(MW, y, W-MW, H, GL_COLOR);
 }
 
-void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float size)
-{
-  float x, y;
-  int ind;
 
-  // Line antialiasing is controlled by calling glEnable and glDisable with argument GL_LINE_SMOOTH
-  // axis
-  glLineWidth(1.0);
-  glColor3f(1.0, 1.0, 1.0);
-  glLineStipple(1, 0x0FF0);
-  glEnable(GL_LINE_STIPPLE);
-  glBegin(GL_LINES);
-
-  glVertex2f(-1.0, 0.0);
-  glVertex2f(+1.0, 0.0);
-
-  glVertex2f(0.0, -1.0);
-  glVertex2f(0.0, +1.0);
-  glEnd();
-  glDisable(GL_LINE_STIPPLE);
-
-  glBegin(GL_LINE_LOOP);
-  glVertex2f(-1.0, -1.0);
-  glVertex2f(-1.0, +1.0);
-  glVertex2f(+1.0, +1.0);
-  glVertex2f(+1.0, -1.0);
-  glEnd();
-
-  glColor3f(1.0, 1.0, 1.0);
-  glBegin(GL_LINE_LOOP);
-  glVertex2f(0.91, -1.0);
-  glVertex2f(0.97, -1.0);
-  glVertex2f(0.97, +1.0);
-  glVertex2f(0.91, +1.0);
-  glEnd();
-
-
-  glBegin(GL_POLYGON);
-//  glColor3f(0.0, 1.0, 1.0);
-  glColor3f(0.0, 0.0, 0.5);
-  glVertex2f(0.0, 0.90);
-  glVertex2f(0.0, 0.97);
-  glEnd();
-
-  // QPSK
-  glBegin(GL_POLYGON);
-  glColor3f(0.0, 0.3, 0.0);
-//  glColor3f(0.5, 0.0, 0.0);
-  glVertex2f(0.0, 0.91);
-  glVertex2f(0.0, 0.98);
-  glEnd();
-
-  //Scatter points
-  glPointSize(size);
-  glBegin(GL_POINTS);
-
-  for (ind=0; ind<2*SegmentSize; ind+=2)
-  {
-    x=XYdata[ind]*skala;
-    y=XYdata[ind+1]*skala;
-    glColor3f(0.0, 0.0, 1.0);
-    glVertex2f(x, y);
-  }
-
-  glEnd();
-
-}
 
 void DrawEyeDiagram(int SegmentSize, DSP::Float *Xdata, DSP::Float *Ydata,
                     bool IsDataComplex, int SymbolPeriod,

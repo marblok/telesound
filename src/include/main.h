@@ -39,7 +39,8 @@ class MainApp : public wxApp
 {
 public:
   static std::string HostAddress;
-
+  wxLocale locale;
+  static wxLanguage lang;
 private:
   static MainFrame *frame;
 
@@ -290,7 +291,7 @@ class MainFrame : public GUIFrame
     void OnCarrierFreqChange(wxScrollEvent& event);
     void UpdateModulatorParametersText(void);
 
-
+    virtual void OnLanguageChange(wxCommandEvent &event);
     void OnProcessEnd(wxCommandEvent &event );
     void OnSelectVoiceType(wxCommandEvent& event);
     // ++++++++++++++++++++++++++++++++++++++++++++++ //

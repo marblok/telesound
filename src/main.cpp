@@ -186,6 +186,7 @@ void MyMorseKey::OnKeyUp(wxKeyEvent &event)
 // ---------------------------------------------------------------------------
 MainFrame *MainApp::frame = NULL;
 std::string MainApp::HostAddress;
+wxLanguage MainApp::lang;
 // wxCriticalSection CS_OnLOG;
 
 bool MainApp::LogFunction(const std::string &source, const std::string &message, bool IsError)
@@ -286,16 +287,19 @@ void T_TaskElement::OnStatusBoxUpdate(wxCommandEvent &event)
 {
   bool IsError = (event.GetInt() == 1);
   std::string MessageText = event.GetString().ToStdString();
+  if(task_parent_window!=NULL)
   task_parent_window->SetStatusBoxMessage(MessageText, IsError);
 }
 #endif // __DEBUG__
-
+WX_DECLARE_STRING_HASH_MAP(wxLanguage, LangMap);
 // Initialize this in OnInit, not statically
 bool MainApp::OnInit()
 {
   // char temp_str[1024];
 
   // Create the main frame window
+
+ MainApp::lang = wxLANGUAGE_POLISH;
 #ifdef __DEBUG__
   DSP::log.SetLogState(DSP::e::LogState::file | DSP::e::LogState::user_function);
   DSP::log.SetLogFileName("log_file.log");
@@ -332,6 +336,55 @@ bool MainApp::OnInit()
   HostAddress = inet_ntoa(addr);
 
   WSACleanup();
+  LangMap lang_map;
+  lang_map ["PL"] = wxLANGUAGE_POLISH;
+  lang_map ["EN"] = wxLANGUAGE_ENGLISH;
+  
+  MainApp::lang = wxLANGUAGE_POLISH;
+
+  fs::path configFile = "config/config.ini";
+  if(fs::exists(configFile)){
+  std::ifstream cFile (configFile);
+    if (cFile.is_open())
+    {
+        std::string line;
+        while(getline(cFile, line))
+       {
+            line.erase(std::remove_if(line.begin(), line.end(), isspace),
+                                 line.end());
+            if( line.empty() || line[0] == '#' )
+            {
+                continue;
+            }
+            auto delimiterPos = line.find("=");
+            auto name = line.substr(0, delimiterPos);
+            auto value = line.substr(delimiterPos + 1);
+            if (name =="Language"){
+              if(lang_map.count(value)!=0)
+              MainApp::lang = lang_map[value];
+            }
+        }
+    }
+    else 
+    {
+    
+        
+    }}
+
+
+
+if(locale.Init(lang,wxLOCALE_DONT_LOAD_DEFAULT)){
+    const wxLanguageInfo* lang_info = wxLocale::GetLanguageInfo(lang);
+    locale.AddCatalogLookupPathPrefix(wxGetCwd()+"/locale");
+    locale.AddCatalog(lang_info->CanonicalName.SubString(0,1));
+}
+else {//if language not supported
+return false;
+}
+
+
+
+
 
   frame = new MainFrame((wxFrame *)NULL, wxID_ANY, _T("TeleSound ver. 1.1 (Marek.Blok@eti.pg.edu.pl)"),
                         wxDefaultPosition, wxSize(800, 600),
@@ -985,6 +1038,12 @@ MainFrame::MainFrame(wxWindow *parent,
 {
   frame_is_closing = false;
   task_is_stopping_now = false;
+ if(MainApp::lang== wxLANGUAGE_POLISH)
+  frame_menubar->Check(ID_Lang_PL,true);
+  else
+  frame_menubar->Check(ID_Lang_EN,true);
+
+
 
   int waveInDevNumber = TAudioMixer::GetNoOfWaveInDevices();
   int waveOutDevNumber = TAudioMixer::GetNoOfWaveOutDevices();
@@ -1032,6 +1091,7 @@ MainFrame::MainFrame(wxWindow *parent,
 
   parent_task = NULL;
   MyProcessingThread::CreateAndRunThreads(this, 1); // tworzymy tylko jeden wątek, bo pozostałych i tak nie wykorzystywano
+
 
   FillSettingsInterface(NULL);
   UpdateGUI();
@@ -1254,6 +1314,35 @@ void MainFrame::UpdateGUI(void)
     }
   }
 }
+void MainFrame::OnLanguageChange(wxCommandEvent &event){
+std::string lang;
+switch (event.GetId()){
+case ID_Lang_EN:
+  lang = "EN";
+  break;
+default:
+  lang = "PL";
+  break;
+
+}
+
+//save config
+
+  fs::path configFile = "config/config.ini";
+
+    std::ofstream cFile (configFile,std::ofstream::trunc);
+    if (cFile.is_open())
+    {
+    cFile<<"Language="+lang<<std::endl;
+    }
+
+wxMessageDialog dlg(this, _("Aby zastosowac nowy jezyk nalezy uruchomic program ponownie"),_("Zmiana jezyka"),wxOK);
+if (dlg.ShowModal()==wxID_OK){
+//destroy window
+this->Destroy();
+}
+
+};
 void MainFrame::FillSettingsInterface(T_TaskElement *selected_task)
 {
   if (selected_task == NULL)
@@ -1769,31 +1858,49 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
     }
     break;
   case ID_SELECT_MODULATOR_TYPE:
-      interface_state.modulator_type = (E_ModulatorTypes)(ModulationTypeBox->GetSelection());
-      interface_state.modulator_variant=1;
-      ModulatorVariantSelect->SetSelection(0);
+    interface_state.modulator_type = (E_ModulatorTypes)(ModulationTypeBox->GetSelection());
+    interface_state.modulator_variant = 1;
+    if (parent_task != NULL)
+    {
+      if (parent_task->ProcessingBranch != NULL)
       {
-      wxCommandEvent evt,evt2;
-      //TODO: Add a slight delay between stop and start, so that when the client changes modulator type, the server has enough time to stop processing?  
-      UpdateModulatorParametersText();
-      evt.SetId(ID_STOP_TASK);
-      OnStopTask(evt);
-      evt2.SetId(ID_RUN_TASK);
-      OnRunTask(evt);
+        T_BranchCommand *temp;
+        TCommandData *command_data;
+
+        interface_state.userdata_state = E_US_modulator_type;
+        command_data = new TCommandData;
+        command_data->UserData = (void *)(&interface_state);
+        temp = new T_BranchCommand(E_BC_userdata, command_data);
+#ifdef __DEBUG__
+        DSP::log << "ID_MODULATOR_TYPE_CHANGE" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
+#endif
+        parent_task->ProcessingBranch->PostCommandToBranch(temp);
       }
-      break;
+    }
+    ModulatorVariantSelect->SetSelection(0);
+    UpdateModulatorParametersText();
+    break;
   case ID_SELECT_MODULATOR_VARIANT:
-  interface_state.modulator_variant= (unsigned short)(ModulatorVariantSelect->GetSelection()+1);
-        {
-      wxCommandEvent evt,evt2;
-      //TODO: Add a slight delay between stop and start, so that when the client changes modulator type, the server has enough time to stop processing?  
-      UpdateModulatorParametersText();
-      evt.SetId(ID_STOP_TASK);
-      OnStopTask(evt);
-      evt2.SetId(ID_RUN_TASK);
-      OnRunTask(evt);
+    interface_state.modulator_variant = (unsigned short)(ModulatorVariantSelect->GetSelection() + 1);
+    UpdateModulatorParametersText();
+if (parent_task != NULL)
+    {
+      if (parent_task->ProcessingBranch != NULL)
+      {
+        T_BranchCommand *temp;
+        TCommandData *command_data;
+
+        interface_state.userdata_state = E_US_modulator_type;
+        command_data = new TCommandData;
+        command_data->UserData = (void *)(&interface_state);
+        temp = new T_BranchCommand(E_BC_userdata, command_data);
+#ifdef __DEBUG__
+        DSP::log << "ID_MODULATOR_TYPE_CHANGE" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
+#endif
+        parent_task->ProcessingBranch->PostCommandToBranch(temp);
       }
-      break;
+    }
+    break;
   case ID_use_logatoms:
     SentenceTranscription->ChangeValue("");
     VoiceFileIndex->ChangeValue("");
@@ -2239,12 +2346,18 @@ void MyGLCanvas::DrawScatter(int width, int height)
 {
   if (T_DSPlib_processing::CurrentObject == NULL)
     return;
-
+  T_PlotsStack *temp_plot_stack;
+  temp_plot_stack= new T_PlotsStack(400,400);
   glLoadIdentity();
-  T_DSPlib_processing::CurrentObject->SignalSegments->SetBackgroundColor(1.0, 1.0, 1.0);
-  T_DSPlib_processing::CurrentObject->SignalSegments->SubPlot(1, 1, -1, width, height, true);
+      if (SocketsAreConnected == true)
+      temp_plot_stack->SetBackgroundColor(0.4, CLR_gray);
+    else
+      temp_plot_stack->SetBackgroundColor(1.0, 1.0, 0.0);
+  temp_plot_stack->SubPlot(1, 1, -1, width, height, true);
+  temp_plot_stack->SetBackgroundColor(1.0, CLR_gray);
+  temp_plot_stack->SubPlot(1, 1, 1, width, height, true);
   SetColor(0.0, CLR_gray);
-  DrawScatterPlot(T_DSPlib_processing::CurrentObject->constellation_buffer_size, T_DSPlib_processing::CurrentObject->tmp_constellation_buffer.data(), 3, 3);
+  temp_plot_stack->DrawScatterPlot(T_DSPlib_processing::CurrentObject->constellation_buffer_size, T_DSPlib_processing::CurrentObject->tmp_constellation_buffer.data(), 3, 3);
   // ++++++++++++++++++++++++++++++++++++++++ //
   // ++++++++++++++++++++++++++++++++++++++++ //
   
@@ -3180,8 +3293,8 @@ void MainFrame::UpdateModulatorParametersText(){
       M = 8;
       break;
     case 2:
-      F_symb = interface_state.sampling_rate / 80.0;
-      M = 8;
+      F_symb = interface_state.sampling_rate / 40.0;
+      M = 4;
       break;
     }
     break;
@@ -3190,11 +3303,11 @@ void MainFrame::UpdateModulatorParametersText(){
     {
     case 1:
       F_symb = interface_state.sampling_rate / 40.0;
-      M = 8;
+      M = 4;
       break;
     case 2:
-      F_symb = interface_state.sampling_rate / 80.0;
-      M = 8;
+      F_symb = interface_state.sampling_rate / 40.0;
+      M = 16;
       break;
     }
     break;
