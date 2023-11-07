@@ -56,6 +56,11 @@
         "codecvt": "cpp",
         "iomanip": "cpp",
         "filesystem": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "cstdarg": "cpp",
+        "cstddef": "cpp",
+        "algorithm": "cpp",
+        "iterator": "cpp",
+        "memory_resource": "cpp"
     }
 }

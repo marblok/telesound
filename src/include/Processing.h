@@ -27,6 +27,39 @@ extern wxCriticalSection CS_UserData;
 //typedef float sos_matrix[no_of_sos_segments][3];
 typedef std::vector<std::vector<float>> sos_matrix;
 
+class Modulator{
+  private:
+    std::unique_ptr <DSP::u::Const> Const;
+    float CarrierFreq;
+    DSP::Clock_ptr BitClock, SymbolClock, Interpol1Clock, Interpol2Clock;
+    std::unique_ptr <DSP::u::BinRand> ModBits;
+    std::unique_ptr <DSP::u::Serial2Parallel> ModS2P;
+    std::unique_ptr <DSP::u::SymbolMapper> ModMapper;
+    std::unique_ptr <DSP::u::Const> ModZero;
+    std::unique_ptr <DSP::u::Zeroinserter> ModZeroInserter;
+    std::unique_ptr <DSP::u::FIR> ModFIR;
+    std::unique_ptr <DSP::u::SamplingRateConversion> ModConverter;
+    std::unique_ptr <DSP::u::DDScos> ModDDS;
+    std::unique_ptr <DSP::u::Multiplication> ModMul;
+    std::unique_ptr <DSP::u::Amplifier> ModAmp;
+    std::unique_ptr <DSP::u::Vacuum> ModVac;
+  public:
+  void create_branch (DSP::Clock_ptr Clock_in, DSP::input &Output_signal, E_ModulatorTypes Modulator_type, float Carrier_freq, unsigned short variant = 1, bool Enable_output = false);
+  void clear_branch(void);
+
+  void enableOutput(bool enable){
+    if(ModAmp!=nullptr){
+      ModAmp->SetGain((enable)?1.0f:0.0f);
+    }
+  }
+  
+  void setCarrierFrequency(float New_frequency){
+   if (ModDDS!=nullptr)
+      ModDDS->SetAngularFrequency(DSP::M_PIx2*New_frequency);
+  }
+};
+
+
 class T_DSPlib_processing : public T_InputElement
 {
   friend class MyGLCanvas;
@@ -37,7 +70,7 @@ class T_DSPlib_processing : public T_InputElement
     unsigned int cycles_per_segment;
 
     bool GraphInitialized;
-
+    bool reloadModulator = false;
     long Fp;
     //! sampling rate of wave source files
     long Fp_wave_in;
@@ -99,25 +132,15 @@ class T_DSPlib_processing : public T_InputElement
     //DSP::Component *AudioOut;
     
     //        Modulator components           //
+
+    Modulator modulator;
     bool ModulatorState;
     E_ModulatorTypes ModulatorType;
     unsigned short ModulatorVariant;
     float CarrierFreq;
-    DSP::Clock_ptr BitClock, SymbolClock, Interpol1Clock, Interpol2Clock;
-    DSP::u::BinRand *ModBits;
-    DSP::u::Serial2Parallel *ModS2P;
-    DSP::u::SymbolMapper *ModMapper;
-    DSP::u::Const *ModZero;
-    DSP::u::Zeroinserter *ModZeroInserter;
-    DSP::u::FIR *ModFIR;
-    DSP::u::SamplingRateConversion *ModConverter;
-    DSP::u::DDScos *ModDDS;
-    DSP::u::Multiplication *ModMul;
-    DSP::u::Amplifier *ModAmp;
-    DSP::u::Vacuum *ModVac;
     //**************************************//
     DSP::u::OutputBuffer *analysis_buffer, *constellation_buffer;
-    const unsigned int constellation_buffer_size = 400;
+    const unsigned int constellation_buffer_size = 4000;
     
     TOptions *MorseDecoder_options;
     bool MorseReceiverState;

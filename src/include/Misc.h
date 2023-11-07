@@ -39,7 +39,8 @@ enum E_UpdateState
   E_US_morse_receiver_state = 256,
   E_US_high_res_psd = 512,
   E_US_modulator_state = 1024,
-  E_US_carrier_freq = 2048
+  E_US_carrier_freq = 2048,
+  E_US_modulator_type = 4096
 };
 E_UpdateState& operator|= (E_UpdateState& left, const E_UpdateState& right);
 E_UpdateState& operator&= (E_UpdateState& left, const E_UpdateState& right);

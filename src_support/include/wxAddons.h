@@ -276,6 +276,7 @@
      void DrawSignal_dB(int SegmentSize, DSP::Float *Ydata,
                      float dB_max, float dB_range, float width);
      void DrawSignal(float skala, DS_type type, float width);
+     void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float size);
      //! sets sampling rate
      /*!
       * @param F_min_in
