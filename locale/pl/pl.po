@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2023-11-07 18:41+0100\n"
-"PO-Revision-Date: 2023-11-07 18:42+0100\n"
+"POT-Creation-Date: 2023-11-07 23:31+0100\n"
+"PO-Revision-Date: 2023-11-07 23:34+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pl\n"
@@ -25,354 +25,418 @@ msgstr ""
 msgid "PL"
 msgstr ""
 
+#: TeleSound_wxGlade.cpp:25
+msgid "jezyk polski"
+msgstr "język polski"
+
 #: TeleSound_wxGlade.cpp:27
 msgid "ENG"
 msgstr ""
+
+#: TeleSound_wxGlade.cpp:27
+msgid "jezyk angielski"
+msgstr "język angielski"
 
 #: TeleSound_wxGlade.cpp:29
 msgid "Language"
 msgstr "Język"
 
-#: TeleSound_wxGlade.cpp:41
+#: TeleSound_wxGlade.cpp:31
+msgid "O programie..."
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:31
+msgid "Wyswietl informacje o programie"
+msgstr "Wyświetl informacje o programie"
+
+#: TeleSound_wxGlade.cpp:32
+msgid "Instrukcja obsĹ‚ugi..."
+msgstr "Instrukcja obsługi..."
+
+#: TeleSound_wxGlade.cpp:32
+msgid "Wyswietl instrukcje obslugi"
+msgstr "Wyświetl instrukcję obsługi"
+
+#: TeleSound_wxGlade.cpp:33
+msgid "Pomoc"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:45
 msgid "Konfiguracja"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:43
+#: TeleSound_wxGlade.cpp:47
 msgid "Kontrola przetwarzania"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:46
+#: TeleSound_wxGlade.cpp:50
 msgid "Status poĹ‚Ä…czenia"
 msgstr "Status połączenia"
 
-#: TeleSound_wxGlade.cpp:53
+#: TeleSound_wxGlade.cpp:57
 msgid "Rozpocznij przetwarzanie"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:57
+#: TeleSound_wxGlade.cpp:61 main.cpp:1262
 msgid "Wstrzymaj przetwarzanie"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:61
+#: TeleSound_wxGlade.cpp:65
 msgid "ZakoĹ„cz przetwarzanie"
 msgstr "Zakończ przetwarzanie"
 
-#: TeleSound_wxGlade.cpp:67
+#: TeleSound_wxGlade.cpp:71 main.cpp:1756
 msgid "Status mikrofonu (wyĹ‚Ä…czony)"
 msgstr "Status mikrofonu (wyłączony)"
 
-#: TeleSound_wxGlade.cpp:71
+#: TeleSound_wxGlade.cpp:75 main.cpp:1820
 msgid "SygnaĹ‚ lokalny (wyĹ‚Ä…czony)"
 msgstr "Sygnał lokalny (wyłączony)"
 
-#: TeleSound_wxGlade.cpp:77
+#: TeleSound_wxGlade.cpp:81
 msgid "PrzywrĂłÄ‡ ustawienia domyĹ›lne"
 msgstr "Przywróć ustawienia domyślne"
 
-#: TeleSound_wxGlade.cpp:80
+#: TeleSound_wxGlade.cpp:84
 msgid "Konfiguracja poĹ‚Ä…czenia"
 msgstr "Konfiguracja połączenia"
 
-#: TeleSound_wxGlade.cpp:84
+#: TeleSound_wxGlade.cpp:88
 msgid "serwer"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:86
+#: TeleSound_wxGlade.cpp:90
 msgid "klient"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:88
+#: TeleSound_wxGlade.cpp:92
 msgid "xxx"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:92
+#: TeleSound_wxGlade.cpp:96
 msgid "SzybkoĹ›Ä‡ prĂłbkowania:"
 msgstr "Szybkość próbkowania:"
 
-#: TeleSound_wxGlade.cpp:95
+#: TeleSound_wxGlade.cpp:99
 msgid "8000"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:96
+#: TeleSound_wxGlade.cpp:100
 msgid "11025"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:97
+#: TeleSound_wxGlade.cpp:101
 msgid "16000"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:98
+#: TeleSound_wxGlade.cpp:102
 msgid "22050"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:99
+#: TeleSound_wxGlade.cpp:103
 msgid "32000"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:100
+#: TeleSound_wxGlade.cpp:104
 msgid "44100"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:101
+#: TeleSound_wxGlade.cpp:105
 msgid "48000"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:106
+#: TeleSound_wxGlade.cpp:110
 msgid "Konfiguracja wykresĂłw"
 msgstr "Konfiguracja wykresów"
 
-#: TeleSound_wxGlade.cpp:109
+#: TeleSound_wxGlade.cpp:113
 msgid "Bez wykresĂłw"
 msgstr "Bez wykresów"
 
-#: TeleSound_wxGlade.cpp:110
+#: TeleSound_wxGlade.cpp:114
 msgid "Przebieg czasowy"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:111
+#: TeleSound_wxGlade.cpp:115
 msgid "Histogram"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:112
+#: TeleSound_wxGlade.cpp:116
 msgid "Periodogram"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:113
+#: TeleSound_wxGlade.cpp:117
 msgid "Spektrogram"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:114
+#: TeleSound_wxGlade.cpp:118
 msgid "Konstelacja"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:115
+#: TeleSound_wxGlade.cpp:119
 msgid "Wykres oczkowy"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:120
+#: TeleSound_wxGlade.cpp:124
 msgid "200"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:124
+#: TeleSound_wxGlade.cpp:128
 msgid "Ustawienia karty dĹşwiÄ™kowej"
 msgstr "Ustawienia karty dźwiękowej"
 
-#: TeleSound_wxGlade.cpp:128
+#: TeleSound_wxGlade.cpp:132
 msgid "Nagrywanie:"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:137
+#: TeleSound_wxGlade.cpp:141
 msgid "Odtwarzanie:"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:148
+#: TeleSound_wxGlade.cpp:152
 msgid "GĹ‚oĹ›noĹ›Ä‡ gĹ‚Ăłwna:"
 msgstr "Głośność główna:"
 
-#: TeleSound_wxGlade.cpp:153 TeleSound_wxGlade.cpp:155
+#: TeleSound_wxGlade.cpp:157 TeleSound_wxGlade.cpp:159
 msgid "Model kanaĹ‚u"
 msgstr "Model kanału"
 
-#: TeleSound_wxGlade.cpp:157
+#: TeleSound_wxGlade.cpp:161
 msgid "80 dB"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:167
+#: TeleSound_wxGlade.cpp:171
 msgid "0 Hz"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:169
+#: TeleSound_wxGlade.cpp:173
 msgid "8000 Hz"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:174
+#: TeleSound_wxGlade.cpp:178
 msgid "SygnaĹ‚ mowy"
 msgstr "Sygnał mowy"
 
-#: TeleSound_wxGlade.cpp:178
+#: TeleSound_wxGlade.cpp:182
 msgid "Logatomy"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:180
+#: TeleSound_wxGlade.cpp:184
 msgid "Zdania"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:184
+#: TeleSound_wxGlade.cpp:188
 msgid "GĹ‚os:"
 msgstr "Głos:"
 
-#: TeleSound_wxGlade.cpp:187
+#: TeleSound_wxGlade.cpp:191
 msgid "losowo"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:188
+#: TeleSound_wxGlade.cpp:192
 msgid "mÄ™ski 1"
 msgstr "męski 1"
 
-#: TeleSound_wxGlade.cpp:189
+#: TeleSound_wxGlade.cpp:193
 msgid "mÄ™ski 2 "
 msgstr "męski 2 "
 
-#: TeleSound_wxGlade.cpp:190
+#: TeleSound_wxGlade.cpp:194
 msgid "ĹĽeĹ„ski 1 "
 msgstr "żeński 1 "
 
-#: TeleSound_wxGlade.cpp:191
+#: TeleSound_wxGlade.cpp:195
 msgid "ĹĽeĹ„ski 2"
 msgstr "żeński 2"
 
-#: TeleSound_wxGlade.cpp:198
+#: TeleSound_wxGlade.cpp:202
 msgid "Losuj"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:212
+#: TeleSound_wxGlade.cpp:216
 msgid "PokaĹĽ tekst"
 msgstr "Pokaż tekst"
 
-#: TeleSound_wxGlade.cpp:219
+#: TeleSound_wxGlade.cpp:223
 msgid "Telegraf"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:221
+#: TeleSound_wxGlade.cpp:225
 msgid "SzybkoĹ›Ä‡ kluczowania"
 msgstr "Szybkość kluczowania"
 
-#: TeleSound_wxGlade.cpp:223
+#: TeleSound_wxGlade.cpp:227
 msgid "20 WPM"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:227
+#: TeleSound_wxGlade.cpp:231
 msgid "Nadajnik"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:229
+#: TeleSound_wxGlade.cpp:233
 msgid "Nadawany tekst:"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:235
+#: TeleSound_wxGlade.cpp:239
 msgid "RÄ™czne nadawanie:"
 msgstr "Ręczne nadawanie:"
 
-#: TeleSound_wxGlade.cpp:239
+#: TeleSound_wxGlade.cpp:243
 msgid "WyĹ›lij"
 msgstr "Wyślij"
 
-#: TeleSound_wxGlade.cpp:241
+#: TeleSound_wxGlade.cpp:245
 msgid "Odbiornik"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:243
+#: TeleSound_wxGlade.cpp:247
 msgid "wĹ‚Ä…czony"
 msgstr "włączony"
 
-#: TeleSound_wxGlade.cpp:248
+#: TeleSound_wxGlade.cpp:252
 msgid "Status programu"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:253
+#: TeleSound_wxGlade.cpp:257
 msgid "Modulacja"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:255
+#: TeleSound_wxGlade.cpp:259
 msgid "WybĂłr modulacji"
 msgstr "Wybór modulacji"
 
-#: TeleSound_wxGlade.cpp:258
+#: TeleSound_wxGlade.cpp:262
 msgid "ASK"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:259
+#: TeleSound_wxGlade.cpp:263
 msgid "PSK"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:260
+#: TeleSound_wxGlade.cpp:264
 msgid "FSK"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:261
+#: TeleSound_wxGlade.cpp:265
 msgid "QAM"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:266
+#: TeleSound_wxGlade.cpp:270
 msgid "Modulator"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:268
+#: TeleSound_wxGlade.cpp:272
 msgid "WĹ‚Ä…cz modulator"
 msgstr "Włącz modulator"
 
-#: TeleSound_wxGlade.cpp:270
+#: TeleSound_wxGlade.cpp:274
 msgid "Parametry modulatora"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:272
+#: TeleSound_wxGlade.cpp:276
 msgid "SzybkoĹ›Ä‡ prĂłbkowania nie jest wielokrotnoĹ›ciÄ… szybkoĹ›ci symbolowej!"
 msgstr "Szybkość próbkowania nie jest wielokrotnością szybkości symbolowej!"
 
-#: TeleSound_wxGlade.cpp:279
+#: TeleSound_wxGlade.cpp:283
 msgid "Wariant: "
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:282
+#: TeleSound_wxGlade.cpp:286
 msgid "1"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:283
+#: TeleSound_wxGlade.cpp:287
 msgid "2"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:288
+#: TeleSound_wxGlade.cpp:292
 msgid "N_symb:"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:292
+#: TeleSound_wxGlade.cpp:296
 msgid "f_symb"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:296
+#: TeleSound_wxGlade.cpp:300
 msgid "bit_per_sample"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:304
+#: TeleSound_wxGlade.cpp:308
 msgid "T_symb"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:308
+#: TeleSound_wxGlade.cpp:312
 msgid "F_symb"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:312
+#: TeleSound_wxGlade.cpp:316
 msgid "bps"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:320
+#: TeleSound_wxGlade.cpp:324
 msgid "CzÄ™stotliwoĹ›Ä‡ noĹ›na (f_o / F_o):"
 msgstr "Częstotliwość nośna (f_o / F_o):"
 
-#: TeleSound_wxGlade.cpp:325
+#: TeleSound_wxGlade.cpp:329
 msgid "WybĂłr czÄ™stotliwoĹ›ci noĹ›nej"
 msgstr "Wybór częstotliwości nośnej"
 
-#: TeleSound_wxGlade.cpp:327
+#: TeleSound_wxGlade.cpp:331
 msgid "Demodulator"
 msgstr ""
 
-#: main.cpp:766
+#: main.cpp:768
 msgid "Processing specification not ready"
 msgstr ""
 
-#: main.cpp:767
+#: main.cpp:769
 msgid "Run Task Problem"
 msgstr ""
 
-#: main.cpp:926
+#: main.cpp:928
 msgid "Task parameters changed"
 msgstr ""
 
-#: main.cpp:1342
+#: main.cpp:1266
+msgid "WznĂłw przetwarzanie"
+msgstr "Wznów przetwarzanie"
+
+#: main.cpp:1340
 msgid "Aby zastosowac nowy jezyk nalezy uruchomic program ponownie"
 msgstr "Aby zastosować nowy język należy uruchomić program ponownie"
 
-#: main.cpp:1342
+#: main.cpp:1340
 msgid "Zmiana jezyka"
 msgstr "Zmiana języka"
+
+#: main.cpp:1456
+msgid ""
+"Author: Marek Blok (c) 2020\n"
+"\n"
+msgstr ""
+"Autor: Marek Blok (c) 2020\n"
+"\n"
+
+#: main.cpp:1457
+msgid ""
+"Updated & translated by: Kacper Stark 2023\n"
+"\n"
+msgstr ""
+"Zaktualizował i przetłumaczył: Kacper Stark 2023\n"
+"\n"
+
+#: main.cpp:1462
+msgid "About TeleSound"
+msgstr "O programie TeleSound"
+
+#: main.cpp:1750
+msgid "Status mikrofonu (wĹ‚Ä…czony)"
+msgstr "Status mikrofonu (włączony)"
+
+#: main.cpp:1814
+msgid "SygnaĹ‚ lokalny (wĹ‚Ä…czony)"
+msgstr "Sygnał lokalny (włączony)"
+
+#: main.cpp:1913 main.cpp:1930
+msgid "losowy"
+msgstr ""

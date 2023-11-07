@@ -44,7 +44,7 @@ enum
     ID_MasterLine_SLIDER = 110,
     ID_Lang_PL = 111,
     ID_Lang_EN = 112,
-
+    ID_Manual = 113,
     ID_SELECT_DRAW_MODE = 121,
     ID_PSD_SLOTS_SLIDER = 122,
 

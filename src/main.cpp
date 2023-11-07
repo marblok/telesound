@@ -43,6 +43,7 @@ EVT_COMMAND(ID_StatusBox_AppendText, wxEVT_STATUSBOX_UPDATE, T_TaskElement::OnSt
 #endif // __DEBUG__
 
 EVT_MENU(MDI_QUIT, MainFrame::OnQuit)
+EVT_MENU(MDI_ABOUT, MainFrame::OnAbout)
 
 EVT_CLOSE(MainFrame::OnClose)
 // EVT_SIZE(MainFrame::OnSize)
@@ -1258,11 +1259,11 @@ void MainFrame::UpdateGUI(void)
       // TODO: move to updategui (?)
       RunProcessingButton->Enable(false);
       PauseProcessingButton->Enable(true);
-      PauseProcessingButton->SetToolTip(_T("Wstrzymaj przetwarzanie"));
+      PauseProcessingButton->SetToolTip(_("Wstrzymaj przetwarzanie"));
       PauseProcessingButton->SetBitmap(wxBitmap(pause_xpm));
       if (interface_state.task_is_paused == true)
       {
-        PauseProcessingButton->SetToolTip(_T("Wznów przetwarzanie"));
+        PauseProcessingButton->SetToolTip(_("Wznów przetwarzanie"));
         PauseProcessingButton->SetBitmap(wxBitmap(resume_xpm));
         StopProcessingButton->Enable(false);
       }
@@ -1450,14 +1451,15 @@ void MainFrame::OnQuit(wxCommandEvent &WXUNUSED(event))
 void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
 {
   std::string text, text2;
-
   text = DSP::lib_version_string();
-  text2 = "TeleSound 2020\n\n";
-  text2 += "Author: Marek Blok (c) 2020\n\n";
+  text2 = "TeleSound 2023\n\n";
+  text2 += _("Author: Marek Blok (c) 2020\n\n");
+  text2 += _("Updated & translated by: Kacper Stark 2023\n\n");
+  text2 += "https://git.pg.edu.pl/dspe/telesound\n\n";
   text2 += text;
 
   wxMessageBox(text2,
-               _T("About Zoom Analyzer"));
+               _("About TeleSound"));
 }
 
 void MainFrame::OnRunTask(wxCommandEvent &event)
@@ -1569,7 +1571,7 @@ void MainFrame::OnPageChanging(wxNotebookEvent &event)
     }
   }
 }
-// TODO: check
+
 void MainFrame::SetStatusBoxMessage(std::string MessageText, bool isError)
 {
 #ifdef __DEBUG__
@@ -1745,13 +1747,13 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
     {
       interface_state.mike_is_off = false;
       MicStateButton->SetBitmap(wxBitmap(mike_on_xpm));
-      MicStateButton->SetToolTip(_T("Status mikrofonu (włączony)"));
+      MicStateButton->SetToolTip(_("Status mikrofonu (włączony)"));
     }
     else
     {
       interface_state.mike_is_off = true;
       MicStateButton->SetBitmap(wxBitmap(mike_off_xpm));
-      MicStateButton->SetToolTip(_T("Status mikrofonu (wyłączony)"));
+      MicStateButton->SetToolTip(_("Status mikrofonu (wyłączony)"));
     }
 
     if (parent_task != NULL)
@@ -1809,13 +1811,13 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
       interface_state.local_signal_gain = 1.0;
       // TODO: Move this to UpdateGUI?
       LocalSignalStateButton->SetBitmap(wxBitmap(local_on_xpm));
-      LocalSignalStateButton->SetToolTip(_T("Sygnał lokalny (włączony)"));
+      LocalSignalStateButton->SetToolTip(_("Sygnał lokalny (włączony)"));
     }
     else
     {
       interface_state.local_signal_gain = 0.0;
       LocalSignalStateButton->SetBitmap(wxBitmap(local_off_xpm));
-      LocalSignalStateButton->SetToolTip(_T("Sygnał lokalny (wyłączony)"));
+      LocalSignalStateButton->SetToolTip(_("Sygnał lokalny (wyłączony)"));
     }
 
     if (parent_task != NULL)
@@ -1908,7 +1910,7 @@ if (parent_task != NULL)
     {
       wxString currentSelection = VoiceTypeBox->GetStringSelection();
       std::vector<wxString> voiceTypes = fileManager->listVoiceTypes(VoiceFileTypes::Logatoms);
-      voiceTypes.push_back(_T("losowy"));
+      voiceTypes.push_back(_("losowy"));
       VoiceTypeBox->Set(voiceTypes);
       int index = VoiceTypeBox->FindString(currentSelection);
       if (index != wxNOT_FOUND)
@@ -1925,7 +1927,7 @@ if (parent_task != NULL)
     {
       wxString currentSelection = VoiceTypeBox->GetStringSelection();
       std::vector<wxString> voiceTypes = fileManager->listVoiceTypes(VoiceFileTypes::Sentences);
-      voiceTypes.push_back(_T("losowy"));
+      voiceTypes.push_back(_("losowy"));
       VoiceTypeBox->Set(voiceTypes);
       int index = VoiceTypeBox->FindString(currentSelection);
       if (index != wxNOT_FOUND)
@@ -2346,21 +2348,26 @@ void MyGLCanvas::DrawScatter(int width, int height)
 {
   if (T_DSPlib_processing::CurrentObject == NULL)
     return;
-  T_PlotsStack *temp_plot_stack;
-  temp_plot_stack= new T_PlotsStack(400,400);
-  glLoadIdentity();
-      if (SocketsAreConnected == true)
+
+ 
+  if (T_DSPlib_processing::CurrentObject->constellation != NULL)
+  {
+    T_PlotsStack *temp_plot_stack;
+    temp_plot_stack = T_DSPlib_processing::CurrentObject->constellation;
+    glLoadIdentity();
+    if (SocketsAreConnected == true)
       temp_plot_stack->SetBackgroundColor(0.4, CLR_gray);
     else
       temp_plot_stack->SetBackgroundColor(1.0, 1.0, 0.0);
+  
   temp_plot_stack->SubPlot(1, 1, -1, width, height, true);
   temp_plot_stack->SetBackgroundColor(1.0, CLR_gray);
   temp_plot_stack->SubPlot(1, 1, 1, width, height, true);
   SetColor(0.0, CLR_gray);
   temp_plot_stack->DrawScatterPlot(T_DSPlib_processing::CurrentObject->constellation_buffer_size, T_DSPlib_processing::CurrentObject->tmp_constellation_buffer.data(), 3, 3);
+  }
   // ++++++++++++++++++++++++++++++++++++++++ //
   // ++++++++++++++++++++++++++++++++++++++++ //
-  
 }
 void MyGLCanvas::DrawHistogram(int width, int height)
 {

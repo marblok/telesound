@@ -214,6 +214,7 @@ class T_DSPlib_processing : public T_InputElement
     int PSD_high_size;
     //! plots stack for high resolution spectrogram
     T_PlotsStack *high_res_PSDs;
+    T_PlotsStack *constellation;
 
     //! created processing algorithm based on DSPlib
     void CreateAlgorithm(bool run_as_server, std::string address,

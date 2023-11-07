@@ -224,6 +224,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   A_Histogram = NULL;
   PSDs = NULL;
   high_res_PSDs = NULL;
+  constellation =NULL;
   A_PSD = NULL;
   A_PSD_dB = NULL;
   PSDs_counter = 0;
@@ -705,14 +706,14 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
   {
     ModulatorType=temp_spec->modulator_type;
     ModulatorVariant=temp_spec->modulator_variant;
+    reloadModulator = true;
+    if (constellation_buffer != NULL)
+    {
+      constellation_buffer->Reset();
+      tmp_constellation_buffer.assign(constellation_buffer_size, 0);
+    }
     UpdateState |= E_US_modulator_type;
     temp_spec->userdata_state ^= E_US_modulator_type;
-    reloadModulator=true;
-    tmp_constellation_buffer=DSP::Float_vector(constellation_buffer_size,0);
-    
-    if (constellation_buffer!=NULL)
-      constellation_buffer->Reset();
-    tmp_constellation_buffer.assign(constellation_buffer_size,0);
   }
 
   if ((temp_spec->userdata_state & E_US_high_res_psd) != 0)
@@ -1066,6 +1067,10 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   }
   A_Histogram = new float[NoOfHistBins];
   memset(A_Histogram, 0, sizeof(float) * NoOfHistBins);
+
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+  constellation = new T_PlotsStack(constellation_buffer_size,0);
+
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   PSDs = new T_PlotsStack(NoOfPSDslots, PSD_size);
@@ -1738,6 +1743,11 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
   {
     delete high_res_PSDs;
     high_res_PSDs = NULL;
+  }
+  if (constellation != NULL)
+  {
+    delete constellation;
+    constellation = NULL;
   }
 
   DSP::log << "T_DSPlib_processing::DestroyAlgorithm" << DSP::e::LogMode::second << "PlotsStacks deleted" << std::endl;
