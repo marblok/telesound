@@ -2060,11 +2060,13 @@ void MyGLCanvas::OnDrawNow_(void)
   case E_DM_signal:
     DrawSignal(w, h);
     break;
-  //TODO:
+
   case E_DM_scatterplot:
     DrawScatter(w,h);
     break;
+
   case E_DM_eyediagram:
+    DrawEyeDiagram(w,h);
     break;
   case E_DM_none:
   default:
@@ -2368,6 +2370,30 @@ void MyGLCanvas::DrawScatter(int width, int height)
   }
   // ++++++++++++++++++++++++++++++++++++++++ //
   // ++++++++++++++++++++++++++++++++++++++++ //
+}
+
+void MyGLCanvas::DrawEyeDiagram(int width, int height){
+  if (T_DSPlib_processing::CurrentObject == NULL)
+    return;
+
+ 
+  if (T_DSPlib_processing::CurrentObject->eyediagrams != NULL)
+  {
+    T_PlotsStack *temp_plot_stack;
+    temp_plot_stack = T_DSPlib_processing::CurrentObject->eyediagrams;
+    glLoadIdentity();
+    if (SocketsAreConnected == true)
+      temp_plot_stack->SetBackgroundColor(0.4, CLR_gray);
+    else
+      temp_plot_stack->SetBackgroundColor(1.0, 1.0, 0.0);
+  
+  temp_plot_stack->SubPlot(1, 1, -1, width, height, true);
+  temp_plot_stack->SetBackgroundColor(0.0, 0.0, 0.0);
+  temp_plot_stack->SubPlot(1, 1, 1, width, height, true);
+  SetColor(0.0, CLR_gray);
+  temp_plot_stack->DrawEyeDiagram(T_DSPlib_processing::CurrentObject->Fp,T_DSPlib_processing::CurrentObject->tmp_eyediagram_buffer, 40, 2,1,2,false);
+
+  }
 }
 void MyGLCanvas::DrawHistogram(int width, int height)
 {
@@ -3344,7 +3370,7 @@ void MainFrame::UpdateModulatorParametersText(){
   bps = M*F_symb;
 
   NsymbText->SetValue(wxString::FromDouble(N_symb) +" [Sa]");
-  f_symb1Text->SetValue(wxString::FromDouble(f_symb) + " [Sa/symb]");
+  f_symb1Text->SetValue(wxString::FromDouble(f_symb) + " [symb/Sa]");
   BitPerSampleText->SetValue(wxString::FromDouble(bit_per_sample)+" [bit/Sa]");
   TsymbText->SetValue(wxString::FromDouble(Tsymb)+" [s]");
   F_symb2Text->SetValue(wxString::FromDouble(F_symb)+" [bod]");

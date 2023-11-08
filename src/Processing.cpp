@@ -225,6 +225,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   PSDs = NULL;
   high_res_PSDs = NULL;
   constellation =NULL;
+  eyediagrams=NULL;
   A_PSD = NULL;
   A_PSD_dB = NULL;
   PSDs_counter = 0;
@@ -1052,6 +1053,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   tmp_FFT_buffer = DSP::Float_vector(FFT_size, 0);
 
   tmp_constellation_buffer=DSP::Float_vector(constellation_buffer_size,0);
+  tmp_eyediagram_buffer=DSP::Float_vector(eyediagram_buffer_size,0);
   // memset(tmp_FFT_buffer, 0, FFT_size*sizeof(float));
 
   SignalSegments = new T_PlotsStack(NoOfPSDslots, BufferStep);
@@ -1070,8 +1072,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   constellation = new T_PlotsStack(constellation_buffer_size,0);
-
-
+  eyediagrams = new T_PlotsStack(NoOfPSDslots, BufferStep);
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   PSDs = new T_PlotsStack(NoOfPSDslots, PSD_size);
   if (A_PSD != NULL)
@@ -1126,9 +1127,13 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
                                              T_DSPlib_processing::AnalysisBufferCallback                  // DSP::u::notify_callback_ptr func_ptr=NULL,
   );                                                                                                 // int CallbackIdentifier=0);
   constellation_buffer = new DSP::u::OutputBuffer(constellation_buffer_size, 1U, DSP::e::BufferType::stop_when_full, MasterClock, -1, T_DSPlib_processing::ConstellationBufferCallback);
+  eyediagram_buffer = new DSP::u::OutputBuffer(eyediagram_buffer_size, 1U, DSP::e::BufferType::stop_when_full, MasterClock, -1, T_DSPlib_processing::EyeDiagramBufferCallback);
+
+    
 #ifdef __TEST_CHANNEL_FILTER__
   ChannelFilter_HPF->Output("out") >> analysis_buffer->Input("in");
   ChannelFilter_HPF->Output("out") >> constellation_buffer->Input("in");
+  ChannelFilter_HPF->Output("out.re") >> eyediagram_buffer->Input("in");
 #else
   NoiseAdd->Output("out") >> analysis_buffer->Input("in");
   NoiseAdd->Output("out") >> constellation_buffer->Input("in");
@@ -1453,6 +1458,18 @@ void T_DSPlib_processing::ConstellationBufferCallback(DSP::Component_ptr Caller,
   buffer->ReadBuffer(CurrentObject->tmp_constellation_buffer.data(), CurrentObject->constellation_buffer_size * sizeof(float), -1, DSP::e::SampleType::ST_float);
 }
 
+void T_DSPlib_processing::EyeDiagramBufferCallback(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier)
+{
+  DSP::u::OutputBuffer *buffer;
+  if (UserDefinedIdentifier && DSP::CallbackID_signal_mask != 0)
+  { // ignore start / stop signaling
+    return;
+  }
+  buffer = (DSP::u::OutputBuffer *)(Caller->Convert2Block());
+  buffer->ReadBuffer(CurrentObject->tmp_eyediagram_buffer.data(), CurrentObject->eyediagram_buffer_size * sizeof(float), -1, DSP::e::SampleType::ST_float);
+}
+
+
 void T_DSPlib_processing::ComputeHighResolutionSpectorgram(void)
 {
   DSP::Float_vector FFT_input_buffer;
@@ -1708,6 +1725,11 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
     delete constellation_buffer;
     constellation_buffer = NULL;
   }
+    if (eyediagram_buffer != NULL)
+  {
+    delete eyediagram_buffer;
+    eyediagram_buffer = NULL;
+  }
   DSP::log << "T_DSPlib_processing::DestroyAlgorithm" << DSP::e::LogMode::second << "blocks deleted" << std::endl;
 
   DSP::Clock::FreeClocks();
@@ -1748,6 +1770,11 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
   {
     delete constellation;
     constellation = NULL;
+  }
+  if (eyediagrams != NULL)
+  {
+    delete eyediagrams;
+    eyediagrams = NULL;
   }
 
   DSP::log << "T_DSPlib_processing::DestroyAlgorithm" << DSP::e::LogMode::second << "PlotsStacks deleted" << std::endl;

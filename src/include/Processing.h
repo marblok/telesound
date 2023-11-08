@@ -139,8 +139,9 @@ class T_DSPlib_processing : public T_InputElement
     unsigned short ModulatorVariant;
     float CarrierFreq;
     //**************************************//
-    DSP::u::OutputBuffer *analysis_buffer, *constellation_buffer;
+    DSP::u::OutputBuffer *analysis_buffer, *constellation_buffer, *eyediagram_buffer;
     const unsigned int constellation_buffer_size = 4000;
+    const unsigned int eyediagram_buffer_size = 2000;
     
     TOptions *MorseDecoder_options;
     bool MorseReceiverState;
@@ -185,7 +186,7 @@ class T_DSPlib_processing : public T_InputElement
     //! number of slots in signal map
     int NoOfSignalMAPslots;
     DSP::Float_vector tmp_FFT_buffer;
-    DSP::Float_vector tmp_constellation_buffer;
+    DSP::Float_vector tmp_constellation_buffer, tmp_eyediagram_buffer;
 
     unsigned int PSDs_counter;
     bool standard_PSD_scaling;
@@ -197,6 +198,7 @@ class T_DSPlib_processing : public T_InputElement
     static T_DSPlib_processing *CurrentObject;
     static void AnalysisBufferCallback(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier);
     static void ConstellationBufferCallback(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier);
+    static void EyeDiagramBufferCallback(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier);
     //! przechowuje kolejne segmenty analizowanego sygnału
     T_PlotsStack *SignalSegments;
     //! przechowuje mapy kolejnych segmentów analizowanego sygnału
@@ -215,6 +217,7 @@ class T_DSPlib_processing : public T_InputElement
     //! plots stack for high resolution spectrogram
     T_PlotsStack *high_res_PSDs;
     T_PlotsStack *constellation;
+    T_PlotsStack *eyediagrams;
 
     //! created processing algorithm based on DSPlib
     void CreateAlgorithm(bool run_as_server, std::string address,
