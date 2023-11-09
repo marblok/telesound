@@ -827,30 +827,48 @@ void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float sk
   }
   glEnd();
 }
-void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples,  int samplesPerSymbol, int symbolsPerTrace, float skala_x, float skala_y, bool input_complex = true)
+void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, int samplesPerSymbol, int symbolsPerTrace, float skala_x, float skala_y, bool input_complex = true)
 {
 
-    glPointSize(1);
-    int numSamples = samples.size();
-    int samplesPerTrace = samplesPerSymbol*symbolsPerTrace;
-    double x_tick = (2*skala_x)/samplesPerTrace;
-    std::vector<double> x_values; 
+  glPointSize(2);
+  int numSamples = samples.size();
+  int samplesPerTrace = samplesPerSymbol * symbolsPerTrace;
+  int numTraces = numSamples / samplesPerTrace;
+  float color_tick = 1.0f/numTraces;
+  float x_tick = (2 * skala_x) / samplesPerTrace;
+  std::vector<float> x_values;
 
-    for(double i=-skala_x; i<=skala_x; i+=x_tick){//prepare x values;
-      x_values.push_back(i);
+  for (float i = -skala_x; i <= skala_x; i += x_tick)
+  { // prepare x values;
+    x_values.push_back(i);
+  }
+  unsigned int x_size = x_values.size();
+  int offset = 0;
+  
+  float color=0;
+
+  glLineWidth(1.0f);
+
+  for (int i = 0; i < numTraces; i++)
+  {
+    glBegin(GL_LINES);
+    //glBegin(GL_POINTS);
+    for (int j = 1; j < x_size-2; j++)
+    {
+      
+      //glVertex2d(x_values[j]+((rand() % 2 - 1) * x_tick/2), samples[j + offset] * skala_y);
+      glColor3f(color+color_tick, color+color_tick, 0.0);
+      glVertex2d(x_values[j], samples[j + offset] * skala_y);
+      glVertex2d(x_values[j+1], samples[j+ 1 + offset] * skala_y);
+
+      //glVertex2d(x_values[j], samples[j + offset] * skala_y);
     }
-    int x_size = x_values.size();
+    glEnd();
+    offset += samplesPerTrace;
+    color+=color_tick; 
 
-    //drawing
-    glColor3f(1.0,1.0,0.0);
-    for (int i = 0; i < numSamples; i+=samplesPerTrace) {
-    glBegin(GL_POINTS);
-       for (int j = 0; j < x_size; j++) {
-            glVertex2d(x_values[j], samples[j+i] * skala_y);
-        }
-         glEnd();
-   }
-    glFlush();
+  }
+
 }
 
 void T_PlotsStack::DrawSignal(float skala, DS_type type, float width)

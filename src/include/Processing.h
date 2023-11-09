@@ -141,8 +141,7 @@ class T_DSPlib_processing : public T_InputElement
     //**************************************//
     DSP::u::OutputBuffer *analysis_buffer, *constellation_buffer, *eyediagram_buffer;
     const unsigned int constellation_buffer_size = 4000;
-    const unsigned int eyediagram_buffer_size = 2000;
-    
+    const unsigned int eyediagram_buffer_size = 12000;
     TOptions *MorseDecoder_options;
     bool MorseReceiverState;
   
