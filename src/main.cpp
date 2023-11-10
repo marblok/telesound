@@ -80,6 +80,8 @@ EVT_COMMAND_SCROLL(ID_SNR_SLIDER, MainFrame::OnChannelSNRChange)
 EVT_COMMAND_SCROLL(ID_HPF_SLIDER, MainFrame::OnChannelFilterChange)
 EVT_COMMAND_SCROLL(ID_LPF_SLIDER, MainFrame::OnChannelFilterChange)
 EVT_COMMAND_SCROLL(ID_carrier_freq_SLIDER, MainFrame::OnCarrierFreqChange)
+EVT_COMMAND_SCROLL(ID_demod_carrier_freq_SLIDER, MainFrame::OnCarrierFreqChange)
+EVT_COMMAND_SCROLL(ID_demod_delay_SLIDER, MainFrame::OnCarrierFreqChange)
 
 
 EVT_BUTTON(ID_send_ascii_text, MainFrame::OnButtonPress)
@@ -87,6 +89,7 @@ EVT_CHECKBOX(ID_morse_receiver_state, MainFrame::OnSettingsInterfaceChange)
 
 EVT_CHECKBOX(ID_show_text_checkbox, MainFrame::OnSettingsInterfaceChange)
 EVT_CHECKBOX(ID_modulator_state, MainFrame::OnSettingsInterfaceChange)
+EVT_CHECKBOX(ID_demod_state, MainFrame::OnSettingsInterfaceChange)
 
 
 EVT_COMBOBOX(ID_voice_type, MainFrame::OnSelectVoiceType)
@@ -423,6 +426,9 @@ T_ProcessingSpec::T_ProcessingSpec(void)
   modulator_type = E_MT_PSK;
   modulator_variant = 1;
   carrier_freq = 4000;
+  demodulator_carrier_freq=4000;
+  demodulator_delay=0;
+  demodulator_state=false;
   morse_receiver_state = false;
 
   Next = NULL;
@@ -883,6 +889,9 @@ void T_InterfaceState::TransferDataToTask(
     do_transfer |= (modulator_type != selected_task->FirstProcessingSpec->modulator_type);
     do_transfer |= (modulator_variant != selected_task->FirstProcessingSpec->modulator_variant);
     do_transfer |= (carrier_freq != selected_task->FirstProcessingSpec->carrier_freq);
+    do_transfer |= (demodulator_carrier_freq != selected_task->FirstProcessingSpec->demodulator_carrier_freq);
+    do_transfer |= (demodulator_delay != selected_task->FirstProcessingSpec->demodulator_delay);
+    do_transfer |= (demodulator_state != selected_task->FirstProcessingSpec->demodulator_state);
     do_transfer |= (wav_filename.compare(selected_task->FirstProcessingSpec->wav_filename) != 0);
 
     if (do_transfer == false)
@@ -970,6 +979,10 @@ void T_InterfaceState::TransferDataToTask(
     selected_task->FirstProcessingSpec->modulator_type = modulator_type;
     selected_task->FirstProcessingSpec->modulator_variant = modulator_variant;
     selected_task->FirstProcessingSpec->carrier_freq = carrier_freq;
+    selected_task->FirstProcessingSpec->demodulator_carrier_freq = demodulator_carrier_freq;
+    selected_task->FirstProcessingSpec->demodulator_delay = demodulator_delay;
+    selected_task->FirstProcessingSpec->demodulator_state = demodulator_state;
+
     selected_task->FirstProcessingSpec->wav_filename = wav_filename;
 
     switch (draw_mode)
@@ -1840,7 +1853,11 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
     break;
   case ID_modulator_state:
     interface_state.modulator_state = ModulatorState->GetValue();
-
+    if(!interface_state.modulator_state){
+      CarrierFreqSlider->Disable();
+    }else{
+      CarrierFreqSlider->Enable();
+    }
     if (parent_task != NULL)
     {
       if (parent_task->ProcessingBranch != NULL)
@@ -1898,6 +1915,33 @@ if (parent_task != NULL)
         temp = new T_BranchCommand(E_BC_userdata, command_data);
 #ifdef __DEBUG__
         DSP::log << "ID_MODULATOR_TYPE_CHANGE" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
+#endif
+        parent_task->ProcessingBranch->PostCommandToBranch(temp);
+      }
+    }
+    break;
+     case ID_demod_state:
+    interface_state.demodulator_state = demodState->GetValue();
+    if(!interface_state.demodulator_state){
+      DemodCarrierFreq->Disable();
+      DemodDelay->Disable();
+    }else{
+      DemodCarrierFreq->Enable();
+      DemodDelay->Enable();
+    }
+    if (parent_task != NULL)
+    {
+      if (parent_task->ProcessingBranch != NULL)
+      {
+        T_BranchCommand *temp;
+        TCommandData *command_data;
+
+        interface_state.userdata_state = E_US_demod_state;
+        command_data = new TCommandData;
+        command_data->UserData = (void *)(&interface_state);
+        temp = new T_BranchCommand(E_BC_userdata, command_data);
+#ifdef __DEBUG__
+        DSP::log << "ID_DEMODULATOR_ON_OFF" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
         parent_task->ProcessingBranch->PostCommandToBranch(temp);
       }
@@ -2366,11 +2410,12 @@ void MyGLCanvas::DrawScatter(int width, int height)
   temp_plot_stack->SetBackgroundColor(1.0, CLR_gray);
   temp_plot_stack->SubPlot(1, 1, 1, width, height, true);
   SetColor(0.0, CLR_gray);
-  temp_plot_stack->DrawScatterPlot(T_DSPlib_processing::CurrentObject->constellation_buffer_size, T_DSPlib_processing::CurrentObject->tmp_constellation_buffer.data(), 3, 3);
+  temp_plot_stack->DrawScatterPlot(T_DSPlib_processing::CurrentObject->constellation_buffer_size, T_DSPlib_processing::CurrentObject->tmp_constellation_buffer.data(), 1, 3);
   }
   // ++++++++++++++++++++++++++++++++++++++++ //
   // ++++++++++++++++++++++++++++++++++++++++ //
 }
+
 
 void MyGLCanvas::DrawEyeDiagram(int width, int height){
   if (T_DSPlib_processing::CurrentObject == NULL)
@@ -2391,7 +2436,7 @@ void MyGLCanvas::DrawEyeDiagram(int width, int height){
   temp_plot_stack->SetBackgroundColor(0.0, 0.0, 0.0);
   temp_plot_stack->SubPlot(1, 1, 1, width, height, true);
   SetColor(0.0, CLR_gray);
-  temp_plot_stack->DrawEyeDiagram(T_DSPlib_processing::CurrentObject->Fp,T_DSPlib_processing::CurrentObject->tmp_eyediagram_buffer, 40, 2,1,2,false);
+  temp_plot_stack->DrawEyeDiagram(T_DSPlib_processing::CurrentObject->Fp,T_DSPlib_processing::CurrentObject->tmp_eyediagram_buffer, 40, 2,1,2,true);
 
   }
 }
@@ -3119,7 +3164,7 @@ void MainFrame::InitGUI(){
 
 void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
 {
-  float Fd, Fg, Carrier_freq;
+  float Fd, Fg, Carrier_freq, demod_carrier_freq;
   bool Fd_fix = false;
   bool Fg_fix = false;
   bool keep_Fg = false;
@@ -3131,6 +3176,7 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
     Fg *= 100;
     Fd = interface_state.channel_Fd;
     Carrier_freq = interface_state.carrier_freq;
+    demod_carrier_freq = interface_state.demodulator_carrier_freq;
     keep_Fg = true;
     break;
   case ID_HPF_SLIDER:
@@ -3138,6 +3184,7 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
     Fd *= 100;
     Fg = interface_state.channel_Fg;
     Carrier_freq = interface_state.carrier_freq;
+    demod_carrier_freq = interface_state.demodulator_carrier_freq;
     keep_Fg = false;
     break;
 
@@ -3152,15 +3199,20 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
     CarrierFreqSlider-> SetRange(0,(int)(interface_state.sampling_rate / 200));
     CarrierFreqSlider-> SetValue((int)(interface_state.sampling_rate / 400));
 
+    DemodCarrierFreq-> SetRange(0,(int)(interface_state.sampling_rate / 200));
+    DemodCarrierFreq-> SetValue((int)(interface_state.sampling_rate / 400));
+
     interface_state.channel_Fd = 0;
     interface_state.channel_Fg = interface_state.sampling_rate / 2;
     
     interface_state.carrier_freq =  interface_state.sampling_rate / 4;
+    interface_state.demodulator_carrier_freq =  interface_state.sampling_rate / 4;
 
 
     Fd = interface_state.channel_Fd;
     Fg = interface_state.channel_Fg; 
     Carrier_freq = interface_state.carrier_freq;
+    demod_carrier_freq = interface_state.demodulator_carrier_freq;
     UpdateModulatorParametersText();
     break;
   }
@@ -3212,6 +3264,7 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
     HPF_text->ChangeValue(wxString::Format("%.0f Hz", Fd));
     LPF_text->ChangeValue(wxString::Format("%.0f Hz", Fg));
     CarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (Carrier_freq/interface_state.sampling_rate),Carrier_freq));
+    DemodCarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (demod_carrier_freq/interface_state.sampling_rate),demod_carrier_freq));
     return;
   }
 
@@ -3233,6 +3286,11 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
     interface_state.carrier_freq = Carrier_freq;
     interface_state.userdata_state |= E_US_carrier_freq;
     CarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (Carrier_freq / interface_state.sampling_rate), Carrier_freq));
+  }  if (interface_state.demodulator_carrier_freq != demod_carrier_freq)
+  {
+    interface_state.demodulator_carrier_freq = Carrier_freq;
+    interface_state.userdata_state |= E_US_demod_carrier_freq;
+    DemodCarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (demod_carrier_freq / interface_state.sampling_rate), demod_carrier_freq));
   }
   if (Fg_fix == true)
   {
@@ -3267,6 +3325,7 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
 void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
 {
   float Carrier_freq;
+  int delay;
   switch (event.GetId())
   {
   case ID_carrier_freq_SLIDER:
@@ -3280,7 +3339,47 @@ void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
     interface_state.carrier_freq = Carrier_freq;
     interface_state.userdata_state |= E_US_carrier_freq;
     break;
+  
+
+  case ID_demod_carrier_freq_SLIDER:
+    Carrier_freq = DemodCarrierFreq->GetValue();
+    Carrier_freq *= 100;
+    DemodCarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (Carrier_freq / interface_state.sampling_rate), Carrier_freq));
+    if (event.GetEventType() != wxEVT_SCROLL_CHANGED)
+    { // only show current position but do not update
+      return;
+    }
+    interface_state.demodulator_carrier_freq = Carrier_freq;
+    interface_state.userdata_state |= E_US_demod_carrier_freq;
+    break;
+  
+  
+  case ID_demod_delay_SLIDER:
+    delay = DemodDelay->GetValue();
+    interface_state.demodulator_delay = delay;
+    interface_state.userdata_state |= E_US_demod_delay;
+  if (parent_task != NULL)
+  {
+    interface_state.TransferDataToTask(NULL, parent_task, false);
+
+    if (parent_task->ProcessingBranch != NULL)
+    {
+      T_BranchCommand *temp;
+      TCommandData *command_data;
+
+      command_data = new TCommandData;
+      command_data->UserData = (void *)(&interface_state);
+      temp = new T_BranchCommand(E_BC_userdata, command_data);
+#ifdef __DEBUG__
+      DSP::log << "MainFrame::OnDelayChange" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
+#endif
+      parent_task->ProcessingBranch->PostCommandToBranch(temp);
+    }
+}
+break;
+
   }
+  
   if (parent_task != NULL)
   {
     interface_state.TransferDataToTask(NULL, parent_task, false);

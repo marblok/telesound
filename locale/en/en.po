@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2023-11-07 23:35+0100\n"
-"PO-Revision-Date: 2023-11-07 23:39+0100\n"
+"POT-Creation-Date: 2023-11-10 23:11+0100\n"
+"PO-Revision-Date: 2023-11-10 23:12+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -77,7 +77,7 @@ msgstr "Connection status"
 msgid "Rozpocznij przetwarzanie"
 msgstr "Start processing"
 
-#: TeleSound_wxGlade.cpp:61 main.cpp:1262
+#: TeleSound_wxGlade.cpp:61 main.cpp:1265
 msgid "Wstrzymaj przetwarzanie"
 msgstr "Pause processing"
 
@@ -85,11 +85,11 @@ msgstr "Pause processing"
 msgid "ZakoĹ„cz przetwarzanie"
 msgstr "Stop processing"
 
-#: TeleSound_wxGlade.cpp:71 main.cpp:1756
+#: TeleSound_wxGlade.cpp:71 main.cpp:1759
 msgid "Status mikrofonu (wyĹ‚Ä…czony)"
 msgstr "Microphone (off)"
 
-#: TeleSound_wxGlade.cpp:75 main.cpp:1820
+#: TeleSound_wxGlade.cpp:75 main.cpp:1823
 msgid "SygnaĹ‚ lokalny (wyĹ‚Ä…czony)"
 msgstr "Local signal (off)"
 
@@ -297,87 +297,83 @@ msgstr "enabled"
 msgid "Status programu"
 msgstr "Program status"
 
-#: TeleSound_wxGlade.cpp:257
+#: TeleSound_wxGlade.cpp:258
 msgid "Modulacja"
 msgstr "Modulation"
 
-#: TeleSound_wxGlade.cpp:259
+#: TeleSound_wxGlade.cpp:260
 msgid "WybĂłr modulacji"
 msgstr "Modulation"
 
-#: TeleSound_wxGlade.cpp:262
+#: TeleSound_wxGlade.cpp:263
 msgid "ASK"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:263
+#: TeleSound_wxGlade.cpp:264
 msgid "PSK"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:264
+#: TeleSound_wxGlade.cpp:265
 msgid "FSK"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:265
+#: TeleSound_wxGlade.cpp:266
 msgid "QAM"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:270
-msgid "Modulator"
-msgstr ""
-
 #: TeleSound_wxGlade.cpp:272
-msgid "WĹ‚Ä…cz modulator"
-msgstr "Enable modulator"
-
-#: TeleSound_wxGlade.cpp:274
-msgid "Parametry modulatora"
-msgstr "Parameters"
-
-#: TeleSound_wxGlade.cpp:276
-msgid "SzybkoĹ›Ä‡ prĂłbkowania nie jest wielokrotnoĹ›ciÄ… szybkoĹ›ci symbolowej!"
-msgstr "Sampling rate is not compatible with selected modulator!"
-
-#: TeleSound_wxGlade.cpp:283
-msgid "Wariant: "
-msgstr "Variant: "
-
-#: TeleSound_wxGlade.cpp:286
 msgid "1"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:287
+#: TeleSound_wxGlade.cpp:273
 msgid "2"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:292
+#: TeleSound_wxGlade.cpp:278
+msgid "Modulator"
+msgstr ""
+
+#: TeleSound_wxGlade.cpp:280
+msgid "WĹ‚Ä…cz modulator"
+msgstr "Enable modulator"
+
+#: TeleSound_wxGlade.cpp:282
+msgid "Parametry modulatora"
+msgstr "Parameters"
+
+#: TeleSound_wxGlade.cpp:284
+msgid "SzybkoĹ›Ä‡ prĂłbkowania nie jest wielokrotnoĹ›ciÄ… szybkoĹ›ci symbolowej!"
+msgstr "Sampling rate is not compatible with selected modulator!"
+
+#: TeleSound_wxGlade.cpp:291
 msgid "N_symb:"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:296
+#: TeleSound_wxGlade.cpp:295
 msgid "f_symb"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:300
+#: TeleSound_wxGlade.cpp:299
 msgid "bit_per_sample"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:308
+#: TeleSound_wxGlade.cpp:307
 msgid "T_symb"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:312
+#: TeleSound_wxGlade.cpp:311
 msgid "F_symb"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:316
+#: TeleSound_wxGlade.cpp:315
 msgid "bps"
 msgstr ""
 
-#: TeleSound_wxGlade.cpp:324
+#: TeleSound_wxGlade.cpp:323
 msgid "CzÄ™stotliwoĹ›Ä‡ noĹ›na (f_o / F_o):"
 msgstr "Carrier frequency (f_o / F_o):"
 
-#: TeleSound_wxGlade.cpp:329
+#: TeleSound_wxGlade.cpp:328
 msgid "WybĂłr czÄ™stotliwoĹ›ci noĹ›nej"
 msgstr "Carrier frequency select"
 
@@ -385,57 +381,80 @@ msgstr "Carrier frequency select"
 msgid "Demodulator"
 msgstr ""
 
-#: main.cpp:768
+#: TeleSound_wxGlade.cpp:333
+msgid "Wlacz demodulator"
+msgstr "Enable demodulator"
+
+#: TeleSound_wxGlade.cpp:337
+msgid "Czestotliwosc nosna:"
+msgstr "Carrier frequency:"
+
+#: TeleSound_wxGlade.cpp:342
+msgid "Wybor czestotliwosci nosnej"
+msgstr "Carrier frequency select"
+
+#: TeleSound_wxGlade.cpp:347
+msgid "Opoznienie (Sa):"
+msgstr "Delay (Sa):"
+
+#: TeleSound_wxGlade.cpp:350
+msgid "Wybor opoznienia demodulatora"
+msgstr "Demodulator delay select"
+
+#: main.cpp:771
 msgid "Processing specification not ready"
 msgstr ""
 
-#: main.cpp:769
+#: main.cpp:772
 msgid "Run Task Problem"
 msgstr ""
 
-#: main.cpp:928
+#: main.cpp:931
 msgid "Task parameters changed"
 msgstr ""
 
-#: main.cpp:1266
+#: main.cpp:1269
 msgid "WznĂłw przetwarzanie"
 msgstr "Resume processing"
 
-#: main.cpp:1340
+#: main.cpp:1343
 msgid "Aby zastosowac nowy jezyk nalezy uruchomic program ponownie"
 msgstr "To apply the selected language, please restart the program"
 
-#: main.cpp:1340
+#: main.cpp:1343
 msgid "Zmiana jezyka"
 msgstr "Language change"
 
-#: main.cpp:1456
+#: main.cpp:1459
 msgid ""
 "Author: Marek Blok (c) 2020\n"
 "\n"
 msgstr ""
 
-#: main.cpp:1457
+#: main.cpp:1460
 msgid ""
 "Updated & translated by: Kacper Stark 2023\n"
 "\n"
 msgstr ""
 
-#: main.cpp:1462
+#: main.cpp:1465
 msgid "About TeleSound"
 msgstr ""
 
-#: main.cpp:1750
+#: main.cpp:1753
 msgid "Status mikrofonu (wĹ‚Ä…czony)"
 msgstr "Microphone (on)"
 
-#: main.cpp:1814
+#: main.cpp:1817
 msgid "SygnaĹ‚ lokalny (wĹ‚Ä…czony)"
 msgstr "Local signal (on)"
 
-#: main.cpp:1913 main.cpp:1930
+#: main.cpp:1947 main.cpp:1964
 msgid "losowy"
 msgstr "random"
+
+#~ msgid "Wariant: "
+#~ msgstr "Variant: "
 
 #~ msgid "Głośność główna:"
 #~ msgstr "Master volume:"

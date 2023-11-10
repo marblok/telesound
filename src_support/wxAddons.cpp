@@ -801,24 +801,21 @@ void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float sk
 
 
   glBegin(GL_POLYGON);
-//  glColor3f(0.0, 1.0, 1.0);
   glColor3f(0.0, 0.0, 0.5);
   glVertex2f(0.0, 0.90);
   glVertex2f(0.0, 0.97);
   glEnd();
 
-  // QPSK
   glBegin(GL_POLYGON);
   glColor3f(0.0, 0.3, 0.0);
-//  glColor3f(0.5, 0.0, 0.0);
+
   glVertex2f(0.0, 0.91);
   glVertex2f(0.0, 0.98);
   glEnd();
-  
+
   glPointSize(size);
   glBegin(GL_POINTS);
-
-  for (ind=0; ind<SegmentSize; ind+=20)
+  for (ind=0; ind<SegmentSize; ind+=2)
   {
     x=XYdata[ind]*skala;
     y=XYdata[ind+1]*skala;
@@ -829,46 +826,81 @@ void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float sk
 }
 void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, int samplesPerSymbol, int symbolsPerTrace, float skala_x, float skala_y, bool input_complex = true)
 {
-
   glPointSize(2);
-  int numSamples = samples.size();
+  int numSamples;
+  float reBaseLine, imBaseLine;
+  std::vector<float> x_values;
+
+  if (input_complex)
+  {
+    numSamples = samples.size() / 2;
+    reBaseLine = 0.5;
+    imBaseLine = -0.5;
+  }
+  else
+  {
+    numSamples = samples.size();
+  }
+
   int samplesPerTrace = samplesPerSymbol * symbolsPerTrace;
   int numTraces = numSamples / samplesPerTrace;
-  float color_tick = 1.0f/numTraces;
-  float x_tick = (2 * skala_x) / samplesPerTrace;
-  std::vector<float> x_values;
+  float color_tick = 1.0f / numTraces;
+  float x_tick = (2 * skala_x-0.1) / samplesPerTrace;
+
 
   for (float i = -skala_x; i <= skala_x; i += x_tick)
   { // prepare x values;
     x_values.push_back(i);
   }
+  
   unsigned int x_size = x_values.size();
   int offset = 0;
-  
-  float color=0;
+  float color = 0;
 
   glLineWidth(1.0f);
-
-  for (int i = 0; i < numTraces; i++)
+  if (input_complex)
   {
-    glBegin(GL_LINES);
-    //glBegin(GL_POINTS);
-    for (int j = 1; j < x_size-2; j++)
+    for (int i = 0; i < numTraces; i++)
     {
       
-      //glVertex2d(x_values[j]+((rand() % 2 - 1) * x_tick/2), samples[j + offset] * skala_y);
-      glColor3f(color+color_tick, color+color_tick, 0.0);
-      glVertex2d(x_values[j], samples[j + offset] * skala_y);
-      glVertex2d(x_values[j+1], samples[j+ 1 + offset] * skala_y);
+      // glBegin(GL_POINTS);
 
-      //glVertex2d(x_values[j], samples[j + offset] * skala_y);
+
+  glBegin(GL_LINES);
+      for (int j = 0; j < x_size - 2; j+=2)
+      {
+        glColor3f(color + color_tick, color + color_tick, 0.0);
+      
+        glVertex2d(x_values[j], reBaseLine+samples[j + offset] * skala_y);//re
+        glVertex2d(x_values[j + 2], reBaseLine+samples[j + 2 + offset] * skala_y);//re
+        
+        glColor3f(0.0, color + color_tick, color + color_tick);
+        glVertex2d(x_values[j], imBaseLine+samples[j + 1 + offset] * skala_y);//im
+        glVertex2d(x_values[j + 2], imBaseLine+samples[j + 3 + offset] * skala_y);//im
+     
+      }
+      glEnd();
+      offset += samplesPerTrace;
+      color += color_tick;
     }
-    glEnd();
-    offset += samplesPerTrace;
-    color+=color_tick; 
-
   }
-
+  else
+  {
+    for (int i = 0; i < numTraces; i++)
+    {
+      glBegin(GL_LINES);
+      // glBegin(GL_POINTS);
+      for (int j = 1; j < x_size - 2; j++)
+      {
+        glColor3f(color + color_tick, color + color_tick, 0.0);
+        glVertex2d(x_values[j], samples[j + offset] * skala_y);
+        glVertex2d(x_values[j + 1], samples[j + 1 + offset] * skala_y);
+      }
+      glEnd();
+      offset += samplesPerTrace;
+      color += color_tick;
+    }
+  }
 }
 
 void T_PlotsStack::DrawSignal(float skala, DS_type type, float width)

@@ -28,7 +28,13 @@ extern wxCriticalSection CS_UserData;
 typedef std::vector<std::vector<float>> sos_matrix;
 
 class Modulator{
+  
   private:
+    unsigned int L1, M1, L2 , M2;
+    DSP::e::ModulationType mod_type;
+    unsigned int bits_per_symbol;
+    std::string coef_name_stage1, coef_name_stage2;    
+    DSP::Float_vector h_LPF_stage1, h_LPF_stage2;
     std::unique_ptr <DSP::u::Const> Const;
     float CarrierFreq;
     DSP::Clock_ptr BitClock, SymbolClock, Interpol1Clock, Interpol2Clock;
@@ -57,8 +63,44 @@ class Modulator{
    if (ModDDS!=nullptr)
       ModDDS->SetAngularFrequency(DSP::M_PIx2*New_frequency);
   }
+  friend class Demodulator;
 };
+class Demodulator{
+  private:
+    DSP::Clock_ptr  SymbolClock, Interpol1Clock, Interpol2Clock;
+    
+    std::unique_ptr <DSP::u::Amplifier> DemodAmp;
+    std::unique_ptr <DSP::u::Delay> DemodDelay;
+    std::unique_ptr <DSP::u::DDScos> DemodDDS;
+    std::unique_ptr <DSP::u::Multiplication> DemodMul;
+    std::unique_ptr <DSP::u::SamplingRateConversion> DemodConverter;
+    std::unique_ptr <DSP::u::FIR> DemodFIR;
+    std::unique_ptr <DSP::u::RawDecimator> DemodDecimator;
 
+  public:
+  void create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation_re, DSP::input &Constellation_im, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, bool enable);
+  void clear_branch(void);
+
+  void enableInput(bool enable){
+    if(DemodAmp!=nullptr){
+      DemodAmp->SetGain((enable)?1.0f:0.0f);
+    }
+  }
+  
+  void setInputDelay(DSP::output &Input_signal,int delay){// execute between clock ticks
+    if(DemodDelay!=nullptr){
+      DemodDelay.reset(new DSP::u::Delay(delay,1U));
+      DemodAmp->Output("out")>>DemodDelay->Input("in");
+      DemodDelay->Output("out")>>DemodMul->Input("in1");
+    }
+  } 
+
+  void setCarrierFrequency(float New_frequency){
+   if (DemodDDS!=nullptr)
+      DemodDDS->SetAngularFrequency(-DSP::M_PIx2*New_frequency);
+  }
+
+};
 
 class T_DSPlib_processing : public T_InputElement
 {
@@ -71,6 +113,7 @@ class T_DSPlib_processing : public T_InputElement
 
     bool GraphInitialized;
     bool reloadModulator = false;
+    bool reloadDelay = false;
     long Fp;
     //! sampling rate of wave source files
     long Fp_wave_in;
@@ -117,6 +160,9 @@ class T_DSPlib_processing : public T_InputElement
     DSP::u::IIR *ChannelFilter_LPF2;
     DSP::u::IIR *ChannelFilter_HPF;
     DSP::u::IIR *ChannelFilter_HPF2;
+
+
+    DSP::u::Splitter *OutSplitter;
     bool ChannelFilterON;
     float ChannelFd, ChannelFg;
     DSP::Float_vector LPF_new_coefs_b, LPF_new_coefs_a;
@@ -134,13 +180,19 @@ class T_DSPlib_processing : public T_InputElement
     //        Modulator components           //
 
     Modulator modulator;
+    Demodulator demodulator;
     bool ModulatorState;
     E_ModulatorTypes ModulatorType;
     unsigned short ModulatorVariant;
     float CarrierFreq;
+
+    bool DemodulatorState;
+    float DemodulatorCarrierFreq;
+    int DemodulatorDelay;
+
     //**************************************//
     DSP::u::OutputBuffer *analysis_buffer, *constellation_buffer, *eyediagram_buffer;
-    const unsigned int constellation_buffer_size = 4000;
+    const unsigned int constellation_buffer_size = 3000;
     const unsigned int eyediagram_buffer_size = 12000;
     TOptions *MorseDecoder_options;
     bool MorseReceiverState;

@@ -73,7 +73,11 @@ enum
     ID_carrier_freq_SLIDER=140,
     ID_SELECT_MODULATOR_TYPE = 141, 
     ID_SELECT_MODULATOR_VARIANT = 142,
+    ID_demod_carrier_freq_SLIDER = 143,
+    ID_demod_delay_SLIDER = 144,
+    ID_demod_state=145,
 
+    
     ID_RUN_TASK = 201,
     ID_PAUSE_TASK = 202,
     ID_STOP_TASK = 203,

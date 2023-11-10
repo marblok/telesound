@@ -170,9 +170,12 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
 
   MorseReceiverState = SpecList->morse_receiver_state;
   ModulatorState   = SpecList->modulator_state;
+  DemodulatorState = SpecList->demodulator_state;
   ModulatorType = SpecList->modulator_type;
   ModulatorVariant = SpecList->modulator_variant;
   CarrierFreq  = SpecList->carrier_freq;
+  DemodulatorCarrierFreq= SpecList->demodulator_carrier_freq;
+  DemodulatorDelay= SpecList->demodulator_delay;
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
   MasterClock = NULL;
@@ -206,6 +209,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   ChannelFilter_LPF2 = NULL;
   ChannelFilter_HPF2 = NULL;
 #endif
+  OutSplitter=NULL;
   NoiseBuffer = NULL;
   NoiseGain = NULL;
   SignalGain = NULL;
@@ -243,11 +247,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   DSP::Clock::SchemeToDOTfile(MasterClock, "processing_scheme.dot");
 }
 void Modulator::create_branch(DSP::Clock_ptr Clock_in, DSP::input &Output_signal, E_ModulatorTypes Modulator_type, float Carrier_freq, unsigned short variant, bool Enable_output){ 
-  unsigned int L1, M1, L2 , M2;
-  DSP::e::ModulationType mod_type;
-  unsigned int bits_per_symbol;
-
-  std::string coef_name_stage1, coef_name_stage2;
+  CarrierFreq = Carrier_freq;
   switch (Modulator_type)
   {
   case E_MT_ASK:
@@ -359,8 +359,7 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, DSP::input &Output_signal
   if (Modulator_type == E_MT_FSK)
   {   
   DSP::LoadCoef coef_info_stage1, coef_info_stage2, coef_info_stage3;
-  int N_LPF_stage1, N_LPF_stage2, N_LPF_stage3;
-  DSP::Float_vector h_LPF_stage1, h_LPF_stage2, h_LPF_stage3;
+  int N_LPF_stage1, N_LPF_stage2;
 
     // filtr dla 1. stopnia
     coef_info_stage1.Open(coef_name_stage1, "matlab"); // TODO:change directory to /config.
@@ -415,7 +414,6 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, DSP::input &Output_signal
     // wczytanie wspolczynników filtrow
     DSP::LoadCoef coef_info_stage1, coef_info_stage2, coef_info_stage3;
     int N_LPF_stage1, N_LPF_stage2, N_LPF_stage3;
-    DSP::Float_vector h_LPF_stage1, h_LPF_stage2, h_LPF_stage3;
 
     // filtr dla 1. stopnia
     coef_info_stage1.Open(coef_name_stage1, "matlab"); // TODO:change directory to /config.
@@ -508,9 +506,44 @@ void Modulator::clear_branch(){
   //   DSP::Component::ListOfAllComponents(true);
   // #endif
   }
+  void Demodulator::create_branch(DSP::Clock_ptr Clock_in, DSP::input & Constellation_re, DSP::input &Constellation_im, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator,   bool enable){
+      Interpol2Clock = Clock_in;
+      Interpol1Clock = DSP::Clock::GetClock(Clock_in,modulator.M2,modulator.L2);
+      DemodAmp.reset(new DSP::u::Amplifier(((enable) ? 1.0f : 0.0f),1,false));
+      DemodDelay.reset(new DSP::u::Delay(0,1,true));
+      DemodDDS.reset(new DSP::u::DDScos(Clock_in, true, 1.0, -DSP::M_PIx2 *modulator.CarrierFreq));
+      DemodMul.reset(new DSP::u::Multiplication(1U, 1U));
+      DemodConverter.reset(new DSP::u::SamplingRateConversion(true, Clock_in, modulator.M2, modulator.L2, modulator.h_LPF_stage2));
+      DemodFIR.reset(new DSP::u::FIR(true, modulator.h_LPF_stage1));
+      DemodDecimator.reset(new DSP::u::RawDecimator(Interpol1Clock,modulator.L1,2U));
 
-T_DSPlib_processing::~T_DSPlib_processing(void)
-{
+
+
+      Input_signal>>DemodAmp->Input("in");
+      DemodAmp->Output("out")>> DemodDelay->Input("in");
+      DemodDelay->Output("out")>>DemodMul->Input("in1");
+      DemodDDS->Output("out")>>DemodMul->Input("in2");
+      DemodMul->Output("out")>>DemodConverter->Input("in");
+      DemodConverter->Output("out")>>DemodFIR->Input("in");
+      DemodConverter->Output("out")>>Eyediagram;
+      DemodFIR->Output("out")>>DemodDecimator->Input("in");
+      DemodDecimator->Output("out1")>>Constellation_re;
+      DemodDecimator->Output("out2")>>Constellation_im;
+  }
+
+  void Demodulator::clear_branch()
+  {
+      DemodAmp.reset(nullptr);
+      DemodDelay.reset(nullptr);
+      DemodDDS.reset(nullptr);
+      DemodMul.reset(nullptr);
+      DemodConverter.reset(nullptr);
+      DemodFIR.reset(nullptr);
+      DemodDecimator.reset(nullptr);
+      DemodAmp.reset(nullptr);
+  }
+  T_DSPlib_processing::~T_DSPlib_processing(void)
+  {
   DestroyAlgorithm();
 
   if (window != NULL)
@@ -694,6 +727,12 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
     ModulatorState = temp_spec->modulator_state;
     UpdateState |= E_US_modulator_state;
     temp_spec->userdata_state ^= E_US_modulator_state;
+  }   
+  if ((temp_spec->userdata_state & E_US_demod_state) != 0)
+  {
+    DemodulatorState = temp_spec->demodulator_state;
+    UpdateState |= E_US_demod_state;
+    temp_spec->userdata_state ^= E_US_demod_state;
   }
     if ((temp_spec->userdata_state & E_US_carrier_freq) != 0)
   {
@@ -701,6 +740,21 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
     modulator.setCarrierFrequency(temp_spec->carrier_freq/temp_spec->sampling_rate);
     UpdateState |= E_US_carrier_freq;
     temp_spec->userdata_state ^= E_US_carrier_freq;
+  }
+  if ((temp_spec->userdata_state & E_US_demod_carrier_freq) != 0)
+  {
+    CarrierFreq = temp_spec->demodulator_carrier_freq;
+    demodulator.setCarrierFrequency(temp_spec->demodulator_carrier_freq/temp_spec->sampling_rate);
+    UpdateState |= E_US_demod_carrier_freq;
+    temp_spec->userdata_state ^= E_US_demod_carrier_freq;
+  }
+    if ((temp_spec->userdata_state & E_US_demod_delay) != 0)
+  {
+    
+    DemodulatorDelay= temp_spec->demodulator_delay;
+    reloadDelay=true;
+    UpdateState |= E_US_demod_delay;
+    temp_spec->userdata_state ^= E_US_demod_delay;
   }
     
     if ((temp_spec->userdata_state & E_US_modulator_type) != 0)
@@ -900,6 +954,13 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   AllSignalsAdd->Output("out")>> out_socket->Input("in");
 
   // wejscie 4 : modulator
+  constellation_buffer = new DSP::u::OutputBuffer(constellation_buffer_size, 2U, DSP::e::BufferType::stop_when_full, MasterClock, -1, T_DSPlib_processing::ConstellationBufferCallback);
+  constellation_buffer->SetName("Constellation");
+  eyediagram_buffer = new DSP::u::OutputBuffer(eyediagram_buffer_size, 2U, DSP::e::BufferType::stop_when_full, MasterClock, -1, T_DSPlib_processing::EyeDiagramBufferCallback);
+  eyediagram_buffer->SetName("Eye_diagram");
+  tmp_constellation_buffer=DSP::Float_vector(constellation_buffer_size,0);
+  tmp_eyediagram_buffer=DSP::Float_vector(eyediagram_buffer_size,0);
+  
   modulator.create_branch(MasterClock, DigitalSignalsAdd->Input("in3"), CurrentObject->ModulatorType, CurrentObject->CarrierFreq/Fp, CurrentObject->ModulatorVariant, CurrentObject->ModulatorState);
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
@@ -970,7 +1031,8 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
 
   NoiseAdd = new DSP::u::Addition(2U, 0U);
   NoiseAdd->SetName("Add(noise)", false);
-
+  OutSplitter = new DSP::u::Splitter(3U);
+  OutSplitter->SetName("OutSplitter");
   AudioOut = new DSP::u::AudioOutput(Fp, 1, 16);
   // AudioOut = new DSP::u::Vacuum;
 
@@ -982,10 +1044,10 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   ChannelFilter_LPF->Output("out") >> ChannelFilter_LPF2->Input("in");
   ChannelFilter_LPF2->Output("out") >> ChannelFilter_HPF2->Input("in");
   ChannelFilter_HPF2->Output("out") >> ChannelFilter_HPF->Input("in");
-  ChannelFilter_HPF->Output("out") >> AudioOut->Input("in");
+  ChannelFilter_HPF->Output("out") >> OutSplitter->Input("in");
 #else
   ChannelFilter_LPF->Output("out") >> ChannelFilter_HPF->Input("in");
-  ChannelFilter_HPF->Output("out") >> AudioOut->Input("in");
+  ChannelFilter_HPF->Output("out") >> OutSplitter->Input("in");
 #endif
 #else
   SignalGain->Output("out") >> ChannelFilter_LPF->Input("in");
@@ -1001,7 +1063,8 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   NoiseGain->Output("out") >> NoiseAdd->Input("in2");
   NoiseAdd->Output("out") >> AudioOut->Input("in");
 #endif
-
+ OutSplitter->Output("out1")>>AudioOut->Input("in");
+ demodulator.create_branch(MasterClock, constellation_buffer->Input("in.re"),constellation_buffer->Input("in.im"), eyediagram_buffer->Input("in"),OutSplitter->Output("out3"), modulator,CurrentObject->DemodulatorState);
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // basic assumptions:
@@ -1011,6 +1074,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   // SignalMapSize = 2; //define line for each slot
   // NoOfSignalMAPslots = NoOfPSDslots * 8;
   // specgram_time_span = 2.0; // in [sek]
+ 
   PSD_size = (FFT_size / 2) + 1;
   PSD_high_size = 0;
 
@@ -1052,8 +1116,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
 
   tmp_FFT_buffer = DSP::Float_vector(FFT_size, 0);
 
-  tmp_constellation_buffer=DSP::Float_vector(constellation_buffer_size,0);
-  tmp_eyediagram_buffer=DSP::Float_vector(eyediagram_buffer_size,0);
+  
   // memset(tmp_FFT_buffer, 0, FFT_size*sizeof(float));
 
   SignalSegments = new T_PlotsStack(NoOfPSDslots, BufferStep);
@@ -1125,18 +1188,13 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   analysis_buffer = new DSP::u::OutputBuffer(BufferSize, 1U,
                                              DSP::e::BufferType::stop_when_full, MasterClock, BufferStep, // int NotificationsStep_in=,
                                              T_DSPlib_processing::AnalysisBufferCallback                  // DSP::u::notify_callback_ptr func_ptr=NULL,
-  );                                                                                                 // int CallbackIdentifier=0);
-  constellation_buffer = new DSP::u::OutputBuffer(constellation_buffer_size, 1U, DSP::e::BufferType::stop_when_full, MasterClock, -1, T_DSPlib_processing::ConstellationBufferCallback);
-  eyediagram_buffer = new DSP::u::OutputBuffer(eyediagram_buffer_size, 1U, DSP::e::BufferType::stop_when_full, MasterClock, -1, T_DSPlib_processing::EyeDiagramBufferCallback);
-
+  );
+  analysis_buffer->SetName("Analysis");                                                                                                 // int CallbackIdentifier=0);
     
 #ifdef __TEST_CHANNEL_FILTER__
-  ChannelFilter_HPF->Output("out") >> analysis_buffer->Input("in");
-  ChannelFilter_HPF->Output("out") >> constellation_buffer->Input("in");
-  ChannelFilter_HPF->Output("out.re") >> eyediagram_buffer->Input("in");
+  OutSplitter->Output("out2") >> analysis_buffer->Input("in");
 #else
   NoiseAdd->Output("out") >> analysis_buffer->Input("in");
-  NoiseAdd->Output("out") >> constellation_buffer->Input("in");
 #endif
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
@@ -1259,6 +1317,12 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
       CurrentObject->modulator.enableOutput(CurrentObject->ModulatorState);
     }
     CurrentObject->UpdateState &= (~E_US_modulator_state);
+    
+    if ((CurrentObject->UpdateState & E_US_demod_state) != 0)
+    {
+      CurrentObject->demodulator.enableInput(CurrentObject->DemodulatorState);
+    }
+    CurrentObject->UpdateState &= (~E_US_demod_state);
   }
   // -------------------------------------------------------- //
 
@@ -1671,6 +1735,10 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
     ChannelFilter_HPF2 = NULL;
   }
 #endif
+if(OutSplitter!=NULL){
+delete OutSplitter;
+
+}
   if (NoiseBuffer != NULL)
   {
     delete NoiseBuffer;
@@ -1806,9 +1874,15 @@ bool T_DSPlib_processing::Process(E_processing_DIR processing_DIR)
   DSP::f::Sleep(5);
   DSP::Clock::Execute(MasterClock, cycles_per_segment);
   if(reloadModulator){
+    demodulator.clear_branch();
     modulator.clear_branch();
     modulator.create_branch(MasterClock, DigitalSignalsAdd->Input("in3"), CurrentObject->ModulatorType, CurrentObject->CarrierFreq/Fp, CurrentObject->ModulatorVariant, CurrentObject->ModulatorState);
+    demodulator.create_branch(MasterClock, constellation_buffer->Input("in.re"), constellation_buffer->Input("in.im"), eyediagram_buffer->Input("in"), OutSplitter->Output("out3"), modulator, CurrentObject->DemodulatorState);
     reloadModulator=false;
+  }
+  if(reloadDelay){
+    demodulator.setInputDelay(OutSplitter->Output("out3"),DemodulatorDelay);
+    reloadDelay=false;
   }
   DSP::f::Sleep(0);
   DSP::f::Sleep(5);

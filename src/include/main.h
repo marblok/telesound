@@ -219,6 +219,10 @@ class T_InterfaceState
     unsigned short modulator_variant;
     float carrier_freq;
     
+    bool demodulator_state;
+    float demodulator_carrier_freq;
+    int demodulator_delay;
+
     E_UpdateState userdata_state;
 
     // +++++++++++++++++++++++++ //
