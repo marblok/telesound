@@ -62,6 +62,7 @@ class Modulator{
   void setCarrierFrequency(float New_frequency){
    if (ModDDS!=nullptr)
       ModDDS->SetAngularFrequency(DSP::M_PIx2*New_frequency);
+      CarrierFreq =New_frequency;
   }
   friend class Demodulator;
 };
@@ -87,7 +88,7 @@ class Demodulator{
     }
   }
   
-  void setInputDelay(DSP::output &Input_signal,int delay){// execute between clock ticks
+  void setInputDelay(int delay){// execute between clock ticks
     if(DemodDelay!=nullptr){
       DemodDelay.reset(new DSP::u::Delay(delay,1U));
       DemodAmp->Output("out")>>DemodDelay->Input("in");

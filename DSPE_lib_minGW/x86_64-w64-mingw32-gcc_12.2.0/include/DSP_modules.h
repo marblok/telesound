@@ -51,6 +51,7 @@ namespace DSP {
   namespace u {
     class Copy;
     class Delay;
+    class AdjustableDelay;
     class LoopDelay;
     class Splitter;
     class Amplifier;
@@ -927,6 +928,19 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
     bool DefineOutput(const std::string &Name, const unsigned int &OutputNo = 0);
     bool DefineOutput(const std::string &Name, const unsigned int &OutputNo_re, const unsigned int &OutputNo_im);
     bool DefineOutput(const std::string &Name, const std::vector<unsigned int> &Outputs);
+    //! Defines standard outputs
+    /*!
+    * AreOutputsComplex == false:
+      "out", "out.re" - all output lines
+      "out1", "out1.re", "out2", "out2.re", ... - all output lines separately
+    * AreOutputsComplex == true:
+      "out"  - all output lines
+      "out.re" - all even output lines
+      "out.im" - all odd output lines
+      "out1", "out1.re", "out1.im", - all complex output lines separately
+      "out2", "out2.re", "out2.im",... 
+    */
+    void DefineStandardOutputs(const bool &AreOutputsComplex = false);
     //! Deletes output definition
     /*! If Name.length() == 0 deletes all output definitions
      */
@@ -1360,6 +1374,20 @@ class DSP::Block : public virtual DSP::Component
     bool DefineInput(const std::string &Name, const unsigned int &InputNo = 0);
     bool DefineInput(const std::string &Name, const unsigned int &InputNo_re, const unsigned int &InputNo_im);
     bool DefineInput(const std::string &Name, const std::vector <unsigned int> &Inputs);
+    //! Defines standard inputs
+    /*!
+    * AreInputsComplex == false:
+      "in", "in.re" - all input lines
+      "in1", "in1.re", "in2", "in2.re", ... - all input lines separately
+    * AreInputsComplex == true:
+      "in"  - all input lines
+      "in.re" - all even input lines
+      "in.im" - all odd input lines
+      "in1", "in1.re", "in1.im", - all complex input lines separately
+      "in2", "in2.re", "in2.im",... 
+    */
+    void DefineStandardInputs(const bool &AreInputsComplex);
+
     //! Deletes input definition
     /*! If Name == NULL deletes all input definitions
      */
@@ -2012,6 +2040,62 @@ class DSP::u::Delay : public DSP::Block
     virtual ~Delay(void);
 };
 
+//! Adjustable delay element implemented in processing mode
+/*! \warning Cannot separate processing in digital feedback loop !!!
+ *
+ * Inputs and Outputs names:
+ *   - Output:
+ *    -# "out" (vector of all outputs)
+ *    -# "out1", "out2", ...
+ *    -# "out.re" == "out1"
+ *    -# "out.im" == "out2"
+ *    .
+ *   - Input:
+ *    -# "in" (vector of all inputs)
+ *    -# "in1", "in2", ...
+ *    -# "in.re" == "in1"
+ *    -# "in.im" == "in2"
+ *    .
+ */
+class DSP::u::AdjustableDelay : public DSP::Block
+{
+  private:
+    unsigned int max_delay;
+    unsigned int current_delay;
+    unsigned int new_delay; //
+    DSP::Float **State;
+    //! current index in buffer
+    unsigned int *index;
+
+    //! Updates current_delay at the begining of the clock's cycle as well as NoOfInputsProcessed
+    void UpdateDelayIfNeeded(void);
+
+    //! version for Delay == 0
+    static void InputExecute_D0(INPUT_EXECUTE_ARGS);
+    static void InputExecute_D0_multi(INPUT_EXECUTE_ARGS);
+    //! version for Delay == 1
+    static void InputExecute_D1(INPUT_EXECUTE_ARGS);
+    static void InputExecute_D1_multi(INPUT_EXECUTE_ARGS);
+    //! version with memcpy
+    static void InputExecute(INPUT_EXECUTE_ARGS);
+    static void InputExecute_multi(INPUT_EXECUTE_ARGS);
+    //! version with cyclic buffer
+    static void InputExecute_with_cyclic_buffer(INPUT_EXECUTE_ARGS);
+    static void InputExecute_with_cyclic_buffer_multi(INPUT_EXECUTE_ARGS);
+  public:
+    //! Sets new value of the delay.
+    /*! Returns actually set delay (will differ from new_delay it is is out of range)
+    * delay value will be updated at the begining of new clock cycle 
+    * before that the GetCurrentDelay returns the previous delay value.
+    */
+    unsigned int SetDelay(unsigned int new_delay_in);
+    //! Returns current delay
+    unsigned int GetCurrentDelay(void);
+
+    //! DSP::u::AdjustableDelay block constructor
+    AdjustableDelay(unsigned int max_delay_in = 1, unsigned int initial_delay = 0, unsigned int InputsNo = 1, bool IsBufferCyclic = true);
+    virtual ~AdjustableDelay(void);
+};
 /**************************************************/
 //! Outputs input value to multiple outputs
 /*! Inputs and Outputs names:
@@ -2395,11 +2479,13 @@ class DSP::u::RawDecimator  : public DSP::Block, public DSP::Source
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
     static void InputExecute(INPUT_EXECUTE_ARGS);
 
+    void Init(bool IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int M_in, unsigned int InputsNo);
   public:
     /*! \todo_later OutputClocks should be updated for each output
      * not only first
      */
     RawDecimator(DSP::Clock_ptr ParentClock, unsigned int M_in=2, unsigned int InputsNo=1);
+    RawDecimator(const bool &AreInputsComplex, DSP::Clock_ptr ParentClock, unsigned int M_in=2, unsigned int InputsNo=1);
     ~RawDecimator(void);
 };
 
@@ -2433,11 +2519,11 @@ class DSP::u::Zeroinserter  : public DSP::Block, public DSP::Source
     static void InputExecute_real(INPUT_EXECUTE_ARGS);
     static void InputExecute_cplx(INPUT_EXECUTE_ARGS);
 
-    void Init(bool IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in, bool Hold);
+    void Init(const bool &IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in, bool Hold);
 public:
     //if Hold == true, holds input value instead of inserting zeros
     Zeroinserter(DSP::Clock_ptr ParentClock, unsigned int L_in=2, bool Hold=false);
-    Zeroinserter(bool IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in=2, bool Hold=false);
+    Zeroinserter(const bool &IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in=2, bool Hold=false);
     ~Zeroinserter(void);
 };
 

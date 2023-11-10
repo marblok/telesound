@@ -1881,7 +1881,7 @@ bool T_DSPlib_processing::Process(E_processing_DIR processing_DIR)
     reloadModulator=false;
   }
   if(reloadDelay){
-    demodulator.setInputDelay(OutSplitter->Output("out3"),DemodulatorDelay);
+    demodulator.setInputDelay(DemodulatorDelay);
     reloadDelay=false;
   }
   DSP::f::Sleep(0);
