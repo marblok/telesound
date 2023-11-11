@@ -52,6 +52,15 @@ class Modulator{
   public:
   void create_branch (DSP::Clock_ptr Clock_in, DSP::input &Output_signal, E_ModulatorTypes Modulator_type, float Carrier_freq, unsigned short variant = 1, bool Enable_output = false);
   void clear_branch(void);
+  DSP::Complex_vector get_constellation(){
+    DSP::Complex_vector tmp_constellation;
+    tmp_constellation.resize(0);
+    bool is_real=false;
+    if(ModMapper!=nullptr){
+      getConstellation(tmp_constellation,(DSP::e::ModulationType)mod_type,0,bits_per_symbol, is_real);
+    }
+    return tmp_constellation;
+    }
 
   void enableOutput(bool enable){
     if(ModAmp!=nullptr){
@@ -184,7 +193,7 @@ class T_DSPlib_processing : public T_InputElement
     E_ModulatorTypes ModulatorType;
     unsigned short ModulatorVariant;
     float CarrierFreq;
-
+    DSP::Complex_vector current_constellation;
     bool DemodulatorState;
     float DemodulatorCarrierFreq;
     int DemodulatorDelay;

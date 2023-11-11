@@ -766,11 +766,18 @@ void T_PlotsStack::DrawSpecgram3_dB(float dB_max, float dB_range, const CLR_map_
   //  glDisableClientState(GL_COLOR_ARRAY);
   glDeleteTextures( 1, &texture );
 }
-void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float size)
+void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Complex_vector constellation, float skala, float size)
 {
   float x, y;
   int ind;
-
+  glColor3f(1.0, 0.0, 0.0);
+  glPointSize(size+3);
+  glBegin(GL_POINTS);
+  for (auto &element : constellation) 
+  {  
+    glVertex2f(element.re/(skala*3.1),element.im/(skala*3.1));
+  }
+  glEnd();
   // Line antialiasing is controlled by calling glEnable and glDisable with argument GL_LINE_SMOOTH
   // axis
   glLineWidth(1.0);
@@ -812,6 +819,7 @@ void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float sk
   glVertex2f(0.0, 0.91);
   glVertex2f(0.0, 0.98);
   glEnd();
+
 
   glPointSize(size);
   glBegin(GL_POINTS);

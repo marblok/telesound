@@ -176,6 +176,9 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   CarrierFreq  = SpecList->carrier_freq;
   DemodulatorCarrierFreq= SpecList->demodulator_carrier_freq;
   DemodulatorDelay= SpecList->demodulator_delay;
+
+  current_constellation = DSP::Complex_vector(0);
+
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
   MasterClock = NULL;
@@ -1878,6 +1881,7 @@ bool T_DSPlib_processing::Process(E_processing_DIR processing_DIR)
     modulator.clear_branch();
     modulator.create_branch(MasterClock, DigitalSignalsAdd->Input("in3"), CurrentObject->ModulatorType, CurrentObject->CarrierFreq/Fp, CurrentObject->ModulatorVariant, CurrentObject->ModulatorState);
     demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"), OutSplitter->Output("out3"), modulator, CurrentObject->DemodulatorState);
+    current_constellation = modulator.get_constellation();
     reloadModulator=false;
   }
   DSP::f::Sleep(0);

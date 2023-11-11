@@ -2410,7 +2410,7 @@ void MyGLCanvas::DrawScatter(int width, int height)
   temp_plot_stack->SetBackgroundColor(1.0, CLR_gray);
   temp_plot_stack->SubPlot(1, 1, 1, width, height, true);
   SetColor(0.0, CLR_gray);
-  temp_plot_stack->DrawScatterPlot(T_DSPlib_processing::CurrentObject->constellation_buffer_size, T_DSPlib_processing::CurrentObject->tmp_constellation_buffer.data(), 1, 3);
+  temp_plot_stack->DrawScatterPlot(T_DSPlib_processing::CurrentObject->constellation_buffer_size, T_DSPlib_processing::CurrentObject->tmp_constellation_buffer.data(), T_DSPlib_processing::CurrentObject->current_constellation, 1,3);
   }
   // ++++++++++++++++++++++++++++++++++++++++ //
   // ++++++++++++++++++++++++++++++++++++++++ //
