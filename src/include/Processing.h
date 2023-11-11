@@ -170,7 +170,7 @@ class T_DSPlib_processing : public T_InputElement
     DSP::u::IIR *ChannelFilter_HPF2;
 
 
-    DSP::u::Splitter *OutSplitter;
+    // DSP::u::Splitter *OutSplitter;
     bool ChannelFilterON;
     float ChannelFd, ChannelFg;
     DSP::Float_vector LPF_new_coefs_b, LPF_new_coefs_a;

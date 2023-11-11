@@ -212,7 +212,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   ChannelFilter_LPF2 = NULL;
   ChannelFilter_HPF2 = NULL;
 #endif
-  OutSplitter=NULL;
+  // OutSplitter=NULL;
   NoiseBuffer = NULL;
   NoiseGain = NULL;
   SignalGain = NULL;
@@ -1034,8 +1034,8 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
 
   NoiseAdd = new DSP::u::Addition(2U, 0U);
   NoiseAdd->SetName("Add(noise)", false);
-  OutSplitter = new DSP::u::Splitter(3U);
-  OutSplitter->SetName("OutSplitter");
+  // OutSplitter = new DSP::u::Splitter(3U);
+  // OutSplitter->SetName("OutSplitter");
   AudioOut = new DSP::u::AudioOutput(Fp, 1, 16);
   // AudioOut = new DSP::u::Vacuum;
 
@@ -1047,10 +1047,12 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   ChannelFilter_LPF->Output("out") >> ChannelFilter_LPF2->Input("in");
   ChannelFilter_LPF2->Output("out") >> ChannelFilter_HPF2->Input("in");
   ChannelFilter_HPF2->Output("out") >> ChannelFilter_HPF->Input("in");
-  ChannelFilter_HPF->Output("out") >> OutSplitter->Input("in");
+  // ChannelFilter_HPF->Output("out") >> OutSplitter->Input("in");
+  ChannelFilter_HPF->Output("out") >> AudioOut->Input("in");
 #else
   ChannelFilter_LPF->Output("out") >> ChannelFilter_HPF->Input("in");
-  ChannelFilter_HPF->Output("out") >> OutSplitter->Input("in");
+  // ChannelFilter_HPF->Output("out") >> OutSplitter->Input("in");
+  ChannelFilter_HPF->Output("out") >> AudioOut->Input("in");
 #endif
 #else
   SignalGain->Output("out") >> ChannelFilter_LPF->Input("in");
@@ -1066,8 +1068,9 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   NoiseGain->Output("out") >> NoiseAdd->Input("in2");
   NoiseAdd->Output("out") >> AudioOut->Input("in");
 #endif
- OutSplitter->Output("out1")>>AudioOut->Input("in");
- demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"),OutSplitter->Output("out3"), modulator,CurrentObject->DemodulatorState);
+//  OutSplitter->Output("out1")>>AudioOut->Input("in");
+//  demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"),OutSplitter->Output("out3"), modulator,CurrentObject->DemodulatorState);
+ demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"),ChannelFilter_HPF->Output("out"), modulator,CurrentObject->DemodulatorState);
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // basic assumptions:
@@ -1195,11 +1198,18 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   analysis_buffer->SetName("Analysis");                                                                                                 // int CallbackIdentifier=0);
     
 #ifdef __TEST_CHANNEL_FILTER__
-  OutSplitter->Output("out2") >> analysis_buffer->Input("in");
+  // OutSplitter->Output("out2") >> analysis_buffer->Input("in");
+  ChannelFilter_HPF->Output("out") >> analysis_buffer->Input("in");
 #else
   NoiseAdd->Output("out") >> analysis_buffer->Input("in");
 #endif
 
+  // { // diagnostics
+  //   DSP::Clock::ListOfAllComponents(true);
+  //   std::stringstream ss;
+  //   ss << "scheme_" << rand() << ".dot";
+  //   DSP::Clock::SchemeToDOTfile(MasterClock, ss.str());
+  // }
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 }
 
@@ -1738,10 +1748,10 @@ void T_DSPlib_processing::DestroyAlgorithm(void)
     ChannelFilter_HPF2 = NULL;
   }
 #endif
-if(OutSplitter!=NULL){
-delete OutSplitter;
+// // if(OutSplitter!=NULL){
+// // delete OutSplitter;
 
-}
+// }
   if (NoiseBuffer != NULL)
   {
     delete NoiseBuffer;
@@ -1878,11 +1888,26 @@ bool T_DSPlib_processing::Process(E_processing_DIR processing_DIR)
   DSP::Clock::Execute(MasterClock, cycles_per_segment);
   if(reloadModulator){
     demodulator.clear_branch();
+    // { // diagnostics
+    //   DSP::Clock::ListOfAllComponents(true);
+    //   std::stringstream ss;
+    //   ss << "scheme_" << rand() << "-demodulator_clear.dot";
+    //   DSP::Clock::SchemeToDOTfile(MasterClock, ss.str());
+    // }    
+
     modulator.clear_branch();
     modulator.create_branch(MasterClock, DigitalSignalsAdd->Input("in3"), CurrentObject->ModulatorType, CurrentObject->CarrierFreq/Fp, CurrentObject->ModulatorVariant, CurrentObject->ModulatorState);
-    demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"), OutSplitter->Output("out3"), modulator, CurrentObject->DemodulatorState);
+    // demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"), OutSplitter->Output("out3"), modulator, CurrentObject->DemodulatorState);
+    demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"), ChannelFilter_HPF->Output("out"), modulator, CurrentObject->DemodulatorState);
     current_constellation = modulator.get_constellation();
     reloadModulator=false;
+
+    // { // diagnostics
+    //   DSP::Clock::ListOfAllComponents(true);
+    //   std::stringstream ss;
+    //   ss << "scheme_" << rand() << "-reload.dot";
+    //   DSP::Clock::SchemeToDOTfile(MasterClock, ss.str());
+    // }    
   }
   DSP::f::Sleep(0);
   DSP::f::Sleep(5);
