@@ -829,9 +829,11 @@ void T_InterfaceState::Reset(void)
   modulator_state = false;
   modulator_type = E_MT_PSK;
   modulator_variant = 1;
+  demodulator_state= false;
   carrier_freq = sampling_rate/4;
+  demodulator_carrier_freq=sampling_rate/4;
+  demodulator_delay=0;
   wav_filename[0] = 0x00;
-
   userdata_state = E_US_none;
 }
 
@@ -1131,6 +1133,7 @@ MainFrame::MainFrame(wxWindow *parent,
     SelectVoiceFile->Disable();
     OpenWAVEfile->Disable();
     StopWAVEfile->Disable();
+    showSentenceText->Disable();
   }
 
   // Accelerators
@@ -2436,7 +2439,7 @@ void MyGLCanvas::DrawEyeDiagram(int width, int height){
   temp_plot_stack->SetBackgroundColor(0.0, 0.0, 0.0);
   temp_plot_stack->SubPlot(1, 1, 1, width, height, true);
   SetColor(0.0, CLR_gray);
-  temp_plot_stack->DrawEyeDiagram(T_DSPlib_processing::CurrentObject->Fp,T_DSPlib_processing::CurrentObject->tmp_eyediagram_buffer, 40, 2,1,2,true);
+  temp_plot_stack->DrawEyeDiagram(T_DSPlib_processing::CurrentObject->Fp,T_DSPlib_processing::CurrentObject->tmp_eyediagram_buffer, 10, 2,1,2,true);
 
   }
 }

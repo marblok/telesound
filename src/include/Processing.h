@@ -67,7 +67,12 @@ class Modulator{
       ModAmp->SetGain((enable)?1.0f:0.0f);
     }
   }
-  
+  DSP::Clock_ptr getSymbolClock(void){
+    return SymbolClock;
+  }
+    DSP::Clock_ptr getInterpol1Clock(void){
+    return Interpol1Clock;
+  }
   void setCarrierFrequency(float New_frequency){
    if (ModDDS!=nullptr)
       ModDDS->SetAngularFrequency(DSP::M_PIx2*New_frequency);
@@ -88,7 +93,7 @@ class Demodulator{
     std::unique_ptr <DSP::u::RawDecimator> DemodDecimator;
 
   public:
-  void create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, bool enable);
+  void create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, float carrier_freq, unsigned int input_delay, bool enable);
   void clear_branch(void);
 
   void enableInput(bool enable){
@@ -200,8 +205,8 @@ class T_DSPlib_processing : public T_InputElement
 
     //**************************************//
     DSP::u::OutputBuffer *analysis_buffer, *constellation_buffer, *eyediagram_buffer;
-    const unsigned int constellation_buffer_size = 3000;
-    const unsigned int eyediagram_buffer_size = 12000;
+    const unsigned int constellation_buffer_size = 150;
+    const unsigned int eyediagram_buffer_size = 1500;
     TOptions *MorseDecoder_options;
     bool MorseReceiverState;
   

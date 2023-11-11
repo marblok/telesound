@@ -775,37 +775,31 @@ void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Com
   glBegin(GL_POINTS);
   for (auto &element : constellation) 
   {  
-    glVertex2f(element.re/(skala*3.1),element.im/(skala*3.1));
+    glVertex2f(element.re/(skala*3.15),element.im/(skala*3.15));
   }
   glEnd();
   // Line antialiasing is controlled by calling glEnable and glDisable with argument GL_LINE_SMOOTH
   // axis
   glLineWidth(1.0);
-  glColor3f(0.0, 0.0, 0.0);
+  glColor3f(0.5, 0.5, 0.5);
   glLineStipple(1, 0x0FF0);
   glEnable(GL_LINE_STIPPLE);
   glBegin(GL_LINES);
 
   glVertex2f(-1.0, 0.0);
   glVertex2f(+1.0, 0.0);
-
-
+  glVertex2f(0.0, -1.0);
+  glVertex2f(0.0, +1.0);
+  
+  glColor3f(0.8, 0.8, 0.8);
   glVertex2f(-1.0,+1.0);
   glVertex2f(+1.0,-1.0);
   glVertex2f(-1.0,-1.0);
   glVertex2f(+1.0,+1.0);
-
-
-
-  glVertex2f(0.0, -1.0);
-  glVertex2f(0.0, +1.0);
   glEnd();
   glDisable(GL_LINE_STIPPLE);
 
-
-
   glColor3f(1.0, 1.0, 1.0);
-
 
   glBegin(GL_POLYGON);
   glColor3f(0.0, 0.0, 0.5);
@@ -853,25 +847,26 @@ void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, i
   int samplesPerTrace = samplesPerSymbol * symbolsPerTrace;
   int numTraces = numSamples / samplesPerTrace;
   float color_tick = 1.0f / numTraces;
-  float x_tick = (2 * skala_x-0.1) / samplesPerTrace;
+  float x_tick = (2 * skala_x) / samplesPerTrace;
 
 
-  for (float i = -skala_x; i <= skala_x; i += x_tick)
+  for (float i = -skala_x; i < skala_x; i += x_tick)
   { // prepare x values;
     x_values.push_back(i);
   }
-  
+  x_values.push_back(skala_x);
   unsigned int x_size = x_values.size();
   int offset = 0;
   float color = 0;
 
   glLineWidth(1.0f);
+ // glEnable(GL_LINE_SMOOTH);
   if (input_complex)
   {
     for (int i = 0; i < numTraces; i++)
     {
       
-      // glBegin(GL_POINTS);
+
 
 
   glBegin(GL_LINES);
@@ -891,6 +886,7 @@ void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, i
       offset += samplesPerTrace;
       color += color_tick;
     }
+
   }
   else
   {
@@ -898,7 +894,7 @@ void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, i
     {
       glBegin(GL_LINES);
       // glBegin(GL_POINTS);
-      for (int j = 1; j < x_size - 2; j++)
+      for (int j = 1; j < x_size - 1; j++)
       {
         glColor3f(color + color_tick, color + color_tick, 0.0);
         glVertex2d(x_values[j], samples[j + offset] * skala_y);
@@ -909,6 +905,7 @@ void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, i
       color += color_tick;
     }
   }
+   // glDisable(GL_LINE_SMOOTH);
 }
 
 void T_PlotsStack::DrawSignal(float skala, DS_type type, float width)
