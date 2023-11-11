@@ -506,29 +506,29 @@ void Modulator::clear_branch(){
   //   DSP::Component::ListOfAllComponents(true);
   // #endif
   }
-  void Demodulator::create_branch(DSP::Clock_ptr Clock_in, DSP::input & Constellation_re, DSP::input &Constellation_im, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator,   bool enable){
+  void Demodulator::create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator,   bool enable){
       Interpol2Clock = Clock_in;
       Interpol1Clock = DSP::Clock::GetClock(Clock_in,modulator.M2,modulator.L2);
       DemodAmp.reset(new DSP::u::Amplifier(((enable) ? 1.0f : 0.0f),1,false));
-      DemodDelay.reset(new DSP::u::Delay(0,1,true));
+      DemodDelay.reset(new DSP::u::AdjustableDelay(50,0));
       DemodDDS.reset(new DSP::u::DDScos(Clock_in, true, 1.0, -DSP::M_PIx2 *modulator.CarrierFreq));
       DemodMul.reset(new DSP::u::Multiplication(1U, 1U));
       DemodConverter.reset(new DSP::u::SamplingRateConversion(true, Clock_in, modulator.M2, modulator.L2, modulator.h_LPF_stage2));
       DemodFIR.reset(new DSP::u::FIR(true, modulator.h_LPF_stage1));
-      DemodDecimator.reset(new DSP::u::RawDecimator(Interpol1Clock,modulator.L1,2U));
+      DemodDecimator.reset(new DSP::u::RawDecimator(true,Interpol1Clock,modulator.L1));
 
 
 
       Input_signal>>DemodAmp->Input("in");
       DemodAmp->Output("out")>> DemodDelay->Input("in");
       DemodDelay->Output("out")>>DemodMul->Input("in1");
+      DemodDelay->SetName("max 50 samples");
       DemodDDS->Output("out")>>DemodMul->Input("in2");
       DemodMul->Output("out")>>DemodConverter->Input("in");
       DemodConverter->Output("out")>>DemodFIR->Input("in");
       DemodConverter->Output("out")>>Eyediagram;
       DemodFIR->Output("out")>>DemodDecimator->Input("in");
-      DemodDecimator->Output("out1")>>Constellation_re;
-      DemodDecimator->Output("out2")>>Constellation_im;
+      DemodDecimator->Output("out")>>Constellation;
   }
 
   void Demodulator::clear_branch()
@@ -752,7 +752,7 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
   {
     
     DemodulatorDelay= temp_spec->demodulator_delay;
-    reloadDelay=true;
+    demodulator.setInputDelay(DemodulatorDelay);
     UpdateState |= E_US_demod_delay;
     temp_spec->userdata_state ^= E_US_demod_delay;
   }
@@ -1064,7 +1064,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   NoiseAdd->Output("out") >> AudioOut->Input("in");
 #endif
  OutSplitter->Output("out1")>>AudioOut->Input("in");
- demodulator.create_branch(MasterClock, constellation_buffer->Input("in.re"),constellation_buffer->Input("in.im"), eyediagram_buffer->Input("in"),OutSplitter->Output("out3"), modulator,CurrentObject->DemodulatorState);
+ demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"),OutSplitter->Output("out3"), modulator,CurrentObject->DemodulatorState);
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // basic assumptions:
@@ -1877,12 +1877,8 @@ bool T_DSPlib_processing::Process(E_processing_DIR processing_DIR)
     demodulator.clear_branch();
     modulator.clear_branch();
     modulator.create_branch(MasterClock, DigitalSignalsAdd->Input("in3"), CurrentObject->ModulatorType, CurrentObject->CarrierFreq/Fp, CurrentObject->ModulatorVariant, CurrentObject->ModulatorState);
-    demodulator.create_branch(MasterClock, constellation_buffer->Input("in.re"), constellation_buffer->Input("in.im"), eyediagram_buffer->Input("in"), OutSplitter->Output("out3"), modulator, CurrentObject->DemodulatorState);
+    demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"), OutSplitter->Output("out3"), modulator, CurrentObject->DemodulatorState);
     reloadModulator=false;
-  }
-  if(reloadDelay){
-    demodulator.setInputDelay(DemodulatorDelay);
-    reloadDelay=false;
   }
   DSP::f::Sleep(0);
   DSP::f::Sleep(5);

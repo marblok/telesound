@@ -71,7 +71,7 @@ class Demodulator{
     DSP::Clock_ptr  SymbolClock, Interpol1Clock, Interpol2Clock;
     
     std::unique_ptr <DSP::u::Amplifier> DemodAmp;
-    std::unique_ptr <DSP::u::Delay> DemodDelay;
+    std::unique_ptr <DSP::u::AdjustableDelay> DemodDelay;
     std::unique_ptr <DSP::u::DDScos> DemodDDS;
     std::unique_ptr <DSP::u::Multiplication> DemodMul;
     std::unique_ptr <DSP::u::SamplingRateConversion> DemodConverter;
@@ -79,7 +79,7 @@ class Demodulator{
     std::unique_ptr <DSP::u::RawDecimator> DemodDecimator;
 
   public:
-  void create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation_re, DSP::input &Constellation_im, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, bool enable);
+  void create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, bool enable);
   void clear_branch(void);
 
   void enableInput(bool enable){
@@ -90,9 +90,7 @@ class Demodulator{
   
   void setInputDelay(int delay){// execute between clock ticks
     if(DemodDelay!=nullptr){
-      DemodDelay.reset(new DSP::u::Delay(delay,1U));
-      DemodAmp->Output("out")>>DemodDelay->Input("in");
-      DemodDelay->Output("out")>>DemodMul->Input("in1");
+      DemodDelay->SetDelay(delay);
     }
   } 
 
