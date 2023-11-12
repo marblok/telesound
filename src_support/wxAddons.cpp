@@ -767,6 +767,7 @@ void T_PlotsStack::DrawSpecgram3_dB(float dB_max, float dB_range, const CLR_map_
   glDeleteTextures( 1, &texture );
 }
 void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Complex_vector constellation, float skala, float size, bool demodulator_state)
+void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Complex_vector constellation, float skala, float size, bool demodulator_state)
 {
   // if (!demodulator_state) // draw demodulator status
   //   return;
