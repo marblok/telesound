@@ -84,7 +84,7 @@ enum
     ID_MIKE_ON_OFF = 204,
     ID_LOCAL_SIGNAL_ON_OFF = 205,
     ID_RESET_SETTINGS = 206,
-    
+    ID_RESIZE_TO_SQUARE = 207,
     ID_NOTEBOOK_SASH = 301,
     ID_draw_time_signal = 302,
     ID_draw_histogram = 303,
