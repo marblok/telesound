@@ -36,6 +36,7 @@ EVT_BUTTON(ID_STOP_TASK, MainFrame::OnStopTask)
 EVT_BUTTON(ID_MIKE_ON_OFF, MainFrame::OnSettingsInterfaceChange)
 EVT_BUTTON(ID_LOCAL_SIGNAL_ON_OFF, MainFrame::OnSettingsInterfaceChange)
 EVT_BUTTON(ID_RESET_SETTINGS, MainFrame::OnSettingsInterfaceChange)
+EVT_BUTTON(ID_RESIZE_TO_SQUARE, MainFrame::OnSettingsInterfaceChange)
 
 EVT_COMMAND(ID_BranchEnd, wxEVT_BRANCH_END, T_TaskElement::OnBranchEnd)
 #ifdef __DEBUG__
@@ -1796,7 +1797,9 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
   UpdateGUI();
   //InitGUI();
   break;
-
+  case ID_RESIZE_TO_SQUARE:
+    sashWindow->SetSashPosition(sashWindow->GetSize().GetHeight());
+    break;
   case ID_morse_receiver_state:
     interface_state.morse_receiver_state = MorseReceiverState->GetValue();
 
@@ -2413,7 +2416,7 @@ void MyGLCanvas::DrawScatter(int width, int height)
   temp_plot_stack->SetBackgroundColor(1.0, CLR_gray);
   temp_plot_stack->SubPlot(1, 1, 1, width, height, true);
   SetColor(0.0, CLR_gray);
-  temp_plot_stack->DrawScatterPlot(T_DSPlib_processing::CurrentObject->constellation_buffer_size, T_DSPlib_processing::CurrentObject->tmp_constellation_buffer.data(), T_DSPlib_processing::CurrentObject->current_constellation, 1,3);
+  temp_plot_stack->DrawScatterPlot(T_DSPlib_processing::CurrentObject->constellation_buffer_size*2, T_DSPlib_processing::CurrentObject->tmp_constellation_buffer.data(), T_DSPlib_processing::CurrentObject->current_constellation, 1,3, T_DSPlib_processing::CurrentObject->DemodulatorState);
   }
   // ++++++++++++++++++++++++++++++++++++++++ //
   // ++++++++++++++++++++++++++++++++++++++++ //
@@ -2439,7 +2442,7 @@ void MyGLCanvas::DrawEyeDiagram(int width, int height){
   temp_plot_stack->SetBackgroundColor(0.0, 0.0, 0.0);
   temp_plot_stack->SubPlot(1, 1, 1, width, height, true);
   SetColor(0.0, CLR_gray);
-  temp_plot_stack->DrawEyeDiagram(T_DSPlib_processing::CurrentObject->Fp,T_DSPlib_processing::CurrentObject->tmp_eyediagram_buffer, 10, 2,1,2,true);
+  temp_plot_stack->DrawEyeDiagram(T_DSPlib_processing::CurrentObject->Fp,T_DSPlib_processing::CurrentObject->tmp_eyediagram_buffer, 10, 2,1,2,true, T_DSPlib_processing::CurrentObject->DemodulatorState);
 
   }
 }
