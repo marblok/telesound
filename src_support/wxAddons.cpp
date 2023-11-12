@@ -766,8 +766,11 @@ void T_PlotsStack::DrawSpecgram3_dB(float dB_max, float dB_range, const CLR_map_
   //  glDisableClientState(GL_COLOR_ARRAY);
   glDeleteTextures( 1, &texture );
 }
-void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Complex_vector constellation, float skala, float size)
+void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Complex_vector constellation, float skala, float size, bool demodulator_state)
 {
+  // if (!demodulator_state) // draw demodulator status
+  //   return;
+  
   float x, y;
   int ind;
   glColor3f(1.0, 0.0, 0.0);
@@ -814,20 +817,23 @@ void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Com
   glVertex2f(0.0, 0.98);
   glEnd();
 
-
+  glColor3f(0.0, 0.0, 1.0);
   glPointSize(size);
   glBegin(GL_POINTS);
   for (ind=0; ind<SegmentSize; ind+=2)
   {
     x=XYdata[ind]*skala;
     y=XYdata[ind+1]*skala;
-    glColor3f(0.0, 0.0, 1.0);
     glVertex2f(x, y);
   }
   glEnd();
 }
-void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, int samplesPerSymbol, int symbolsPerTrace, float skala_x, float skala_y, bool input_complex = true)
+void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, int samplesPerSymbol, int symbolsPerTrace, float skala_x, float skala_y, bool input_complex, bool demodulator_state)
 {
+  if (!demodulator_state) // draw demodulator status
+    return; 
+
+  
   glPointSize(2);
   int numSamples;
   float reBaseLine, imBaseLine;
