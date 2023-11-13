@@ -854,7 +854,14 @@ void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, i
   int numTraces = numSamples / samplesPerTrace;
   float color_tick = 1.0f / numTraces;
   float x_tick = (2 * skala_x) / samplesPerTrace;
+  // float y_limit = 0; 
 
+  // glColor3f(.7f,.7f,.7f);
+  // glLineWidth(3);
+  // glBegin(GL_LINES);
+  // glVertex2f(-1,0);
+  // glVertex2f(1, 0);
+  // glEnd();
 
   for (float i = -skala_x; i < skala_x; i += x_tick)
   { // prepare x values;
@@ -865,27 +872,23 @@ void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, i
   int offset = 0;
   float color = 0;
 
-  glLineWidth(1.0f);
+  glLineWidth(1);
  // glEnable(GL_LINE_SMOOTH);
   if (input_complex)
   {
     for (int i = 0; i < numTraces; i++)
     {
-      
-
-
-
   glBegin(GL_LINES);
       for (int j = 0; j < x_size - 2; j+=2)
       {
         glColor3f(color + color_tick, color + color_tick, 0.0);
       
-        glVertex2d(x_values[j], reBaseLine+samples[j + offset] * skala_y);//re
-        glVertex2d(x_values[j + 2], reBaseLine+samples[j + 2 + offset] * skala_y);//re
+        glVertex2f(x_values[j], reBaseLine+samples[j + offset] * skala_y);//re
+        glVertex2f(x_values[j + 2], reBaseLine+samples[j + 2 + offset] * skala_y);//re
         
         glColor3f(0.0, color + color_tick, color + color_tick);
-        glVertex2d(x_values[j], imBaseLine+samples[j + 1 + offset] * skala_y);//im
-        glVertex2d(x_values[j + 2], imBaseLine+samples[j + 3 + offset] * skala_y);//im
+        glVertex2f(x_values[j], imBaseLine+samples[j + 1 + offset] * skala_y);//im
+        glVertex2f(x_values[j + 2], imBaseLine+samples[j + 3 + offset] * skala_y);//im
      
       }
       glEnd();
