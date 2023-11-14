@@ -49,8 +49,9 @@ class Modulator{
     std::unique_ptr <DSP::u::Multiplication> ModMul;
     std::unique_ptr <DSP::u::Amplifier> ModAmp;
     std::unique_ptr <DSP::u::Vacuum> ModVac;
+    long Fp;
   public:
-  void create_branch (DSP::Clock_ptr Clock_in, DSP::input &Output_signal, E_ModulatorTypes Modulator_type, float Carrier_freq, unsigned short variant = 1, bool Enable_output = false);
+  void create_branch (DSP::Clock_ptr Clock_in, long Fp, DSP::input &Output_signal, E_ModulatorTypes Modulator_type, float Carrier_freq, unsigned short variant = 1, bool Enable_output = false);
   void clear_branch(void);
   DSP::Complex_vector get_constellation(){
     DSP::Complex_vector tmp_constellation;
@@ -204,7 +205,8 @@ class T_DSPlib_processing : public T_InputElement
     int DemodulatorDelay;
 
     //**************************************//
-    DSP::u::OutputBuffer *analysis_buffer, *constellation_buffer, *eyediagram_buffer;
+    DSP::u::OutputBuffer *analysis_buffer;
+    std::unique_ptr<DSP::u::OutputBuffer> constellation_buffer, eyediagram_buffer;
     const unsigned int constellation_buffer_size = 80;
     const unsigned int eyediagram_buffer_size = 1500;
     TOptions *MorseDecoder_options;
@@ -286,6 +288,7 @@ class T_DSPlib_processing : public T_InputElement
     //! created processing algorithm based on DSPlib
     void CreateAlgorithm(bool run_as_server, std::string address,
         long SamplingRate, DSP::e::SampleType sockets_sample_type = DSP::e::SampleType::ST_short);
+    void recreateBuffers(DSP::Clock_ptr symbolclock, DSP::Clock_ptr  interpol1clock);
     void DestroyAlgorithm(void);
 
   public:
