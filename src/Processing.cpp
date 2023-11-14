@@ -148,7 +148,10 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   //cycles_per_segment = (unsigned int)(5*specgram_time_span*Fp)/NoOfPSDslots;
   //cycles_per_segment = (unsigned int)(5*(specgram_time_span*Fp/10000)*NoOfPSDslots);
   // co 5% szerokości okna czasowego
+  if(Fp%8000 == 0)
   cycles_per_segment = (unsigned int)(0.05*(specgram_time_span*Fp));
+  else
+  cycles_per_segment = (unsigned int)(0.05*(specgram_time_span*Fp)/40)*40;//may also work well for 8000 Sa/s
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
   AudioInOff = SpecList->MikeIsOff;
@@ -250,8 +253,6 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   DSP::Clock::SchemeToDOTfile(MasterClock, "processing_scheme.dot");
 }
 void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Output_signal, E_ModulatorTypes Modulator_type, float Carrier_freq, unsigned short variant, bool Enable_output){ 
-  clear_branch();
-  DSP::Clock::ListOfAllComponents(true);
   CarrierFreq = Carrier_freq;
   this->Fp = Fp;
   //  if(Fp%8000!=0){
@@ -595,6 +596,9 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Outp
     ModMul->Output("out.im") >> ModVac->Input("in");
     ModAmp->Output("out") >> Output_signal;
   }
+  // DSP::log<<"Modulator:"<<"create_branch"<<std::endl<<std::endl;
+  // DSP::Component::ListOfAllComponents(true);
+
 }
 
 void Modulator::clear_branch(){
@@ -613,10 +617,13 @@ void Modulator::clear_branch(){
   Interpol1Clock=NULL;
   SymbolClock=NULL;
   BitClock=NULL;
-  
-  // #ifdef __DEBUG__
-  //   DSP::Component::ListOfAllComponents(true);
-  // #endif
+
+// #ifdef __DEBUG__
+//   DSP::log << "Modulator:"
+//            << "clear_branch" << std::endl
+//            << std::endl;
+//   DSP::Component::ListOfAllComponents(true);
+// #endif
   }
   void Demodulator::create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, float carrier_freq, unsigned int input_delay, bool enable){
     //   if(modulator.Fp%8000!=0){//disable if Fp is not 8000*N - temporary (debugging)
@@ -647,6 +654,13 @@ void Modulator::clear_branch(){
       DemodConverter->Output("out")>>Eyediagram;
       DemodFIR->Output("out")>>DemodDecimator->Input("in");
       DemodDecimator->Output("out")>>Constellation;
+    
+// #ifdef __DEBUG__
+//       DSP::log << "Demodulator:"
+//                << "create_branch" << std::endl
+//                << std::endl;
+//       DSP::Component::ListOfAllComponents();
+// #endif
   }
 
   void Demodulator::clear_branch()
@@ -661,6 +675,12 @@ void Modulator::clear_branch(){
       Interpol1Clock = NULL;
       Interpol2Clock = NULL;
       SymbolClock = NULL;
+// #ifdef __DEBUG__
+//       DSP::log << "Demodulator:"
+//                << "clear_branch" << std::endl
+//                << std::endl;
+//       DSP::Component::ListOfAllComponents();
+// #endif
   }
   T_DSPlib_processing::~T_DSPlib_processing(void)
   {

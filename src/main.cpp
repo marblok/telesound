@@ -3202,18 +3202,17 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
     HPF_slider->SetValue(0);
     LPF_slider->SetValue((int)(interface_state.sampling_rate / 200));
     
-    CarrierFreqSlider-> SetRange(0,(int)(interface_state.sampling_rate / 200));
-    CarrierFreqSlider-> SetValue((int)(interface_state.sampling_rate / 400));
+    CarrierFreqSlider-> SetRange(0,(int)(interface_state.sampling_rate / 20));
+    CarrierFreqSlider-> SetValue((int)round((interface_state.sampling_rate / 40)/10)*10);
 
-    DemodCarrierFreq-> SetRange(0,(int)(interface_state.sampling_rate / 200));
-    DemodCarrierFreq-> SetValue((int)(interface_state.sampling_rate / 400));
+    DemodCarrierFreq-> SetRange(0,(int)(interface_state.sampling_rate / 20));
+    DemodCarrierFreq-> SetValue((int)round((interface_state.sampling_rate/ 40)/10)*10);
 
     interface_state.channel_Fd = 0;
     interface_state.channel_Fg = interface_state.sampling_rate / 2;
     
-    interface_state.carrier_freq =  interface_state.sampling_rate / 4;
-    interface_state.demodulator_carrier_freq =  interface_state.sampling_rate / 4;
-
+    interface_state.carrier_freq =  round((interface_state.sampling_rate / 4)/10)*10;
+    interface_state.demodulator_carrier_freq =  interface_state.carrier_freq;
 
     Fd = interface_state.channel_Fd;
     Fg = interface_state.channel_Fg; 
@@ -3336,7 +3335,7 @@ void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
   {
   case ID_carrier_freq_SLIDER:
     Carrier_freq = CarrierFreqSlider->GetValue();
-    Carrier_freq *= 100;
+    Carrier_freq *= 10;
     CarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (Carrier_freq / interface_state.sampling_rate), Carrier_freq));
     if (event.GetEventType() != wxEVT_SCROLL_CHANGED)
     { // only show current position but do not update
@@ -3349,7 +3348,7 @@ void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
 
   case ID_demod_carrier_freq_SLIDER:
     Carrier_freq = DemodCarrierFreq->GetValue();
-    Carrier_freq *= 100;
+    Carrier_freq *= 10;
     DemodCarrierFreqTextCtrl->ChangeValue(wxString::Format("%.2f [1/Sa] / %.0f [Hz]", (Carrier_freq / interface_state.sampling_rate), Carrier_freq));
     if (event.GetEventType() != wxEVT_SCROLL_CHANGED)
     { // only show current position but do not update
