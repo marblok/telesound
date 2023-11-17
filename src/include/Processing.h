@@ -87,8 +87,8 @@ class Demodulator{
   private:
     DSP::Clock_ptr  SymbolClock, Interpol1Clock, Interpol2Clock;
     
-    std::unique_ptr <DSP::u::Amplifier> DemodAmp;
-    std::unique_ptr <DSP::u::AdjustableDelay> DemodDelay, CarrierOffset;
+    std::unique_ptr <DSP::u::Amplifier> DemodAmp, CarrierOffset;
+    std::unique_ptr <DSP::u::AdjustableDelay> DemodDelay;
     std::unique_ptr <DSP::u::DDScos> DemodDDS;
     std::unique_ptr <DSP::u::Multiplication> DemodMul;
     std::unique_ptr <DSP::u::SamplingRateConversion> DemodConverter;
@@ -115,10 +115,12 @@ class Demodulator{
    if (DemodDDS!=nullptr)
       DemodDDS->SetAngularFrequency(-DSP::M_PIx2*New_frequency);
   }
-  void setCarrierOffset(int New_offset)
+  void setCarrierOffset(int New_offset)//0 to 100 (0 to pi)
   {
-    if (CarrierOffset != nullptr)
-      CarrierOffset->SetDelay(New_offset);
+    if (CarrierOffset != nullptr){
+      float t = -1*New_offset*(DSP::M_PIx1/100.0f);//e^−jt=cos(t)−jsin(t) - Euler's formula
+      DSP::Complex j(cos(t),-sin(t));
+      CarrierOffset->SetGain(j);}
   }
 };
 

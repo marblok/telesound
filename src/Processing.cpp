@@ -717,8 +717,8 @@ void Modulator::clear_branch(){
       DemodConverter.reset(new DSP::u::SamplingRateConversion(true, Clock_in, modulator.M2, modulator.L2, modulator.h_LPF_stage2));
       DemodFIR.reset(new DSP::u::FIR(true, modulator.h_LPF_stage1));
       DemodDecimator.reset(new DSP::u::RawDecimator(true,Interpol1Clock,modulator.L1));
-      CarrierOffset.reset(new DSP::u::AdjustableDelay(100,carrier_offset,2U));
-
+      CarrierOffset.reset(new DSP::u::Amplifier(DSP::Complex(1.0f,1.0f),1U,true));
+      setCarrierOffset(carrier_offset);
 
 
       Input_signal>>DemodAmp->Input("in");
