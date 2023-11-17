@@ -222,7 +222,7 @@ class T_InterfaceState
     bool demodulator_state;
     float demodulator_carrier_freq;
     int demodulator_delay;
-
+    int demodulator_carrier_offset;
     E_UpdateState userdata_state;
 
     // +++++++++++++++++++++++++ //

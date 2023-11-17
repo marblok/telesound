@@ -76,6 +76,7 @@ enum
     ID_demod_carrier_freq_SLIDER = 143,
     ID_demod_delay_SLIDER = 144,
     ID_demod_state=145,
+    ID_demod_carrieroffset_SLIDER=146,
 
     
     ID_RUN_TASK = 201,

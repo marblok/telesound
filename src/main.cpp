@@ -83,6 +83,7 @@ EVT_COMMAND_SCROLL(ID_LPF_SLIDER, MainFrame::OnChannelFilterChange)
 EVT_COMMAND_SCROLL(ID_carrier_freq_SLIDER, MainFrame::OnCarrierFreqChange)
 EVT_COMMAND_SCROLL(ID_demod_carrier_freq_SLIDER, MainFrame::OnCarrierFreqChange)
 EVT_COMMAND_SCROLL(ID_demod_delay_SLIDER, MainFrame::OnCarrierFreqChange)
+EVT_COMMAND_SCROLL(ID_demod_carrieroffset_SLIDER, MainFrame::OnCarrierFreqChange)
 
 
 EVT_BUTTON(ID_send_ascii_text, MainFrame::OnButtonPress)
@@ -435,6 +436,7 @@ T_ProcessingSpec::T_ProcessingSpec(void)
   carrier_freq = 4000;
   demodulator_carrier_freq=4000;
   demodulator_delay=0;
+  demodulator_carrier_offset=0;
   demodulator_state=false;
   morse_receiver_state = false;
 
@@ -840,6 +842,7 @@ void T_InterfaceState::Reset(void)
   carrier_freq = sampling_rate/4;
   demodulator_carrier_freq=sampling_rate/4;
   demodulator_delay=0;
+  demodulator_carrier_offset=0;
   wav_filename[0] = 0x00;
   userdata_state = E_US_none;
 }
@@ -900,6 +903,7 @@ void T_InterfaceState::TransferDataToTask(
     do_transfer |= (carrier_freq != selected_task->FirstProcessingSpec->carrier_freq);
     do_transfer |= (demodulator_carrier_freq != selected_task->FirstProcessingSpec->demodulator_carrier_freq);
     do_transfer |= (demodulator_delay != selected_task->FirstProcessingSpec->demodulator_delay);
+    do_transfer |= (demodulator_carrier_offset != selected_task->FirstProcessingSpec->demodulator_carrier_offset);
     do_transfer |= (demodulator_state != selected_task->FirstProcessingSpec->demodulator_state);
     do_transfer |= (wav_filename.compare(selected_task->FirstProcessingSpec->wav_filename) != 0);
 
@@ -990,6 +994,7 @@ void T_InterfaceState::TransferDataToTask(
     selected_task->FirstProcessingSpec->carrier_freq = carrier_freq;
     selected_task->FirstProcessingSpec->demodulator_carrier_freq = demodulator_carrier_freq;
     selected_task->FirstProcessingSpec->demodulator_delay = demodulator_delay;
+    selected_task->FirstProcessingSpec->demodulator_carrier_offset = demodulator_carrier_offset;
     selected_task->FirstProcessingSpec->demodulator_state = demodulator_state;
 
     selected_task->FirstProcessingSpec->wav_filename = wav_filename;
@@ -1940,10 +1945,12 @@ if (parent_task != NULL)
     interface_state.demodulator_state = demodState->GetValue();
     if(!interface_state.demodulator_state){
       DemodCarrierFreq->Disable();
+      DemodCarrierOffset->Disable();
       DemodDelay->Disable();
     }else{
       DemodCarrierFreq->Enable();
       DemodDelay->Enable();
+      DemodCarrierOffset->Enable();
     }
     if (parent_task != NULL)
     {
@@ -3367,32 +3374,54 @@ void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
     interface_state.demodulator_carrier_freq = Carrier_freq;
     interface_state.userdata_state |= E_US_demod_carrier_freq;
     break;
-  
-  
+
   case ID_demod_delay_SLIDER:
     delay = DemodDelay->GetValue();
     interface_state.demodulator_delay = delay;
     interface_state.userdata_state |= E_US_demod_delay;
-  if (parent_task != NULL)
-  {
-    interface_state.TransferDataToTask(NULL, parent_task, false);
-
-    if (parent_task->ProcessingBranch != NULL)
+    if (parent_task != NULL)
     {
-      T_BranchCommand *temp;
-      TCommandData *command_data;
+      interface_state.TransferDataToTask(NULL, parent_task, false);
 
-      command_data = new TCommandData;
-      command_data->UserData = (void *)(&interface_state);
-      temp = new T_BranchCommand(E_BC_userdata, command_data);
+      if (parent_task->ProcessingBranch != NULL)
+      {
+        T_BranchCommand *temp;
+        TCommandData *command_data;
+
+        command_data = new TCommandData;
+        command_data->UserData = (void *)(&interface_state);
+        temp = new T_BranchCommand(E_BC_userdata, command_data);
 #ifdef __DEBUG__
-      DSP::log << "MainFrame::OnDelayChange" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
+        DSP::log << "MainFrame::OnDelayChange" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
 #endif
-      parent_task->ProcessingBranch->PostCommandToBranch(temp);
+        parent_task->ProcessingBranch->PostCommandToBranch(temp);
+      }
     }
-}
-break;
+    break;
 
+    case ID_demod_carrieroffset_SLIDER:
+    delay = DemodCarrierOffset->GetValue();
+    interface_state.demodulator_carrier_offset = delay;
+    interface_state.userdata_state |= E_US_demod_carrier_offset;
+    if (parent_task != NULL)
+    {
+      interface_state.TransferDataToTask(NULL, parent_task, false);
+
+      if (parent_task->ProcessingBranch != NULL)
+      {
+        T_BranchCommand *temp;
+        TCommandData *command_data;
+
+        command_data = new TCommandData;
+        command_data->UserData = (void *)(&interface_state);
+        temp = new T_BranchCommand(E_BC_userdata, command_data);
+#ifdef __DEBUG__
+        DSP::log << "MainFrame::OnCarrierOffsetChange" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
+#endif
+        parent_task->ProcessingBranch->PostCommandToBranch(temp);
+      }
+    }
+    break;
   }
   
   if (parent_task != NULL)

@@ -179,7 +179,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   CarrierFreq  = SpecList->carrier_freq;
   DemodulatorCarrierFreq= SpecList->demodulator_carrier_freq;
   DemodulatorDelay= SpecList->demodulator_delay;
-
+  DemodulatorCarrierOffset = SpecList->demodulator_carrier_offset;
   current_constellation = DSP::Complex_vector(0);
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++ //
@@ -701,7 +701,7 @@ void Modulator::clear_branch(){
 //   DSP::Component::ListOfAllComponents(true);
 // #endif
   }
-  void Demodulator::create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, float carrier_freq, unsigned int input_delay, bool enable){
+  void Demodulator::create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, float carrier_freq, int carrier_offset, unsigned int input_delay, bool enable){
     //   if(modulator.Fp%8000!=0){//disable if Fp is not 8000*N - temporary (debugging)
       
     //   return;//leaves buffers unconnected!!!!!!!!!!!
@@ -717,6 +717,7 @@ void Modulator::clear_branch(){
       DemodConverter.reset(new DSP::u::SamplingRateConversion(true, Clock_in, modulator.M2, modulator.L2, modulator.h_LPF_stage2));
       DemodFIR.reset(new DSP::u::FIR(true, modulator.h_LPF_stage1));
       DemodDecimator.reset(new DSP::u::RawDecimator(true,Interpol1Clock,modulator.L1));
+      CarrierOffset.reset(new DSP::u::AdjustableDelay(100,carrier_offset,2U));
 
 
 
@@ -724,7 +725,8 @@ void Modulator::clear_branch(){
       DemodAmp->Output("out")>> DemodDelay->Input("in");
       DemodDelay->Output("out")>>DemodMul->Input("in1");
       DemodDelay->SetName("max 50 samples");
-      DemodDDS->Output("out")>>DemodMul->Input("in2");
+      DemodDDS->Output("out")>>CarrierOffset->Input("in");
+      CarrierOffset->Output("out")>> DemodMul->Input("in2");
       DemodMul->Output("out")>>DemodConverter->Input("in");
       DemodConverter->Output("out")>>DemodFIR->Input("in");
       DemodConverter->Output("out")>>Eyediagram;
@@ -748,6 +750,7 @@ void Modulator::clear_branch(){
       DemodConverter.reset(nullptr);
       DemodFIR.reset(nullptr);
       DemodDecimator.reset(nullptr);
+      CarrierOffset.reset(nullptr);
       Interpol1Clock = NULL;
       Interpol2Clock = NULL;
       SymbolClock = NULL;
@@ -972,7 +975,14 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
     UpdateState |= E_US_demod_delay;
     temp_spec->userdata_state ^= E_US_demod_delay;
   }
+    if ((temp_spec->userdata_state & E_US_demod_carrier_offset) != 0)
+  {
     
+    DemodulatorCarrierOffset= temp_spec->demodulator_carrier_offset;
+    demodulator.setCarrierOffset(DemodulatorCarrierOffset);
+    UpdateState |= E_US_demod_carrier_offset;
+    temp_spec->userdata_state ^= E_US_demod_carrier_offset;
+  }
     if ((temp_spec->userdata_state & E_US_modulator_type) != 0)
   {
     ModulatorType=temp_spec->modulator_type;
@@ -1278,7 +1288,7 @@ void T_DSPlib_processing::CreateAlgorithm(bool run_as_server, std::string addres
   recreateBuffers(modulator.getSymbolClock(), modulator.getInterpol1Clock());
   tmp_constellation_buffer=DSP::Float_vector(constellation_buffer_size*2);
   tmp_eyediagram_buffer=DSP::Float_vector(eyediagram_buffer_size*2);
-  demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"),ChannelFilter_HPF->Output("out"), modulator,CurrentObject->DemodulatorCarrierFreq/Fp,CurrentObject->DemodulatorDelay, CurrentObject->DemodulatorState);
+  demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"),ChannelFilter_HPF->Output("out"), modulator,CurrentObject->DemodulatorCarrierFreq/Fp,CurrentObject->DemodulatorCarrierOffset,CurrentObject->DemodulatorDelay, CurrentObject->DemodulatorState);
   current_constellation = modulator.get_constellation();
   
   
@@ -2127,7 +2137,7 @@ bool T_DSPlib_processing::Process(E_processing_DIR processing_DIR)
     modulator.clear_branch();
     modulator.create_branch(MasterClock, CurrentObject -> Fp,DigitalSignalsAdd->Input("in3"), CurrentObject->ModulatorType, CurrentObject->CarrierFreq/Fp, CurrentObject->ModulatorVariant, CurrentObject->ModulatorState);
     recreateBuffers( modulator.getSymbolClock(), modulator.getInterpol1Clock());
-    demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"),ChannelFilter_HPF->Output("out"), modulator,CurrentObject->DemodulatorCarrierFreq/Fp,CurrentObject->DemodulatorDelay, CurrentObject->DemodulatorState);
+    demodulator.create_branch(MasterClock, constellation_buffer->Input("in"), eyediagram_buffer->Input("in"),ChannelFilter_HPF->Output("out"), modulator,CurrentObject->DemodulatorCarrierFreq/Fp,CurrentObject->DemodulatorCarrierOffset,CurrentObject->DemodulatorDelay, CurrentObject->DemodulatorState);
     current_constellation = modulator.get_constellation();
     reloadModulator=false;
 

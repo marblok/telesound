@@ -76,8 +76,10 @@ class Modulator{
   }
   void setCarrierFrequency(float New_frequency){
    if (ModDDS!=nullptr)
+   {
       ModDDS->SetAngularFrequency(DSP::M_PIx2*New_frequency);
       CarrierFreq =New_frequency;
+  }
   }
   friend class Demodulator;
 };
@@ -86,7 +88,7 @@ class Demodulator{
     DSP::Clock_ptr  SymbolClock, Interpol1Clock, Interpol2Clock;
     
     std::unique_ptr <DSP::u::Amplifier> DemodAmp;
-    std::unique_ptr <DSP::u::AdjustableDelay> DemodDelay;
+    std::unique_ptr <DSP::u::AdjustableDelay> DemodDelay, CarrierOffset;
     std::unique_ptr <DSP::u::DDScos> DemodDDS;
     std::unique_ptr <DSP::u::Multiplication> DemodMul;
     std::unique_ptr <DSP::u::SamplingRateConversion> DemodConverter;
@@ -94,7 +96,7 @@ class Demodulator{
     std::unique_ptr <DSP::u::RawDecimator> DemodDecimator;
 
   public:
-  void create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, float carrier_freq, unsigned int input_delay, bool enable);
+  void create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, float carrier_freq, int carrier_offset, unsigned int input_delay, bool enable);
   void clear_branch(void);
 
   void enableInput(bool enable){
@@ -103,7 +105,7 @@ class Demodulator{
     }
   }
   
-  void setInputDelay(int delay){// execute between clock ticks
+  void setInputDelay(int delay){
     if(DemodDelay!=nullptr){
       DemodDelay->SetDelay(delay);
     }
@@ -113,7 +115,11 @@ class Demodulator{
    if (DemodDDS!=nullptr)
       DemodDDS->SetAngularFrequency(-DSP::M_PIx2*New_frequency);
   }
-
+  void setCarrierOffset(int New_offset)
+  {
+    if (CarrierOffset != nullptr)
+      CarrierOffset->SetDelay(New_offset);
+  }
 };
 
 class T_DSPlib_processing : public T_InputElement
@@ -202,7 +208,7 @@ class T_DSPlib_processing : public T_InputElement
     DSP::Complex_vector current_constellation;
     bool DemodulatorState;
     float DemodulatorCarrierFreq;
-    int DemodulatorDelay;
+    int DemodulatorDelay, DemodulatorCarrierOffset;
 
     //**************************************//
     DSP::u::OutputBuffer *analysis_buffer;
