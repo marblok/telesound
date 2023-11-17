@@ -1089,8 +1089,10 @@ MainFrame::MainFrame(wxWindow *parent,
   }
   //Check if config folder and all required files exist.
   bool configFileError = false;
-  const std::vector<fs::path> requiredFolders = {"./config","./matlab"};
-  const std::vector<fs::path> requiredFiles = {"./config/Polish.mct","./matlab/ASK_PSK_1_stage1.coef","./matlab/ASK_PSK_1_stage2.coef"};
+  const std::vector<fs::path> requiredFolders = {"./config", "./locale"};
+
+  //const std::vector<fs::path> requiredFolders = {"./config","./matlab"};
+  const std::vector<fs::path> requiredFiles = {"./config/Polish.mct","./config/1200_srRC_stage1.coef","./config/1200_srRC_stage2.coef","./config/1920_srRC_stage1.coef", "./config/1920_srRC_stage2.coef", "./locale/PL/pl.mo"};
 
     for (const fs::path& folder : requiredFolders) {//loop through folder list
       if (!fs::exists(folder)) {
@@ -3422,10 +3424,18 @@ void MainFrame::UpdateModulatorParametersText(){
     {
     case 1:
       F_symb = interface_state.sampling_rate / 40.0;
-      M = 8;
+      M = 4;
       break;
     case 2:
-      F_symb = interface_state.sampling_rate / 20.0;
+      F_symb = interface_state.sampling_rate / 40.0;
+      M = 8;
+      break;
+    case 3:
+      F_symb = interface_state.sampling_rate / 25.0;
+      M = 4;
+      break;
+    case 4:
+      F_symb = interface_state.sampling_rate / 25.0;
       M = 8;
       break;
     }
@@ -3441,6 +3451,14 @@ void MainFrame::UpdateModulatorParametersText(){
       F_symb = interface_state.sampling_rate / 40.0;
       M = 4;
       break;
+    case 3:
+      F_symb = interface_state.sampling_rate / 25.0;
+      M = 8;
+      break;
+    case 4:
+      F_symb = interface_state.sampling_rate / 25.0;
+      M = 4;
+      break;
     }
     break;
   case E_MT_QAM:
@@ -3452,6 +3470,14 @@ void MainFrame::UpdateModulatorParametersText(){
       break;
     case 2:
       F_symb = interface_state.sampling_rate / 40.0;
+      M = 16;
+      break;
+    case 3:
+      F_symb = interface_state.sampling_rate / 25.0;
+      M = 4;
+      break;
+    case 4:
+      F_symb = interface_state.sampling_rate / 25.0;
       M = 16;
       break;
     }

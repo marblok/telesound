@@ -148,10 +148,10 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   //cycles_per_segment = (unsigned int)(5*specgram_time_span*Fp)/NoOfPSDslots;
   //cycles_per_segment = (unsigned int)(5*(specgram_time_span*Fp/10000)*NoOfPSDslots);
   // co 5% szerokości okna czasowego
-  if(Fp%8000 == 0)
-  cycles_per_segment = (unsigned int)(0.05*(specgram_time_span*Fp));
-  else
-  cycles_per_segment = (unsigned int)(0.05*(specgram_time_span*Fp)/40)*40;//may also work well for 8000 Sa/s
+  // if(Fp%8000 == 0)
+  // cycles_per_segment = (unsigned int)(0.05*(specgram_time_span*Fp));
+  // else
+  cycles_per_segment = (unsigned int)(0.05*(specgram_time_span*Fp)/200)*200;//may also work well for 8000 Sa/
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
   AudioInOff = SpecList->MikeIsOff;
@@ -366,25 +366,63 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Outp
     mod_type=DSP::e::ModulationType::ASK;
     switch (variant)
     {
-    case 1:// ASK v1
+  // //F_s = 480
+  //   case 1:// ASK v1
+  //     L1 = 10;
+  //     M1 = 1;
+  //     L2 = 10;
+  //     M2 = 1;
+  //     bits_per_symbol = 2;
+  //     coef_name_stage1 = "480_srRC_stage1.coef";
+  //     coef_name_stage2 = "480_srRC_stage2.coef";
+  //     break;
+  //   case 2: //ASK v2
+  //     L1 = 10;
+  //     M1 = 1;
+  //     L2 = 10;
+  //     M2 = 1;
+  //     bits_per_symbol = 3;
+  //     coef_name_stage1 = "480_srRC_stage1.coef";
+  //     coef_name_stage2 = "480_srRC_stage2.coef";
+  //     break;
+  // // F_s = 1200
+    case 1:
       L1 = 5;
       M1 = 1;
       L2 = 8;
       M2 = 1;
       bits_per_symbol = 2;
-      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      coef_name_stage1 = "1200_srRC_stage1.coef";
+      coef_name_stage2 = "1200_srRC_stage2.coef";
       break;
-    case 2: //ASK v2
+    case 2: 
       L1 = 5;
       M1 = 1;
       L2 = 8;
       M2 = 1;
-      bits_per_symbol = 1;
-      coef_name_stage1 = "ASK_PSK_2_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_2_stage2.coef";
-
+      bits_per_symbol = 3;
+      coef_name_stage1 = "1200_srRC_stage1.coef";
+      coef_name_stage2 = "1200_srRC_stage2.coef";
       break;
+/// F_s = 1920
+    case 3:
+      L1 = 5;
+      M1 = 1;
+      L2 = 5;
+      M2 = 1;
+      bits_per_symbol = 2;
+      coef_name_stage1 = "1920_srRC_stage1.coef";
+      coef_name_stage2 = "1920_srRC_stage2.coef";
+    break;
+    case 4:
+      L1 = 5;
+      M1 = 1;
+      L2 = 5;
+      M2 = 1;
+      bits_per_symbol = 3;
+      coef_name_stage1 = "1920_srRC_stage1.coef";
+      coef_name_stage2 = "1920_srRC_stage2.coef";
+    break;
     }
     break;
 
@@ -392,23 +430,43 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Outp
     mod_type=DSP::e::ModulationType::PSK;
     switch (variant)
     {
-    case 1:// 8-PSK v1 - NSymb = 40,
+      ////1200
+    case 1:
       L1 = 5;
       M1 = 1;
       L2 = 8;
       M2 = 1;
       bits_per_symbol = 3;
-      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      coef_name_stage1 = "1200_srRC_stage1.coef";
+      coef_name_stage2 = "1200_srRC_stage2.coef";
       break;
-    case 2: //QPSK v2   Nsymb = 80;
+    case 2: 
       L1 = 5;
       M1 = 1;
       L2 = 8;
       M2 = 1;
       bits_per_symbol = 2;
-      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      coef_name_stage1 = "1200_srRC_stage1.coef";
+      coef_name_stage2 = "1200_srRC_stage2.coef";
+      break;
+      ////////1920
+    case 3:
+      L1 = 5;
+      M1 = 1;
+      L2 = 5;
+      M2 = 1;
+      bits_per_symbol = 3;
+      coef_name_stage1 = "1920_srRC_stage1.coef";
+      coef_name_stage2 = "1920_srRC_stage2.coef";
+      break;
+    case 4:
+      L1 = 5;
+      M1 = 1;
+      L2 = 5;
+      M2 = 1;
+      bits_per_symbol = 2;
+      coef_name_stage1 = "1920_srRC_stage1.coef";
+      coef_name_stage2 = "1920_srRC_stage2.coef";
       break;
     }
     break;
@@ -422,8 +480,8 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Outp
       L2 = 8;
       M2 = 1;
       bits_per_symbol = 1;
-      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      coef_name_stage1 = "1200_srRC_stage1.coef";
+      coef_name_stage2 = "1200_srRC_stage2.coef";
       break;
     case 2:
       L1 = 5;
@@ -431,8 +489,8 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Outp
       L2 = 8;
       M2 = 1;
       bits_per_symbol = 1;
-      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      coef_name_stage1 = "1200_srRC_stage1.coef";
+      coef_name_stage2 = "1200_srRC_stage2.coef";
       break;
     }
     break;
@@ -447,8 +505,8 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Outp
       L2 = 8;
       M2 = 1;
       bits_per_symbol = 2;
-      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      coef_name_stage1 = "1200_srRC_stage1.coef";
+      coef_name_stage2 = "1200_srRC_stage2.coef";
       break;
     case 2:
       L1 = 5;
@@ -456,8 +514,26 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Outp
       L2 = 8;
       M2 = 1;
       bits_per_symbol = 4;
-      coef_name_stage1 = "ASK_PSK_1_stage1.coef";
-      coef_name_stage2 = "ASK_PSK_1_stage2.coef";
+      coef_name_stage1 = "1200_srRC_stage1.coef";
+      coef_name_stage2 = "1200_srRC_stage2.coef";
+      break;
+    case 3:
+      L1 = 5;
+      M1 = 1;
+      L2 = 5;
+      M2 = 1;
+      bits_per_symbol = 2;
+      coef_name_stage1 = "1920_srRC_stage1.coef";
+      coef_name_stage2 = "1920_srRC_stage2.coef";
+      break;
+    case 4:
+      L1 = 5;
+      M1 = 1;
+      L2 = 5;
+      M2 = 1;
+      bits_per_symbol = 4;
+      coef_name_stage1 = "1920_srRC_stage1.coef";
+      coef_name_stage2 = "1920_srRC_stage2.coef";
       break;
     }
     break;
@@ -475,7 +551,7 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Outp
   int N_LPF_stage1, N_LPF_stage2;
 
     // filtr dla 1. stopnia
-    coef_info_stage1.Open(coef_name_stage1, "matlab"); // TODO:change directory to /config.
+    coef_info_stage1.Open(coef_name_stage1, "config"); 
     N_LPF_stage1 = coef_info_stage1.GetSize(0);
     if (N_LPF_stage1 < 1)
     {
@@ -488,7 +564,7 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Outp
     }
 
     // filtr dla 2. stopnia
-    coef_info_stage2.Open(coef_name_stage2, "matlab");
+    coef_info_stage2.Open(coef_name_stage2, "config");
     N_LPF_stage2 = coef_info_stage2.GetSize(0);
     if (N_LPF_stage2 < 1)
     {
@@ -529,7 +605,7 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Outp
     int N_LPF_stage1, N_LPF_stage2, N_LPF_stage3;
 
     // filtr dla 1. stopnia
-    coef_info_stage1.Open(coef_name_stage1, "matlab"); // TODO:change directory to /config.
+    coef_info_stage1.Open(coef_name_stage1, "config");
     N_LPF_stage1 = coef_info_stage1.GetSize(0);
     if (N_LPF_stage1 < 1)
     {
@@ -542,7 +618,7 @@ void Modulator::create_branch(DSP::Clock_ptr Clock_in, long Fp, DSP::input &Outp
     }
 
     // filtr dla 2. stopnia
-    coef_info_stage2.Open(coef_name_stage2, "matlab");
+    coef_info_stage2.Open(coef_name_stage2, "config");
     N_LPF_stage2 = coef_info_stage2.GetSize(0);
     if (N_LPF_stage2 < 1)
     {
