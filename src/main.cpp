@@ -104,6 +104,12 @@ EVT_MENU(ID_draw_time_signal, MainFrame::OnDrawModeChange)
 EVT_MENU(ID_draw_histogram, MainFrame::OnDrawModeChange)
 EVT_MENU(ID_draw_psd, MainFrame::OnDrawModeChange)
 EVT_MENU(ID_draw_spectrogram, MainFrame::OnDrawModeChange)
+EVT_MENU(ID_draw_constellation, MainFrame::OnDrawModeChange)
+EVT_MENU(ID_draw_eyediagram, MainFrame::OnDrawModeChange)
+
+
+
+
 EVT_MENU(ID_draw_none, MainFrame::OnDrawModeChange)
 
 END_EVENT_TABLE()
@@ -1138,7 +1144,7 @@ MainFrame::MainFrame(wxWindow *parent,
   }
 
   // Accelerators
-  wxAcceleratorEntry entries[8];
+  wxAcceleratorEntry entries[10];
   entries[0].Set(wxACCEL_CTRL, (int)'P', ID_PAUSE_TASK);
   entries[1].Set(wxACCEL_CTRL, (int)'M', ID_MIKE_ON_OFF);
   entries[2].Set(wxACCEL_CTRL, (int)'L', ID_LOCAL_SIGNAL_ON_OFF);
@@ -1146,8 +1152,10 @@ MainFrame::MainFrame(wxWindow *parent,
   entries[4].Set(wxACCEL_CTRL, (int)'2', ID_draw_histogram);
   entries[5].Set(wxACCEL_CTRL, (int)'3', ID_draw_psd);
   entries[6].Set(wxACCEL_CTRL, (int)'4', ID_draw_spectrogram);
-  entries[7].Set(wxACCEL_CTRL, (int)'0', ID_draw_none);
-  wxAcceleratorTable accel(8, entries);
+  entries[7].Set(wxACCEL_CTRL, (int)'5', ID_draw_constellation);
+  entries[8].Set(wxACCEL_CTRL, (int)'6', ID_draw_eyediagram);
+  entries[9].Set(wxACCEL_CTRL, (int)'0', ID_draw_none);
+  wxAcceleratorTable accel(10, entries);
   SetAcceleratorTable(accel);
 
   float val;
@@ -3759,6 +3767,12 @@ void MainFrame::OnDrawModeChange(wxCommandEvent &event)
     break;
   case ID_draw_spectrogram:
     DrawModeBox->SetSelection(4);
+    break;
+  case ID_draw_constellation:
+    DrawModeBox->SetSelection(5);
+    break;
+  case ID_draw_eyediagram:
+    DrawModeBox->SetSelection(6);
     break;
   case ID_draw_none:
   default:

@@ -91,6 +91,8 @@ enum
     ID_draw_psd = 304,
     ID_draw_spectrogram = 305,
     ID_draw_none = 306,
+    ID_draw_constellation = 307,
+    ID_draw_eyediagram = 308,
     
     ID_STATUSBOX = 407,
     
