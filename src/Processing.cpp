@@ -719,7 +719,7 @@ void Modulator::clear_branch(){
       DemodDecimator.reset(new DSP::u::RawDecimator(true,Interpol1Clock,modulator.L1));
       CarrierOffset.reset(new DSP::u::Amplifier(DSP::Complex(1.0f,1.0f),1U,true));
       setCarrierOffset(carrier_offset);
-
+      CarrierOffset->SetName("Phase_offset");
 
       Input_signal>>DemodAmp->Input("in");
       DemodAmp->Output("out")>> DemodDelay->Input("in");

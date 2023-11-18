@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2023-11-17 23:23+0100\n"
-"PO-Revision-Date: 2023-11-17 23:23+0100\n"
+"POT-Creation-Date: 2023-11-18 11:20+0100\n"
+"PO-Revision-Date: 2023-11-18 11:20+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -418,16 +418,16 @@ msgid "Korekta fazy:"
 msgstr ""
 
 #: TeleSound_wxGlade.cpp:360
-msgid "0"
-msgstr ""
+msgid "-pi"
+msgstr "-π"
 
-#: TeleSound_wxGlade.cpp:362
-msgid "pi"
-msgstr "π"
-
-#: TeleSound_wxGlade.cpp:365
+#: TeleSound_wxGlade.cpp:363
 msgid "Korekta fazy"
 msgstr ""
+
+#: TeleSound_wxGlade.cpp:366
+msgid "pi"
+msgstr "π"
 
 #: main.cpp:783
 msgid "Processing specification not ready"
