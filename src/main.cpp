@@ -1235,8 +1235,7 @@ MainFrame::MainFrame(wxWindow *parent,
   // remove log page in release version
   notebookWindow->RemovePage(3);
 #endif
-  // TODO: validate ip (regex?) after 'processing start' button is pressed.
-  // allow only numbers and dots
+  // allow only numbers and dots (IP Address)
   wxString allowedChars = "0123456789.";
   wxTextValidator IPValidator(wxFILTER_INCLUDE_CHAR_LIST);
   IPValidator.SetCharIncludes(allowedChars);
@@ -1288,7 +1287,6 @@ void MainFrame::UpdateGUI(void)
     // update toolbar
     if (interface_state.task_is_running == true)
     {
-      // TODO: move to updategui (?)
       RunProcessingButton->Enable(false);
       PauseProcessingButton->Enable(true);
       PauseProcessingButton->SetToolTip(_("Wstrzymaj przetwarzanie"));
@@ -1320,7 +1318,11 @@ void MainFrame::UpdateGUI(void)
     // +++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
     // Enable / disable controls based on interface_state
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++  //
+    
+    //--------------------------
     //  General settings page
+    //--------------------------
+
     if (interface_state.run_as_server == true)
     {
       WorksAsServer->SetValue(true);
@@ -1337,14 +1339,84 @@ void MainFrame::UpdateGUI(void)
       ServerAddressEdit->Enable(true);
     }
 
-    if (interface_state.morse_receiver_state == true)
+
+
+
+
+    {//set SNR slider position
+      float SNR_dB = interface_state.SNR_dB;
+      SNR_dB += 20;
+      SNR_dB /= 100;
+      SNR_dB *= MAX_SLIDER_VALUE;
+      SNR_slider->SetValue(static_cast<int>(SNR_dB));
+      SNR_text->ChangeValue(wxString::Format("%.0f dB", interface_state.SNR_dB));
+    }
+    { // set PSD slots
+      int no_of_slots;
+      no_of_slots = interface_state.no_of_psd_slots;
+      no_of_slots -= 100;
+      no_of_slots /= 50;
+      PSD_slots_slider->SetValue(no_of_slots);
+      PSD_slots_text->ChangeValue(wxString::Format("%i", interface_state.no_of_psd_slots));
+    }
+
+    //set drawmode
+    DrawModeBox->SetSelection((int)interface_state.draw_mode);
+    //set microphone state
+    if (interface_state.mike_is_off == true)
     {
-      AsciiTextReceiver->Enable(true);
+      MicStateButton->SetBitmap(wxBitmap(mike_off_xpm));
+      MicStateButton->SetToolTip(_("Status mikrofonu (wyłączony)"));
     }
     else
     {
-      AsciiTextReceiver->Enable(false);
+      MicStateButton->SetBitmap(wxBitmap(mike_on_xpm));
+      MicStateButton->SetToolTip(_("Status mikrofonu (włączony)"));
     }
+    //set localsignal state
+    if (interface_state.local_signal_gain == 0.0)
+    {
+      LocalSignalStateButton->SetBitmap(wxBitmap(local_off_xpm));
+      LocalSignalStateButton->SetToolTip(_("Sygnał lokalny (wyłączony)"));
+    }
+    else
+    {
+      LocalSignalStateButton->SetBitmap(wxBitmap(local_on_xpm));
+      LocalSignalStateButton->SetToolTip(_("Sygnał lokalny (włączony)"));
+    }
+
+    //--------------------
+    //  Telegraph page
+    //--------------------
+    MorseReceiverState->SetValue(interface_state.morse_receiver_state);
+    AsciiTextReceiver->Enable(interface_state.morse_receiver_state);
+    { // set WPM slider
+      int WPM;
+      WPM = interface_state.WPM;
+      WPM -= 5;
+      WPM /= 5;
+      WPM_slider->SetValue(WPM);
+      WPM_text->SetValue(wxString::Format("%i WPM", interface_state.WPM));
+    }
+
+
+    //--------------------
+    //  Modulation page
+    //--------------------
+
+    ModulatorState->SetValue(interface_state.modulator_state);
+    demodState->SetValue(interface_state.demodulator_state);
+    //set modulator type
+    ModulationTypeBox->SetSelection((int)interface_state.modulator_type);
+    //set modulator variant
+    ModulatorVariantSelect->SetSelection((int)interface_state.modulator_variant-1);
+
+    //modulator and demodulator frequencies are reset automatically.
+
+    //set demodulator delay
+    DemodDelay->SetValue(interface_state.demodulator_delay);
+    //set demodulator phase shift
+    DemodCarrierOffset->SetValue(interface_state.demodulator_carrier_offset);
   }
 }
 void MainFrame::OnLanguageChange(wxCommandEvent &event){
@@ -3447,7 +3519,7 @@ void MainFrame::UpdateModulatorParametersText(){
   double N_symb, f_symb, bit_per_sample, Tsymb, F_symb, bps;
   int M;
   switch (interface_state.modulator_type)
-  { // parameters based on modulation type & variant
+  { // parameters based on modulation type & variant // calculated based on sampling rate.
   case E_MT_ASK:
     switch (interface_state.modulator_variant)
     {

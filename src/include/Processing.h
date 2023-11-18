@@ -57,14 +57,14 @@ class Modulator{
     DSP::Complex_vector tmp_constellation;
     tmp_constellation.resize(0);
     bool is_real=false;
-    if(ModMapper!=nullptr){
+    if(ModMapper){
       getConstellation(tmp_constellation,(DSP::e::ModulationType)mod_type,0,bits_per_symbol, is_real);
     }
     return tmp_constellation;
     }
 
   void enableOutput(bool enable){
-    if(ModAmp!=nullptr){
+    if(ModAmp){
       ModAmp->SetGain((enable)?1.0f:0.0f);
     }
   }
@@ -75,7 +75,7 @@ class Modulator{
     return Interpol1Clock;
   }
   void setCarrierFrequency(float New_frequency){
-   if (ModDDS!=nullptr)
+   if (ModDDS)
    {
       ModDDS->SetAngularFrequency(DSP::M_PIx2*New_frequency);
       CarrierFreq =New_frequency;
@@ -100,27 +100,29 @@ class Demodulator{
   void clear_branch(void);
 
   void enableInput(bool enable){
-    if(DemodAmp!=nullptr){
+    if(DemodAmp){
       DemodAmp->SetGain((enable)?1.0f:0.0f);
     }
   }
   
   void setInputDelay(int delay){
-    if(DemodDelay!=nullptr){
+    if(DemodDelay){
       DemodDelay->SetDelay(delay);
     }
   } 
 
   void setCarrierFrequency(float New_frequency){
-   if (DemodDDS!=nullptr)
+   if (DemodDDS)
       DemodDDS->SetAngularFrequency(-DSP::M_PIx2*New_frequency);
   }
-  void setCarrierOffset(int New_offset)//0 to 360 (0 to 2pi)
+  void setCarrierOffset(int New_offset) // 0 to 360 (0 to 2pi)
   {
-    if (CarrierOffset != nullptr){
-      float t = -1.0f*New_offset*(DSP::M_PIx1/180.0f);//e^−jt=cos(t)−jsin(t) - Euler's formula
-      DSP::Complex j(cos(t),-sin(t));
-      CarrierOffset->SetGain(j);}
+    if (CarrierOffset)
+    {
+      float t = -1.0f * New_offset * (DSP::M_PIx1 / 180.0f); // e^−jt=cos(t)−jsin(t) - Euler's formula
+      DSP::Complex j(cos(t), -sin(t));
+      CarrierOffset->SetGain(j);
+    }
   }
 };
 

@@ -712,7 +712,8 @@ void Modulator::clear_branch(){
       Interpol1Clock = DSP::Clock::GetClock(Clock_in,modulator.M2,modulator.L2);
       DemodAmp.reset(new DSP::u::Amplifier(((enable) ? 1.0f : 0.0f),1,false));
       DemodDelay.reset(new DSP::u::AdjustableDelay(50,input_delay));
-      DemodDDS.reset(new DSP::u::DDScos(Clock_in, true, 1.0, -DSP::M_PIx2 *carrier_freq));
+      DemodDDS.reset(new DSP::u::DDScos(Clock_in, true, 1.0, -DSP::M_PIx2 *carrier_freq,(float)((rand()%61)-30)));//random phase offset on start, so that it's necessary to adjust it manually;
+      //DemodDDS.reset(new DSP::u::DDScos(Clock_in, true, 1.0, -DSP::M_PIx2 *carrier_freq);
       DemodMul.reset(new DSP::u::Multiplication(1U, 1U));
       DemodConverter.reset(new DSP::u::SamplingRateConversion(true, Clock_in, modulator.M2, modulator.L2, modulator.h_LPF_stage2));
       DemodFIR.reset(new DSP::u::FIR(true, modulator.h_LPF_stage1));
@@ -1560,7 +1561,7 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
 
     if ((CurrentObject->UpdateState & E_US_modulator_type) != 0)
     {
-      if (CurrentObject->constellation_buffer_size != NULL)
+      if (CurrentObject->constellation_buffer)
       {
         CurrentObject->constellation_buffer->Reset();
         CurrentObject->tmp_constellation_buffer.assign(CurrentObject->constellation_buffer_size*2, 0);
