@@ -44,7 +44,8 @@ enum E_UpdateState
   E_US_demod_carrier_freq = 8192,
   E_US_demod_state=16384,
   E_US_demod_delay= 32768,
-  E_US_demod_carrier_offset = 65536
+  E_US_demod_carrier_offset = 65536,
+  E_US_demod_gain  = 131072
 };
 E_UpdateState& operator|= (E_UpdateState& left, const E_UpdateState& right);
 E_UpdateState& operator&= (E_UpdateState& left, const E_UpdateState& right);
@@ -93,7 +94,7 @@ class T_ProcessingSpec
     bool morse_receiver_state;
     bool modulator_state;
     bool demodulator_state;
-    float demodulator_carrier_freq;
+    float demodulator_carrier_freq, demodulator_gain;
     int demodulator_delay, demodulator_carrier_offset; 
     E_ModulatorTypes modulator_type;
     unsigned short modulator_variant;

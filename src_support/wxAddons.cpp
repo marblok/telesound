@@ -778,7 +778,8 @@ void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Com
   glBegin(GL_POINTS);
   for (auto &element : constellation) 
   {  
-    glVertex2f(element.re/(skala*3.15),element.im/(skala*3.15));
+    //glVertex2f(element.re/(skala*3.15),element.im/(skala*3.15));
+    glVertex2f(element.re/(skala*2),element.im/(skala*2));
   }
   glEnd();
   // Line antialiasing is controlled by calling glEnable and glDisable with argument GL_LINE_SMOOTH

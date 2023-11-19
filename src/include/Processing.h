@@ -87,7 +87,7 @@ class Demodulator{
   private:
     DSP::Clock_ptr  SymbolClock, Interpol1Clock, Interpol2Clock;
     
-    std::unique_ptr <DSP::u::Amplifier> DemodAmp, CarrierOffset;
+    std::unique_ptr <DSP::u::Amplifier> DemodAmp, CarrierOffset, SymbolsAmp;
     std::unique_ptr <DSP::u::AdjustableDelay> DemodDelay;
     std::unique_ptr <DSP::u::DDScos> DemodDDS;
     std::unique_ptr <DSP::u::Multiplication> DemodMul;
@@ -96,7 +96,7 @@ class Demodulator{
     std::unique_ptr <DSP::u::RawDecimator> DemodDecimator;
 
   public:
-  void create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, float carrier_freq, int carrier_offset, unsigned int input_delay, bool enable);
+  void create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, float carrier_freq, int carrier_offset, unsigned int input_delay, float symbol_gain, bool enable);
   void clear_branch(void);
 
   void enableInput(bool enable){
@@ -108,6 +108,12 @@ class Demodulator{
   void setInputDelay(int delay){
     if(DemodDelay){
       DemodDelay->SetDelay(delay);
+    }
+  } 
+
+  void setOutputGain(float gain){
+    if(SymbolsAmp){
+      SymbolsAmp->SetGain(gain);
     }
   } 
 
@@ -211,14 +217,14 @@ class T_DSPlib_processing : public T_InputElement
     float CarrierFreq;
     DSP::Complex_vector current_constellation;
     bool DemodulatorState;
-    float DemodulatorCarrierFreq;
+    float DemodulatorCarrierFreq, DemodulatorGain;
     int DemodulatorDelay, DemodulatorCarrierOffset;
 
     //**************************************//
     DSP::u::OutputBuffer *analysis_buffer;
     std::unique_ptr<DSP::u::OutputBuffer> constellation_buffer, eyediagram_buffer;
     const unsigned int constellation_buffer_size = 80;
-    const unsigned int eyediagram_buffer_size = 3500;
+    const unsigned int eyediagram_buffer_size = 2500;
     TOptions *MorseDecoder_options;
     bool MorseReceiverState;
   

@@ -77,7 +77,7 @@ enum
     ID_demod_delay_SLIDER = 144,
     ID_demod_state=145,
     ID_demod_carrieroffset_SLIDER=146,
-
+    ID_demod_gain_SLIDER = 147,
     
     ID_RUN_TASK = 201,
     ID_PAUSE_TASK = 202,

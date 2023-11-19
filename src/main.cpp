@@ -84,6 +84,7 @@ EVT_COMMAND_SCROLL(ID_carrier_freq_SLIDER, MainFrame::OnCarrierFreqChange)
 EVT_COMMAND_SCROLL(ID_demod_carrier_freq_SLIDER, MainFrame::OnCarrierFreqChange)
 EVT_COMMAND_SCROLL(ID_demod_delay_SLIDER, MainFrame::OnCarrierFreqChange)
 EVT_COMMAND_SCROLL(ID_demod_carrieroffset_SLIDER, MainFrame::OnCarrierFreqChange)
+EVT_COMMAND_SCROLL(ID_demod_gain_SLIDER, MainFrame::OnCarrierFreqChange)
 
 
 EVT_BUTTON(ID_send_ascii_text, MainFrame::OnButtonPress)
@@ -842,6 +843,7 @@ void T_InterfaceState::Reset(void)
   carrier_freq = sampling_rate/4;
   demodulator_carrier_freq=sampling_rate/4;
   demodulator_delay=0;
+  demodulator_gain =1.0f;
   demodulator_carrier_offset=0;
   wav_filename[0] = 0x00;
   userdata_state = E_US_none;
@@ -905,6 +907,7 @@ void T_InterfaceState::TransferDataToTask(
     do_transfer |= (demodulator_delay != selected_task->FirstProcessingSpec->demodulator_delay);
     do_transfer |= (demodulator_carrier_offset != selected_task->FirstProcessingSpec->demodulator_carrier_offset);
     do_transfer |= (demodulator_state != selected_task->FirstProcessingSpec->demodulator_state);
+    do_transfer |= (demodulator_gain != selected_task->FirstProcessingSpec->demodulator_gain);
     do_transfer |= (wav_filename.compare(selected_task->FirstProcessingSpec->wav_filename) != 0);
 
     if (do_transfer == false)
@@ -996,6 +999,7 @@ void T_InterfaceState::TransferDataToTask(
     selected_task->FirstProcessingSpec->demodulator_delay = demodulator_delay;
     selected_task->FirstProcessingSpec->demodulator_carrier_offset = demodulator_carrier_offset;
     selected_task->FirstProcessingSpec->demodulator_state = demodulator_state;
+    selected_task->FirstProcessingSpec->demodulator_gain = demodulator_gain;
 
     selected_task->FirstProcessingSpec->wav_filename = wav_filename;
 
@@ -2019,10 +2023,14 @@ if (parent_task != NULL)
       DemodCarrierFreq->Disable();
       DemodCarrierOffset->Disable();
       DemodDelay->Disable();
+      DemodGain->Disable();
+      DemodulatorGainText->Disable();
     }else{
       DemodCarrierFreq->Enable();
       DemodDelay->Enable();
       DemodCarrierOffset->Enable();
+      DemodGain->Enable();
+      DemodulatorGainText->Enable();
     }
     if (parent_task != NULL)
     {
@@ -3418,7 +3426,7 @@ void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
 
 void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
 {
-  float Carrier_freq;
+  float Carrier_freq, gain;
   int delay;
   switch (event.GetId())
   {
@@ -3449,6 +3457,10 @@ void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
 
   case ID_demod_delay_SLIDER:
     delay = DemodDelay->GetValue();
+   if (event.GetEventType() != wxEVT_SCROLL_CHANGED)
+    { // only show current position but do not update
+      return;
+    }
     interface_state.demodulator_delay = delay;
     interface_state.userdata_state |= E_US_demod_delay;
     if (parent_task != NULL)
@@ -3473,6 +3485,10 @@ void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
 
     case ID_demod_carrieroffset_SLIDER:
     delay = DemodCarrierOffset->GetValue();
+   if (event.GetEventType() != wxEVT_SCROLL_CHANGED)
+    { // only show current position but do not update
+      return;
+    }
     interface_state.demodulator_carrier_offset = delay;
     interface_state.userdata_state |= E_US_demod_carrier_offset;
     if (parent_task != NULL)
@@ -3494,6 +3510,37 @@ void MainFrame::OnCarrierFreqChange(wxScrollEvent &event)
       }
     }
     break;
+    case ID_demod_gain_SLIDER:
+    gain = DemodGain->GetValue()/100.0f;
+    DemodulatorGainText->SetLabelText(wxString::FromDouble(gain,2));
+       if (event.GetEventType() != wxEVT_SCROLL_CHANGED)
+    { // only show current position but do not update
+      return;
+    }
+    interface_state.demodulator_gain = gain;
+    interface_state.userdata_state |= E_US_demod_gain;
+    if (parent_task != NULL)
+    {
+      interface_state.TransferDataToTask(NULL, parent_task, false);
+
+      if (parent_task->ProcessingBranch != NULL)
+      {
+        T_BranchCommand *temp;
+        TCommandData *command_data;
+
+        command_data = new TCommandData;
+        command_data->UserData = (void *)(&interface_state);
+        temp = new T_BranchCommand(E_BC_userdata, command_data);
+#ifdef __DEBUG__
+        DSP::log << "MainFrame::OnDemodGainChange" << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
+#endif
+        parent_task->ProcessingBranch->PostCommandToBranch(temp);
+      }
+    }
+    break;
+
+
+
   }
   
   if (parent_task != NULL)
@@ -3611,8 +3658,8 @@ void MainFrame::UpdateModulatorParametersText(){
   NsymbText->SetValue(wxString::FromDouble(N_symb) +" [Sa]");
   f_symb1Text->SetValue(wxString::FromDouble(f_symb) + " [symb/Sa]");
   BitPerSampleText->SetValue(wxString::FromDouble(bit_per_sample)+" [bit/Sa]");
-  TsymbText->SetValue(wxString::FromDouble(Tsymb)+" [s]");
-  F_symb2Text->SetValue(wxString::FromDouble(F_symb)+" [bod]");
+  TsymbText->SetValue(wxString::FromDouble(Tsymb,4)+" [s]");
+  F_symb2Text->SetValue(wxString::FromDouble(F_symb)+" [Bd]");
   bpsText->SetValue(wxString::FromDouble(bps)+" [bit/s]");
 }
 
