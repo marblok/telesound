@@ -148,10 +148,12 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   //cycles_per_segment = (unsigned int)(5*specgram_time_span*Fp)/NoOfPSDslots;
   //cycles_per_segment = (unsigned int)(5*(specgram_time_span*Fp/10000)*NoOfPSDslots);
   // co 5% szerokości okna czasowego
-  // if(Fp%8000 == 0)
-  // cycles_per_segment = (unsigned int)(0.05*(specgram_time_span*Fp));
-  // else
-  cycles_per_segment = (unsigned int)(0.05*(specgram_time_span*Fp)/200)*200;//may also work well for 8000 Sa/
+  if(Fp%8000 == 0)
+  cycles_per_segment = (unsigned int)(0.05*(specgram_time_span*Fp)/40)*40;
+  //200??
+  else
+  cycles_per_segment = (unsigned int)(0.05*(specgram_time_span*Fp)/500)*500;
+  //works for 500
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
   AudioInOff = SpecList->MikeIsOff;

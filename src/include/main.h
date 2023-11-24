@@ -267,7 +267,6 @@ class MainFrame : public GUIFrame
     void OnRunTask(wxCommandEvent& event);
     void OnPauseTask(wxCommandEvent& event);
     void OnStopTask(wxCommandEvent& event);
-    void InitGUI();
     bool task_is_stopping_now;
 
     //! true if window if about to close

@@ -1421,6 +1421,12 @@ void MainFrame::UpdateGUI(void)
     DemodDelay->SetValue(interface_state.demodulator_delay);
     //set demodulator phase shift
     DemodCarrierOffset->SetValue(interface_state.demodulator_carrier_offset);
+
+
+    //TODO:: Set demodulator gain!!!!
+
+
+
   }
 }
 void MainFrame::OnLanguageChange(wxCommandEvent &event){
@@ -1832,11 +1838,11 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
         interface_state.draw_mode = E_DM_spectrogram;
         break;
 
-      case 5:
+      case 5://E_DM_scatterplot
         interface_state.draw_mode = E_DM_scatterplot;
         break;
 
-      case 6:
+      case 6://E_DM_eyediagram
         interface_state.draw_mode = E_DM_eyediagram;
         break; 
 
@@ -1886,7 +1892,6 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
   interface_state.Reset();
   FillSettingsInterface(NULL);
   UpdateGUI();
-  //InitGUI();
   break;
   case ID_RESIZE_TO_SQUARE:
     sashWindow->SetSashPosition(sashWindow->GetSize().GetHeight());
@@ -3256,14 +3261,8 @@ bool MyProcessingThread::UpdateBranches(void)
   MyProcessingBranch::CS_CommandList.Leave();
   return true; // keep thread working
 }
-void MainFrame::InitGUI(){
-//TODO: Fill settings
 
 
-
-
-
-}
 
 void MainFrame::OnChannelFilterChange(wxScrollEvent &event)
 {
