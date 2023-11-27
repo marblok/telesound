@@ -121,11 +121,11 @@ class Demodulator{
    if (DemodDDS)
       DemodDDS->SetAngularFrequency(-DSP::M_PIx2*New_frequency);
   }
-  void setCarrierOffset(int New_offset) // 0 to 360 (0 to 2pi)
+  void setCarrierPhaseOffset(int New_offset) // -180 to 180 (-pi to +pi)
   {
     if (CarrierOffset)
     {
-      float t = -1.0f * New_offset * (DSP::M_PIx1 / 180.0f); // e^−jt=cos(t)−jsin(t) - Euler's formula
+      float t = -1.0f * New_offset * (DSP::M_PIx1 / 180.0f); // e^−jt=cos(t)−jsin(t)
       DSP::Complex j(cos(t), -sin(t));
       CarrierOffset->SetGain(j);
     }

@@ -19,8 +19,8 @@ enum E_PageIDs
 enum E_ModulatorTypes{
   E_MT_ASK = 0,
   E_MT_PSK = 1,
-  E_MT_FSK = 2,
-  E_MT_QAM = 3
+  E_MT_QAM = 2,
+  E_MT_FSK = 3
 };
 
 

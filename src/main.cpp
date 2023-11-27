@@ -1409,7 +1409,15 @@ void MainFrame::UpdateGUI(void)
     //--------------------
 
     ModulatorState->SetValue(interface_state.modulator_state);
+    CarrierFreqSlider->Enable(interface_state.modulator_state);
+    
+    
+  
     demodState->SetValue(interface_state.demodulator_state);
+    DemodDelay->Enable(interface_state.demodulator_state);
+    DemodCarrierFreq->Enable(interface_state.demodulator_state);
+    DemodGain->Enable(interface_state.demodulator_state);
+    DemodCarrierOffset->Enable(interface_state.demodulator_state);
     //set modulator type
     ModulationTypeBox->SetSelection((int)interface_state.modulator_type);
     //set modulator variant
@@ -1421,12 +1429,9 @@ void MainFrame::UpdateGUI(void)
     DemodDelay->SetValue(interface_state.demodulator_delay);
     //set demodulator phase shift
     DemodCarrierOffset->SetValue(interface_state.demodulator_carrier_offset);
-
-
-    //TODO:: Set demodulator gain!!!!
-
-
-
+    //set modulator gain
+    DemodGain->SetValue((int)interface_state.demodulator_gain*100);
+    DemodulatorGainText->SetLabelText(wxString::FromDouble(interface_state.demodulator_gain,2));
   }
 }
 void MainFrame::OnLanguageChange(wxCommandEvent &event){
@@ -1955,11 +1960,7 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
     break;
   case ID_modulator_state:
     interface_state.modulator_state = ModulatorState->GetValue();
-    if(!interface_state.modulator_state){
-      CarrierFreqSlider->Disable();
-    }else{
-      CarrierFreqSlider->Enable();
-    }
+    CarrierFreqSlider->Enable(interface_state.modulator_state);
     if (parent_task != NULL)
     {
       if (parent_task->ProcessingBranch != NULL)
@@ -2024,19 +2025,11 @@ if (parent_task != NULL)
     break;
      case ID_demod_state:
     interface_state.demodulator_state = demodState->GetValue();
-    if(!interface_state.demodulator_state){
-      DemodCarrierFreq->Disable();
-      DemodCarrierOffset->Disable();
-      DemodDelay->Disable();
-      DemodGain->Disable();
-      DemodulatorGainText->Disable();
-    }else{
-      DemodCarrierFreq->Enable();
-      DemodDelay->Enable();
-      DemodCarrierOffset->Enable();
-      DemodGain->Enable();
-      DemodulatorGainText->Enable();
-    }
+    DemodCarrierFreq->Enable(interface_state.demodulator_state);
+    DemodDelay->Enable(interface_state.demodulator_state);
+    DemodCarrierOffset->Enable(interface_state.demodulator_state);
+    DemodGain->Enable(interface_state.demodulator_state);
+    DemodulatorGainText->Enable(interface_state.demodulator_state);
     if (parent_task != NULL)
     {
       if (parent_task->ProcessingBranch != NULL)
@@ -2097,7 +2090,7 @@ if (parent_task != NULL)
   }
   if (parent_task != NULL)
     interface_state.TransferDataToTask(NULL, parent_task, false);
-  UpdateGUI();
+    UpdateGUI();
 
   if (refresh_GLcanvas == true)
   {

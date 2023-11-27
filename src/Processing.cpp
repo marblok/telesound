@@ -722,7 +722,7 @@ void Modulator::clear_branch(){
       DemodFIR.reset(new DSP::u::FIR(true, modulator.h_LPF_stage1));
       DemodDecimator.reset(new DSP::u::RawDecimator(true,Interpol1Clock,modulator.L1));
       CarrierOffset.reset(new DSP::u::Amplifier(DSP::Complex(1.0f,1.0f),1U,true));
-      setCarrierOffset(carrier_offset);
+      setCarrierPhaseOffset(carrier_offset);
       CarrierOffset->SetName("Phase_offset");
       SymbolsAmp.reset(new DSP::u::Amplifier(symbol_amp,1,true));
       Input_signal>>DemodAmp->Input("in");
@@ -993,7 +993,7 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
   {
     
     DemodulatorCarrierOffset= temp_spec->demodulator_carrier_offset;
-    demodulator.setCarrierOffset(DemodulatorCarrierOffset);
+    demodulator.setCarrierPhaseOffset(DemodulatorCarrierOffset);
     UpdateState |= E_US_demod_carrier_offset;
     temp_spec->userdata_state ^= E_US_demod_carrier_offset;
   }

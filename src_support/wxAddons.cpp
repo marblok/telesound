@@ -776,9 +776,8 @@ void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Com
   glColor3f(1.0, 0.0, 0.0);
   glPointSize(size+3);
   glBegin(GL_POINTS);
-  for (auto &element : constellation) 
+  for (auto &element : constellation)
   {  
-    //glVertex2f(element.re/(skala*3.15),element.im/(skala*3.15));
     glVertex2f(element.re/(skala*2),element.im/(skala*2));
   }
   glEnd();
