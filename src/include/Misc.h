@@ -45,7 +45,8 @@ enum E_UpdateState
   E_US_demod_state=16384,
   E_US_demod_delay= 32768,
   E_US_demod_carrier_offset = 65536,
-  E_US_demod_gain  = 131072
+  E_US_demod_gain  = 131072,
+  E_US_eyebuffer_source=262144
 };
 E_UpdateState& operator|= (E_UpdateState& left, const E_UpdateState& right);
 E_UpdateState& operator&= (E_UpdateState& left, const E_UpdateState& right);
@@ -99,6 +100,7 @@ class T_ProcessingSpec
     E_ModulatorTypes modulator_type;
     unsigned short modulator_variant;
     float carrier_freq;
+    unsigned int eyebuffer_source;
     const E_DrawModes Get_draw_mode(void);
     void Set_draw_mode(E_DrawModes new_draw_mode);
 

@@ -182,6 +182,7 @@ T_DSPlib_processing::T_DSPlib_processing(T_ProcessingSpec *SpecList)
   DemodulatorCarrierFreq= SpecList->demodulator_carrier_freq;
   DemodulatorDelay= SpecList->demodulator_delay;
   DemodulatorCarrierOffset = SpecList->demodulator_carrier_offset;
+  EyebufferSource= SpecList-> eyebuffer_source;
   DemodulatorGain=SpecList->demodulator_gain;
   current_constellation = DSP::Complex_vector(0);
 
@@ -718,6 +719,7 @@ void Modulator::clear_branch(){
       DemodDDS.reset(new DSP::u::DDScos(Clock_in, true, 1.0, -DSP::M_PIx2 *carrier_freq,(float)((rand()%61)-30)*DSP::M_2_PI_f));//random phase offset on start, so that it's necessary to adjust it manually;
       //DemodDDS.reset(new DSP::u::DDScos(Clock_in, true, 1.0, -DSP::M_PIx2 *carrier_freq);
       DemodMul.reset(new DSP::u::Multiplication(1U, 1U));
+      DemodSwitch.reset(new DSP::u::Switch(true,2U,1U));
       DemodConverter.reset(new DSP::u::SamplingRateConversion(true, Clock_in, modulator.M2, modulator.L2, modulator.h_LPF_stage2));
       DemodFIR.reset(new DSP::u::FIR(true, modulator.h_LPF_stage1));
       DemodDecimator.reset(new DSP::u::RawDecimator(true,Interpol1Clock,modulator.L1));
@@ -734,7 +736,10 @@ void Modulator::clear_branch(){
       DemodMul->Output("out")>>DemodConverter->Input("in");
       DemodConverter->Output("out")>>SymbolsAmp->Input("in");
       SymbolsAmp->Output("out")>>DemodFIR->Input("in");
-      SymbolsAmp->Output("out")>>Eyediagram;
+      SymbolsAmp->Output("out")>>DemodSwitch->Input("in1");// "surowe" symbole
+      DemodFIR->Output("out")>>DemodSwitch->Input("in2");// po filtracji
+      DemodSwitch->Output("out")>>Eyediagram;
+      setBufferInput(0U);
       DemodFIR->Output("out")>>DemodDecimator->Input("in");
       DemodDecimator->Output("out")>>Constellation;
     
@@ -754,6 +759,7 @@ void Modulator::clear_branch(){
       DemodMul.reset(nullptr);
       DemodConverter.reset(nullptr);
       DemodFIR.reset(nullptr);
+      DemodSwitch.reset(nullptr);
       DemodDecimator.reset(nullptr);
       CarrierOffset.reset(nullptr);
       SymbolsAmp.reset(nullptr);
@@ -996,6 +1002,13 @@ void T_DSPlib_processing::ProcessUserData(void *userdata)
     demodulator.setCarrierPhaseOffset(DemodulatorCarrierOffset);
     UpdateState |= E_US_demod_carrier_offset;
     temp_spec->userdata_state ^= E_US_demod_carrier_offset;
+  }
+   if ((temp_spec->userdata_state & E_US_eyebuffer_source) != 0)
+  {  
+    EyebufferSource= temp_spec->eyebuffer_source;
+    demodulator.setBufferInput((unsigned int)EyebufferSource);
+    UpdateState |= E_US_eyebuffer_source;
+    temp_spec->userdata_state ^= E_US_eyebuffer_source;
   }
     if ((temp_spec->userdata_state & E_US_modulator_type) != 0)
   {
@@ -1596,6 +1609,12 @@ void T_DSPlib_processing::AnalysisBufferCallback(DSP::Component_ptr Caller, unsi
     }
     CurrentObject->UpdateState &= (~E_US_demod_delay);
     
+ 
+    if ((CurrentObject->UpdateState & E_US_eyebuffer_source) != 0)
+    {
+      CurrentObject->demodulator.setBufferInput((unsigned int)CurrentObject->EyebufferSource%2);
+    }
+    CurrentObject->UpdateState &= (~E_US_eyebuffer_source);
     
     if ((CurrentObject->UpdateState & E_US_demod_gain) != 0)
     {

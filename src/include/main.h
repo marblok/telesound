@@ -223,6 +223,7 @@ class T_InterfaceState
     float demodulator_carrier_freq, demodulator_gain;
     int demodulator_delay;
     int demodulator_carrier_offset;
+    unsigned int eyebuffer_source;
     E_UpdateState userdata_state;
 
     // +++++++++++++++++++++++++ //

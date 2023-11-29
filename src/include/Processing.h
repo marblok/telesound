@@ -91,6 +91,7 @@ class Demodulator{
     std::unique_ptr <DSP::u::AdjustableDelay> DemodDelay;
     std::unique_ptr <DSP::u::DDScos> DemodDDS;
     std::unique_ptr <DSP::u::Multiplication> DemodMul;
+    std::unique_ptr <DSP::u::Switch> DemodSwitch;
     std::unique_ptr <DSP::u::SamplingRateConversion> DemodConverter;
     std::unique_ptr <DSP::u::FIR> DemodFIR;
     std::unique_ptr <DSP::u::RawDecimator> DemodDecimator;
@@ -105,6 +106,11 @@ class Demodulator{
     }
   }
   
+  void setBufferInput(unsigned int input_no=0U){//Output no - 0 = channel output, 1 - filtered 
+    if(DemodSwitch)
+    DemodSwitch->Select(input_no,0U);
+  }
+
   void setInputDelay(int delay){
     if(DemodDelay){
       DemodDelay->SetDelay(delay);
@@ -219,6 +225,7 @@ class T_DSPlib_processing : public T_InputElement
     bool DemodulatorState;
     float DemodulatorCarrierFreq, DemodulatorGain;
     int DemodulatorDelay, DemodulatorCarrierOffset;
+    unsigned int EyebufferSource;
 
     //**************************************//
     DSP::u::OutputBuffer *analysis_buffer;

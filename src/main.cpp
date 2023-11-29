@@ -66,6 +66,7 @@ EVT_COMBOBOX(ID_SELECT_MIXER_SOURCE_LINE, MainFrame::OnSettingsInterfaceChange)
 EVT_COMBOBOX(ID_SELECT_MIXER_DEST_LINE, MainFrame::OnSettingsInterfaceChange)
 EVT_COMBOBOX(ID_SELECT_MODULATOR_TYPE, MainFrame::OnSettingsInterfaceChange)
 EVT_CHOICE(ID_SELECT_MODULATOR_VARIANT, MainFrame::OnSettingsInterfaceChange)
+EVT_CHOICE(ID_SELECT_EYEBUFFER_SOURCE, MainFrame::OnSettingsInterfaceChange)
 
 EVT_COMMAND_SCROLL(ID_SourceLine_SLIDER, MainFrame::OnMixerVolumeChange)
 EVT_COMMAND_SCROLL(ID_DestLine_SLIDER, MainFrame::OnMixerVolumeChange)
@@ -439,6 +440,7 @@ T_ProcessingSpec::T_ProcessingSpec(void)
   demodulator_delay=0;
   demodulator_carrier_offset=0;
   demodulator_state=false;
+  eyebuffer_source = 0U;
   morse_receiver_state = false;
 
   Next = NULL;
@@ -847,6 +849,7 @@ void T_InterfaceState::Reset(void)
   demodulator_carrier_offset=0;
   wav_filename[0] = 0x00;
   userdata_state = E_US_none;
+  eyebuffer_source=0U;
 }
 
 void T_InterfaceState::Reset(T_TaskElement *selected_task)
@@ -908,6 +911,7 @@ void T_InterfaceState::TransferDataToTask(
     do_transfer |= (demodulator_carrier_offset != selected_task->FirstProcessingSpec->demodulator_carrier_offset);
     do_transfer |= (demodulator_state != selected_task->FirstProcessingSpec->demodulator_state);
     do_transfer |= (demodulator_gain != selected_task->FirstProcessingSpec->demodulator_gain);
+    do_transfer |= (eyebuffer_source != selected_task->FirstProcessingSpec->eyebuffer_source);
     do_transfer |= (wav_filename.compare(selected_task->FirstProcessingSpec->wav_filename) != 0);
 
     if (do_transfer == false)
@@ -1000,6 +1004,7 @@ void T_InterfaceState::TransferDataToTask(
     selected_task->FirstProcessingSpec->demodulator_carrier_offset = demodulator_carrier_offset;
     selected_task->FirstProcessingSpec->demodulator_state = demodulator_state;
     selected_task->FirstProcessingSpec->demodulator_gain = demodulator_gain;
+    selected_task->FirstProcessingSpec->eyebuffer_source = eyebuffer_source;
 
     selected_task->FirstProcessingSpec->wav_filename = wav_filename;
 
@@ -1429,9 +1434,10 @@ void MainFrame::UpdateGUI(void)
     DemodDelay->SetValue(interface_state.demodulator_delay);
     //set demodulator phase shift
     DemodCarrierOffset->SetValue(interface_state.demodulator_carrier_offset);
-    //set modulator gain
-    DemodGain->SetValue((int)interface_state.demodulator_gain*100);
+    //set demodulator gain
+    DemodGain->SetValue((int)(interface_state.demodulator_gain*100));
     DemodulatorGainText->SetLabelText(wxString::FromDouble(interface_state.demodulator_gain,2));
+    EyeBufferSource->SetSelection(interface_state.eyebuffer_source);
   }
 }
 void MainFrame::OnLanguageChange(wxCommandEvent &event){
@@ -1979,6 +1985,27 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
       }
     }
     break;
+  case ID_SELECT_EYEBUFFER_SOURCE:
+    interface_state.eyebuffer_source = EyeBufferSource->GetSelection();
+    if (parent_task != NULL)
+    {
+      if (parent_task->ProcessingBranch != NULL)
+      {
+        T_BranchCommand *temp;
+        TCommandData *command_data;
+
+        interface_state.userdata_state = E_US_eyebuffer_source;
+        command_data = new TCommandData;
+        command_data->UserData = (void *)(&interface_state);
+        temp = new T_BranchCommand(E_BC_userdata, command_data);
+#ifdef __DEBUG__
+        DSP::log << "ID_EYEBUFFER_SOURCE:"<< interface_state.eyebuffer_source << DSP::e::LogMode::second << "PostCommandToBranch" << std::endl;
+#endif
+        parent_task->ProcessingBranch->PostCommandToBranch(temp);
+      }
+    }
+    break;
+  
   case ID_SELECT_MODULATOR_TYPE:
     interface_state.modulator_type = (E_ModulatorTypes)(ModulationTypeBox->GetSelection());
     interface_state.modulator_variant = 1;
@@ -2000,6 +2027,7 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
       }
     }
     ModulatorVariantSelect->SetSelection(0);
+    EyeBufferSource->SetSelection(0);
     UpdateModulatorParametersText();
     break;
   case ID_SELECT_MODULATOR_VARIANT:
@@ -2011,7 +2039,6 @@ if (parent_task != NULL)
       {
         T_BranchCommand *temp;
         TCommandData *command_data;
-
         interface_state.userdata_state = E_US_modulator_type;
         command_data = new TCommandData;
         command_data->UserData = (void *)(&interface_state);
@@ -2022,6 +2049,7 @@ if (parent_task != NULL)
         parent_task->ProcessingBranch->PostCommandToBranch(temp);
       }
     }
+    EyeBufferSource->SetSelection(0);
     break;
      case ID_demod_state:
     interface_state.demodulator_state = demodState->GetValue();

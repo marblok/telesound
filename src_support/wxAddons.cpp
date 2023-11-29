@@ -882,14 +882,14 @@ void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, i
       for (int j = 0; j < x_size - 2; j+=2)
       {
         glColor3f(color + color_tick, color + color_tick, 0.0);
-      
+        if(samples[j+offset]*skala_y>0.45f || samples[j+offset]*skala_y<-0.45f)//auto scale to prevent overlapping 
+        {skala_y = (skala_y/4)*3;}
         glVertex2f(x_values[j], reBaseLine+samples[j + offset] * skala_y);//re
         glVertex2f(x_values[j + 2], reBaseLine+samples[j + 2 + offset] * skala_y);//re
         
         glColor3f(0.0, color + color_tick, color + color_tick);
         glVertex2f(x_values[j], imBaseLine+samples[j + 1 + offset] * skala_y);//im
         glVertex2f(x_values[j + 2], imBaseLine+samples[j + 3 + offset] * skala_y);//im
-     
       }
       glEnd();
       offset += samplesPerTrace;
