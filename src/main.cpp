@@ -2009,6 +2009,7 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
   case ID_SELECT_MODULATOR_TYPE:
     interface_state.modulator_type = (E_ModulatorTypes)(ModulationTypeBox->GetSelection());
     interface_state.modulator_variant = 1;
+    interface_state.eyebuffer_source = 0U;
     if (parent_task != NULL)
     {
       if (parent_task->ProcessingBranch != NULL)
@@ -2028,10 +2029,12 @@ void MainFrame::OnSettingsInterfaceChange(wxCommandEvent &event)
     }
     ModulatorVariantSelect->SetSelection(0);
     EyeBufferSource->SetSelection(0);
+
     UpdateModulatorParametersText();
     break;
   case ID_SELECT_MODULATOR_VARIANT:
     interface_state.modulator_variant = (unsigned short)(ModulatorVariantSelect->GetSelection() + 1);
+    interface_state.eyebuffer_source = 0U;
     UpdateModulatorParametersText();
 if (parent_task != NULL)
     {
