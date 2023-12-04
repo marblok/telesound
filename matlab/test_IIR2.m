@@ -6,27 +6,27 @@ close all
 do_not_save = 0;
 design_LPF = 1;
 
-% 1. Za³o¿enie dF = 100 Hz; Rp = 1; Rs = 70
-% 2. dobraæ metodê aproksymacji N w funkji Wn dla ró¿nych szybkoœci próbkowania
-% 3. projektowaæ filtry
-% 3a. bezpoœrednio jak w ellip
-% 3b. metody aproksymacji (dla sta³ego minimalnego N)
-% ? problem co poni¿ej dF ?
+% 1. Zaï¿½oï¿½enie dF = 100 Hz; Rp = 1; Rs = 70
+% 2. dobraï¿½ metodï¿½ aproksymacji N w funkji Wn dla rï¿½nych szybkoï¿½ci prï¿½bkowania
+% 3. projektowaï¿½ filtry
+% 3a. bezpoï¿½rednio jak w ellip
+% 3b. metody aproksymacji (dla staï¿½ego minimalnego N)
+% ? problem co poniï¿½ej dF ?
 
 % ELLIPAP Elliptic analog lowpass filter prototype.
 % !!! dla ustalonego N, Rp i Rs tylko jeden filter
-% !!! to samo z reprezentacj¹ space-state
-% !!! spor¹ czêœæ transformacji lp2lp oraz lp2hp te¿ mo¿na zrobiæ za wczasu
+% !!! to samo z reprezentacjï¿½ space-state
+% !!! sporï¿½ czï¿½ï¿½ transformacji lp2lp oraz lp2hp teï¿½ moï¿½na zrobiï¿½ za wczasu
 % pozostaje:
 %  - transformacja biliniowa
 %  - state-space version of bilinear transformation
 
-% !!!! ew. dla ustalonego N, Rp i Rs wyznaczyæ strukturê Farrowa
+% !!!! ew. dla ustalonego N, Rp i Rs wyznaczyï¿½ strukturï¿½ Farrowa
 
-% \todo okreœliæ Fp_min (mamy Fp_max)
-% \todo podobnie dla innych rzêdów filtrów: okreœliæ Fp_min i Fp_max
+% \todo okreï¿½liï¿½ Fp_min (mamy Fp_max)
+% \todo podobnie dla innych rzï¿½dï¿½w filtrï¿½w: okreï¿½liï¿½ Fp_min i Fp_max
 if design_LPF == 1,
-  % Fa_max - górna czêstotliwoœæ dziedziny aproksymacji
+  % Fa_max - gï¿½rna czï¿½stotliwoï¿½ï¿½ dziedziny aproksymacji
 %   SamplingRate = 8000; N = 5; order = 15; Fa_max = 2000; Fmax = 3400; Fmin = 200;
 % 	SamplingRate = 11025; N = 5; order = 15; Fa_max = 2500; Fmax = 4600; Fmin = 200;
 % 	SamplingRate = 16000; N = 5; order = 15; Fa_max = 4000; Fmax = 7000; Fmin = 300;
@@ -117,8 +117,8 @@ fprintf(plik, 'Freq_factor = %.2f\n\n', freq_factor);
 for ind=1:N+1,
   plot(f_all, b_all(:,ind));
   coef_b{ind} = polyfit((f_all(:)-Fa_max/2)*freq_factor/SamplingRate, b_all(:,ind), order);
-  %DSP_float const_22050_coef_b_5[16] =
-  fprintf(plik, 'DSP_float const_%i_coef_b_%i[%i]\n  = { ', SamplingRate, ind-1, order+1);
+  %DSP::Float const_22050_coef_b_5[16] =
+  fprintf(plik, 'DSP::Float const_%i_coef_b_%i[%i]\n  = { ', SamplingRate, ind-1, order+1);
   %fprintf(plik, 'coef_b[%i] = { ', ind);
   fprintf(plik, '%.15g, ', coef_b{ind}(1:end-1));
   fprintf(plik, '%.15g ', coef_b{ind}(end));
@@ -133,8 +133,8 @@ subplot(2,1,2)
 for ind=1:N+1,
   plot(f_all, a_all(:,ind));
   coef_a{ind} = polyfit((f_all(:)-Fa_max/2)*freq_factor/SamplingRate, a_all(:,ind), order);
-  %DSP_float const_22050_coef_a_5[16] =
-  fprintf(plik, 'DSP_float const_%i_coef_a_%i[%i]\n  = { ', SamplingRate, ind-1, order+1);
+  %DSP::Float const_22050_coef_a_5[16] =
+  fprintf(plik, 'DSP::Float const_%i_coef_a_%i[%i]\n  = { ', SamplingRate, ind-1, order+1);
   %fprintf(plik, 'coef_a[%i] = { ', ind);
   fprintf(plik, '%.15g, ', coef_a{ind}(1:end-1));
   fprintf(plik, '%.15g ', coef_a{ind}(end));

@@ -9,7 +9,7 @@
 #define BRANCHES_H_
 
 #include "project_definitions.h"
-
+#include "main.h"
 class MyProcessingBranch;
 
 //! base class for command data

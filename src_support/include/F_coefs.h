@@ -5,7 +5,7 @@
   const unsigned int Farrow_coefs_half_band_N_FSD = 15;
 
   //! \note Farrow order is one less then the actual number of polynomial coefficients;
-  const DSP_float Farrow_coefs_half_band
+  const DSP::Float Farrow_coefs_half_band
      [Farrow_coefs_half_band_Farrow_order+1][Farrow_coefs_half_band_N_FSD] = {
        {  2.52624034392694e-005, -0.000266975338688247, 0.00156399011286397, -0.00646611303719638, 0.0214698271897106, -0.0538730741736755, 0.0954532571461074, -0.115707580176046, 0.095380081672645, -0.0539122267728208, 0.0214199717135594, -0.00647165895491196, 0.00155971969064015, -0.000268469754960772, 2.51865101752287e-005 },
        {  -0.000204730592051155, 0.00180537200040647, -0.00843914771927882, 0.0273153775983047, -0.0666394940399859, 0.110356421659632, -0.0972525759803761, -1.2247582655498e-006, 0.0972332823057813, -0.110346509382633, 0.066648101434634, -0.0273191319685252, 0.00843804267823479, -0.00180513681226072, 0.000204757287317348 },
@@ -21,9 +21,9 @@
   // minimum PE = -110dB
   const unsigned int N_FIR_half_band_110_poly_order = 6;
   //! the minimum sensible passband width.
-  const DSP_float N_FIR_half_band_110_min_fp = 1.9531250000000000e-003;
+  const DSP::Float N_FIR_half_band_110_min_fp = 1.9531250000000000e-003;
   //!  \note we have N_FIR_half_band_110_poly_order+1 polynomial coefficients
-  const DSP_float N_FIR_half_band_110
+  const DSP::Float N_FIR_half_band_110
     [N_FIR_half_band_110_poly_order + 1] =
       {  5.9945243653423479e+005, -3.7979580818666291e+005,
          8.9992528904701685e+004, -9.2198306957719597e+003,
@@ -32,8 +32,8 @@
 
   // minimum PE = -90dB
   const unsigned int N_FIR_half_band_90_poly_order = 6;
-  const DSP_float N_FIR_half_band_90_min_fp = 0.01; // 1.9531250000000000e-003;
-  const DSP_float N_FIR_half_band_90
+  const DSP::Float N_FIR_half_band_90_min_fp = 0.01; // 1.9531250000000000e-003;
+  const DSP::Float N_FIR_half_band_90
     [N_FIR_half_band_90_poly_order + 1] =
       {  -1.2120718469581127e+003, 1.0906768836253966e+005,
          -6.4093721534713346e+004, 1.4327163736686833e+004,

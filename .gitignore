@@ -1,0 +1,14 @@
+/wxWidgets-3.2.2/**
+/out_*
+/ref
+*.exe
+/*.dll
+*.log
+!/wxWidgets-3.2.2/README.md
+*.bak
+*.dot
+*.pyc
+*autosave*.wxg#
+/audio*
+out.svg
+out.png

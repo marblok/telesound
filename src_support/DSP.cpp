@@ -98,18 +98,18 @@ void T_OutputStackElement::SetInputSamplingRate(long double input_sampling_rate)
 void T_OutputStackElement::InitializeElement(
     unsigned int InputSegmentSize, unsigned int NoOfOutputSegments)
 {
-  DSPf_InfoMessage("T_OutputStackElement::InitializeElement", GetName());
+  DSP::log << "T_OutputStackElement::InitializeElement"<< DSP::e::LogMode::second << GetName()<< std::endl;
 
   switch (OutputBufferType)
   {
     case E_OBT_float:
-      InitializeElement_<DSP_float>(InputSegmentSize, NoOfOutputSegments);
+      InitializeElement_<DSP::Float>(InputSegmentSize, NoOfOutputSegments);
       break;
     case E_OBT_complex:
-      InitializeElement_<DSP_complex>(InputSegmentSize, NoOfOutputSegments);
+      InitializeElement_<DSP::Complex>(InputSegmentSize, NoOfOutputSegments);
       break;
     default:
-      DSPf_ErrorMessage("T_OutputStackElement::InitializeElement","Unsupported OutputBufferType");
+      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::InitializeElement"<< DSP::e::LogMode::second <<"Unsupported OutputBufferType"<< std::endl;
       break;
   }
 }
@@ -150,7 +150,7 @@ void T_OutputStackElement::InitializeElement_(
   if (max_output_segment_size < output_segment_overlap)
   {
     max_output_segment_size = output_segment_overlap;
-    DSPf_ErrorMessage("T_OutputStackElement::InitializeElement_", "max_output_segment_size < output_segment_overlap");
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::InitializeElement_"<< DSP::e::LogMode::second << "max_output_segment_size < output_segment_overlap"<< std::endl;
   }
 
   if (output_buffer != NULL)
@@ -170,7 +170,7 @@ void T_OutputStackElement::InitializeElement_(
                     + MaxNumberOfProtectedSamples();
   if (output_buffer_size > 0)
   {
-    //output_buffer = new DSP_complex [output_buffer_size];
+    //output_buffer = new DSP::Complex [output_buffer_size];
     output_buffer = (BYTE_ptr)new T[output_buffer_size];
     memset(output_buffer, 0, output_buffer_size * sizeof(T));
   }
@@ -229,7 +229,6 @@ void T_OutputStackElement::DeleteStack(void)
         OutputStacks[ind][ind2]->DeleteStack();
     }
   }
-
   delete this;
 }
 
@@ -293,27 +292,27 @@ T_OutputStackElement::~T_OutputStackElement(void)
 }
 
 unsigned int T_OutputStackElement::Process_cplx(E_processing_DIR processing_DIR,
-    unsigned int NoOfSamples, DSP_complex_ptr InputData)
+    unsigned int NoOfSamples, DSP::Complex_ptr InputData)
 {
   char tekst[1024];
 
   sprintf(tekst, "No processing for complex input signal has been implemented for: %s", GetName());
-  DSPf_ErrorMessage("T_OutputStackElement::Process_cplx", tekst);
+  DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::Process_cplx"<< DSP::e::LogMode::second << tekst<< std::endl;
 
   return 0;
 }
 unsigned int T_OutputStackElement::Process_real(E_processing_DIR processing_DIR,
-    unsigned int NoOfSamples, DSP_float_ptr InputData)
+    unsigned int NoOfSamples, DSP::Float_ptr InputData)
 {
   char tekst[1024];
 
   sprintf(tekst, "No processing for real input signal has been implemented for: %s", GetName());
-  DSPf_ErrorMessage("T_OutputStackElement::Process_real", tekst);
+  DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::Process_real"<< DSP::e::LogMode::second << tekst<< std::endl;
 
   return 0;
 }
 
-//DSP_complex_ptr T_OutputStackElement::LockCurrentSegment(E_processing_DIR processing_DIR)
+//DSP::Complex_ptr T_OutputStackElement::LockCurrentSegment(E_processing_DIR processing_DIR)
 template<class T>
 T *T_OutputStackElement::LockCurrentSegment(E_processing_DIR processing_DIR)
 {
@@ -376,7 +375,7 @@ unsigned int T_OutputStackElement::UnlockCurrentSegment(unsigned int segment_siz
   if (segment_size == MAX_OUTPUT_SEGMENT_SIZE)
     segment_size = max_output_segment_size;
   if (segment_size > max_output_segment_size)
-    DSPf_ErrorMessage("T_OutputStackElement::UnlockCurrentSegment", "segment_size > max_output_segment_size");
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::UnlockCurrentSegment"<< DSP::e::LogMode::second << "segment_size > max_output_segment_size"<< std::endl;
 
   // current_output_segment + 1 <== skip first overlap segment
   output_segment_sizes[current_output_segment+1] = segment_size;
@@ -461,8 +460,7 @@ unsigned int T_OutputStackElement::UnlockCurrentSegment(unsigned int segment_siz
       }
       break;
     default:
-      DSPf_ErrorMessage("T_OutputStackElement::UnlockCurrentSegment",
-          "Unexpected state of previous_lock_processing_DIR variable");
+      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::UnlockCurrentSegment"<<DSP::e::LogMode::second<<"Unexpected state of previous_lock_processing_DIR variable"<< std::endl;
       break;
   }
 
@@ -517,7 +515,7 @@ int T_OutputStackElement::AddOutput(T_OutputStackElement *Element, unsigned int 
 {
   if (OutputIndex >= NoOfStacks)
   {
-    DSPf_ErrorMessage("T_OutputStackElement::AddOutput", "OutputIndex >= NoOfStacks");
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::AddOutput"<< DSP::e::LogMode::second <<"OutputIndex >= NoOfStacks"<< std::endl;
     return -1;
   }
   if (NoOfElementsOnStack[OutputIndex] >= OutputStackSize)
@@ -525,7 +523,7 @@ int T_OutputStackElement::AddOutput(T_OutputStackElement *Element, unsigned int 
 
   if (OutputStacks[OutputIndex][NoOfElementsOnStack[OutputIndex]] != NULL)
   {
-    DSPf_ErrorMessage("T_OutputStackElement::AddOutput", "Output already connected - try other OutputIndex");
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::AddOutput"<< DSP::e::LogMode::second << "Output already connected - try other OutputIndex"<< std::endl;
     return -1;
   }
   OutputStacks[OutputIndex][NoOfElementsOnStack[OutputIndex]] = Element;
@@ -542,7 +540,7 @@ int T_OutputStackElement::RemoveOutput(T_OutputStackElement *Element, unsigned i
 
   if (OutputIndex >= NoOfStacks)
   {
-    DSPf_ErrorMessage("T_OutputStackElement::RemoveOutput", "OutputIndex >= NoOfStacks");
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::RemoveOutput"<< DSP::e::LogMode::second<< "OutputIndex >= NoOfStacks"<< std::endl;
     return -1;
   }
 
@@ -556,7 +554,7 @@ int T_OutputStackElement::RemoveOutput(T_OutputStackElement *Element, unsigned i
     }
   if (element_index == UINT_MAX)
   {
-    DSPf_ErrorMessage("T_OutputStackElement::RemoveOutput", "Element not on the stack");
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::RemoveOutput"<< DSP::e::LogMode::second<< "Element not on the stack"<< std::endl;
     return -1;
   }
 
@@ -587,20 +585,19 @@ void *T_OutputStackElement::GetInputData_forward
   switch (OutputBufferType)
   {
     case E_OBT_float:
-      InputData = (DSP_float *)(output_segment_starts[current_segment+1])
+      InputData = (DSP::Float *)(output_segment_starts[current_segment+1])
                  - NoOfUnprocessedInputSamples[OutputIndex][ElementIndex]
       //// overlap segment before the actual current segment data
                  - OutputStacks[OutputIndex][ElementIndex]->ElementOverlapSegmentSize();
       break;
     case E_OBT_complex:
-      InputData = (DSP_complex *)(output_segment_starts[current_segment+1])
+      InputData = (DSP::Complex *)(output_segment_starts[current_segment+1])
                  - NoOfUnprocessedInputSamples[OutputIndex][ElementIndex]
       //// overlap segment before the actual current segment data
                  - OutputStacks[OutputIndex][ElementIndex]->ElementOverlapSegmentSize();
       break;
     default:
-      DSPf_ErrorMessage("T_OutputStackElement::GetInputData_forward",
-          "Unsupported output type");
+      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::GetInputData_forward"<< DSP::e::LogMode::second<<"Unsupported output type"<< std::endl;
       break;
   }
   return InputData;
@@ -622,18 +619,17 @@ void *T_OutputStackElement::GetInputData_backward
   switch (OutputBufferType)
   {
     case E_OBT_float:
-      InputData = (DSP_float *)(output_segment_starts[current_segment+1])
+      InputData = (DSP::Float *)(output_segment_starts[current_segment+1])
                  - NoOfUnprocessedInputSamples[OutputIndex][ElementIndex];
       //// overlap segment after the actual current segment data
       break;
     case E_OBT_complex:
-      InputData = (DSP_complex *)(output_segment_starts[current_segment+1])
+      InputData = (DSP::Complex *)(output_segment_starts[current_segment+1])
                  - NoOfUnprocessedInputSamples[OutputIndex][ElementIndex];
       //// overlap segment after the actual current segment data
       break;
     default:
-      DSPf_ErrorMessage("T_OutputStackElement::GetInputData_backward",
-          "Unsupported output type");
+      DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::GetInputData_backward"<< DSP::e::LogMode::second << "Unsupported output type"<< std::endl;
       break;
   }
   return InputData;
@@ -655,7 +651,7 @@ bool T_OutputStackElement::ProcessOutputElements(
   result = false;
   if (OutputIndex >= NoOfStacks)
   {
-    DSPf_ErrorMessage("T_OutputStackElement::ProcessOutputElements", "OutputIndex >= NoOfStacks");
+    DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second << "OutputIndex >= NoOfStacks"<< std::endl;
     return result;
   }
 
@@ -684,28 +680,28 @@ bool T_OutputStackElement::ProcessOutputElements(
       switch (OutputBufferType)
       {
         case E_OBT_complex:
-          if (sizeof(DSP_complex) != sizeof(*InputData))
-            DSPf_ErrorMessage("T_OutputStackElement::ProcessOutputElements", "DSP_complex expected but not encountered");
+          if (sizeof(DSP::Complex) != sizeof(*InputData))
+            DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second<< "DSP::Complex expected but not encountered"<< std::endl;
           else
             NoOfUnprocessedInputSamples[OutputIndex][ind] =
-                OutputStacks[OutputIndex][ind]->Process_cplx(processing_DIR, NoOfSamples, (DSP_complex_ptr)InputData);
+                OutputStacks[OutputIndex][ind]->Process_cplx(processing_DIR, NoOfSamples, (DSP::Complex_ptr)InputData);
           break;
         case E_OBT_float:
-          if (sizeof(DSP_float) != sizeof(*InputData))
-            DSPf_ErrorMessage("T_OutputStackElement::ProcessOutputElements", "DSP_float expected but not encountered");
+          if (sizeof(DSP::Float) != sizeof(*InputData))
+            DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second<< "DSP::Float expected but not encountered"<< std::endl;
           else
             NoOfUnprocessedInputSamples[OutputIndex][ind] =
-              OutputStacks[OutputIndex][ind]->Process_real(processing_DIR, NoOfSamples, (DSP_float_ptr)InputData);
+              OutputStacks[OutputIndex][ind]->Process_real(processing_DIR, NoOfSamples, (DSP::Float_ptr)InputData);
           break;
         default:
-          DSPf_ErrorMessage("T_OutputStackElement::ProcessOutputElements", "Unrecognized output buffer type");
+          DSP::log << DSP::e::LogMode::Error <<"T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second<< "Unrecognized output buffer type"<< std::endl;
           break;
       }
     }
     else
     {
       #ifdef __DEBUG__
-        DSPf_InfoMessage("T_OutputStackElement::ProcessOutputElements", "Segment processing has ended");
+        DSP::log << "T_OutputStackElement::ProcessOutputElements"<< DSP::e::LogMode::second << "Segment processing has ended"<< std::endl;
       #endif
       NoOfUnprocessedInputSamples[OutputIndex][ind] = 0;
       result = false;
@@ -933,22 +929,21 @@ void *T_InputElement::GetInputData_forward
     switch (OutputBufferType)
     {
       case E_OBT_float:
-        InputData = (DSP_float *)(output_segment_starts[current_segment+1])
+        InputData = (DSP::Float *)(output_segment_starts[current_segment+1])
                    - NoOfUnprocessedInputSamples[OutputIndex][ElementIndex]
         //// overlap segment before the actual current segment data
                    - OutputStacks[OutputIndex][ElementIndex]->ElementOverlapSegmentSize()
                    + start_correction;
         break;
       case E_OBT_complex:
-        InputData = (DSP_complex *)(output_segment_starts[current_segment+1])
+        InputData = (DSP::Complex *)(output_segment_starts[current_segment+1])
                    - NoOfUnprocessedInputSamples[OutputIndex][ElementIndex]
         //// overlap segment before the actual current segment data
                    - OutputStacks[OutputIndex][ElementIndex]->ElementOverlapSegmentSize()
                    + start_correction;
         break;
       default:
-        DSPf_ErrorMessage("T_InputElement::GetInputData_forward",
-            "Unsupported output type");
+        DSP::log << DSP::e::LogMode::Error <<"T_InputElement::GetInputData_forward"<< DSP::e::LogMode::second <<"Unsupported output type"<< std::endl;
         NoOfInputSamples_in = 0;
         break;
     }
@@ -977,18 +972,17 @@ void *T_InputElement::GetInputData_backward
   switch (OutputBufferType)
   {
     case E_OBT_float:
-      InputData = (DSP_float *)(output_segment_starts[current_segment+1])
+      InputData = (DSP::Float *)(output_segment_starts[current_segment+1])
                  - NoOfUnprocessedInputSamples[OutputIndex][ElementIndex];
       //// overlap segment after the actual current segment data
       break;
     case E_OBT_complex:
-      InputData = (DSP_complex *)(output_segment_starts[current_segment+1])
+      InputData = (DSP::Complex *)(output_segment_starts[current_segment+1])
                  - NoOfUnprocessedInputSamples[OutputIndex][ElementIndex];
       //// overlap segment after the actual current segment data
       break;
     default:
-      DSPf_ErrorMessage("T_InputElement::GetInputData_backward",
-          "Unsupported output type");
+      DSP::log << DSP::e::LogMode::Error <<"T_InputElement::GetInputData_backward"<< DSP::e::LogMode::second << "Unsupported output type"<< std::endl;
       break;
   }
   return InputData;
@@ -1083,7 +1077,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
   char text[1024];
 
   sprintf(text, "  ElementIndex = %i, OutputIndex = %i", ElementIndex, OutputIndex);
-  DSPf_InfoMessage("T_InputElement::UpdateTablesSizes", text);
+  DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<< std::endl;
 
   /* 1. check if OutputStack size has changed properly
    *   if size change value is strange then set ElementIndex = -1;
@@ -1098,7 +1092,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
     counter_t += NoOfElementsInSubtables[ind];
 
     sprintf(text, "  NoOfElementsInSubtables[%i] = %i", ind, NoOfElementsInSubtables[ind]);
-    DSPf_InfoMessage("T_InputElement::UpdateTablesSizes", text);
+    DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<< std::endl;
   }
   //! count number of entries in elements stacks
   counter_e = 0;
@@ -1107,11 +1101,11 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
     counter_e += NoOfElementsOnStack[ind];
 
     sprintf(text, "  NoOfElementsOnStack[%i] = %i", ind, NoOfElementsOnStack[ind]);
-    DSPf_InfoMessage("T_InputElement::UpdateTablesSizes", text);
+    DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<< std::endl;
   }
 
   sprintf(text, "tables sizes %i and %i", counter_e, counter_t);
-  DSPf_InfoMessage("T_InputElement::UpdateTablesSizes", text);
+  DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<< std::endl;
 
   if (counter_e != counter_t)
   {
@@ -1120,7 +1114,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
     if (abs(counter_e - counter_t) != 1)
     {
       sprintf(text, "incorrect tables size change detected %i != %i", counter_e, counter_t);
-      DSPf_ErrorMessage("T_InputElement::UpdateTablesSizes", text);
+      DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << text<< std::endl;
       ElementIndex = -1;
     }
     else
@@ -1129,7 +1123,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
       {
         if (counter_e - counter_t != 1)
         {
-          DSPf_ErrorMessage("T_InputElement::UpdateTablesSizes", "tables size should have increased by one element");
+          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second <<"tables size should have increased by one element"<< std::endl;
           ElementIndex = -1;
         }
       }
@@ -1137,7 +1131,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
       {
         if (counter_e - counter_t != -1)
         {
-          DSPf_ErrorMessage("T_InputElement::UpdateTablesSizes", "tables size should have decreased by one element");
+          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second <<"tables size should have decreased by one element"<< std::endl;
           ElementIndex = -1;
         }
       }
@@ -1149,7 +1143,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
         {
           if (NoOfElementsInSubtables[OutputIndex] == NoOfElementsOnStack[ind]+1)
           {
-            DSPf_ErrorMessage("T_InputElement::UpdateTablesSizes", "incorrect tables size: size change for wrong output");
+            DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "incorrect tables size: size change for wrong output"<< std::endl;
             ElementIndex = -1;
           }
         }
@@ -1157,21 +1151,21 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
         {
           if (NoOfElementsInSubtables[OutputIndex] == NoOfElementsOnStack[ind]-1)
           {
-            DSPf_ErrorMessage("T_InputElement::UpdateTablesSizes", "incorrect tables size: size change for wrong output");
+            DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "incorrect tables size: size change for wrong output"<< std::endl;
             ElementIndex = -1;
           }
         }
       }
       else
       {
-        DSPf_InfoMessage("T_InputElement::UpdateTablesSizes", "NoOfOutputStack has changed (this is rather unexpected)");
+        DSP::log << "T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "NoOfOutputStack has changed (this is rather unexpected)"<< std::endl;
         // though it might be correct ???
       }
     }
   }
   else
   {
-    DSPf_ErrorMessage("T_InputElement::UpdateTablesSizes", "tables size did not change though it was expected to");
+    DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "tables size did not change though it was expected to"<< std::endl;
     return;
   }
 
@@ -1300,8 +1294,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
         }
 
         if (ElementIndex != 0)
-          DSPf_ErrorMessage("T_InputElement::UpdateTablesSizes",
-                            "ElementIndex was expected to be 0");
+          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes" << DSP::e::LogMode::second << "ElementIndex was expected to be 0"<< std::endl;
 
         temp_NoOfElementsInSubtables[OutputIndex] = 1;
         temp_ProcessingFinished[OutputIndex] = new bool[1];
@@ -1332,8 +1325,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
         NoOfElementsInSubtables[OutputIndex]++;
 
         if (ElementIndex != (int)(NoOfElementsInSubtables[OutputIndex])-1)
-          DSPf_ErrorMessage("T_InputElement::UpdateTablesSizes",
-                            "ElementIndex was expected to be last in table");
+          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second << "ElementIndex was expected to be last in table"<< std::endl;
 
         temp_bool = ProcessingFinished[OutputIndex];
         ProcessingFinished[OutputIndex] = new bool[NoOfElementsInSubtables[OutputIndex]];
@@ -1407,8 +1399,7 @@ void T_InputElement::UpdateTablesSizes(bool element_added,
         }
 
         if (ElementIndex != 0)
-          DSPf_ErrorMessage("T_InputElement::UpdateTablesSizes",
-                            "ElementIndex was expected to be 0");
+          DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTablesSizes"<< DSP::e::LogMode::second <<"ElementIndex was expected to be 0"<< std::endl;
 
         // replace tables with temporary ones and delete temporary tables
         delete [] NoOfElementsInSubtables;
@@ -1549,8 +1540,7 @@ bool T_InputElement::FillTimeTables(E_processing_DIR process_dir)
 
   if ((default_n_start < 0) || (default_n_end < 0))
   {
-    DSPf_ErrorMessage("T_InputElement::UpdateTimeTablesWithOverlap",
-        "Default start and end times must be with SetInputTimeRange");
+    DSP::log << DSP::e::LogMode::Error <<"T_InputElement::UpdateTimeTablesWithOverlap"<< DSP::e::LogMode::second <<"Default start and end times must be with SetInputTimeRange"<< std::endl;
   }
 
   // allocate new overlap time tables
@@ -1709,15 +1699,15 @@ T_FILEinput::T_FILEinput(char *filename, char *filedir,
   SetName("T_FILEinput", false);
 
   // determine file type on the basis of filename extension
-  FileType = DSPf_FileExtToFileType(filename);
+  FileType = DSP::f::FileExtToFileType(filename);
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   if (filedir == NULL)
   {
-    input_file = new DSPu_FILEinput(NULL,
+    input_file = new DSP::u::FileInput(NULL,
          filename,
          0, //autodetect
-         DSP_ST_short, FileType);
+         DSP::e::SampleType::ST_short, FileType);
   }
   else
   {
@@ -1730,10 +1720,10 @@ T_FILEinput::T_FILEinput(char *filename, char *filedir,
     temp_filename[temp_len] = '\\';
     strcpy(temp_filename+temp_len+1, filename);
 
-    input_file = new DSPu_FILEinput(NULL,
+    input_file = new DSP::u::FileInput(NULL,
          temp_filename,
          0, // autodetect
-         DSP_ST_short, FileType);
+         DSP::e::SampleType::ST_short, FileType);
 
     delete [] temp_filename;
   }
@@ -1756,11 +1746,11 @@ T_FILEinput::T_FILEinput(char *filename, char *filedir,
   IsComplex = false;
   switch (FileType)
   {
-    case DSP_FT_tape:
+    case DSP::e::FileType::FT_tape:
       {
-        T_TAPE_header *tape_header;
+        DSP::T_TAPE_header *tape_header;
 
-        tape_header = input_file->GetHeader<T_TAPE_header>();
+        tape_header = input_file->GetHeader<DSP::T_TAPE_header>();
         if (tape_header->no_of_channels() == 2)
           IsComplex = true;
         Fo = tape_header->central_frequency * 1000000;
@@ -1787,11 +1777,11 @@ T_FILEinput::T_FILEinput(char *filename, char *filedir,
               double(Fs / 1000000), (long int)NoOfInputSamples );
       }
       break;
-    case DSP_FT_wav:
+    case DSP::e::FileType::FT_wav:
       {
-        T_WAVEchunk   *wav_header;
+        DSP::T_WAVEchunk   *wav_header;
 
-        wav_header = input_file->GetHeader<T_WAVEchunk>();
+        wav_header = input_file->GetHeader<DSP::T_WAVEchunk>();
         if (wav_header->nChannels == 2)
           IsComplex = true;
         Fs = wav_header->nSamplesPerSec;
@@ -1807,11 +1797,11 @@ T_FILEinput::T_FILEinput(char *filename, char *filedir,
               , double(Fo / 1000), double(Fs / 1000), (long int)NoOfInputSamples );
       }
       break;
-    case DSP_FT_flt:
+    case DSP::e::FileType::FT_flt:
       {
-        T_FLT_header  *flt_header;
+        DSP::T_FLT_header  *flt_header;
 
-        flt_header = input_file->GetHeader<T_FLT_header>();
+        flt_header = input_file->GetHeader<DSP::T_FLT_header>();
         if (flt_header->no_of_channels() == 2)
           IsComplex = true;
         Fs = flt_header->sampling_rate();
@@ -1828,7 +1818,7 @@ T_FILEinput::T_FILEinput(char *filename, char *filedir,
               , double(Fo / 1000000), double(Fs / 1000000), (long int)NoOfInputSamples );
       }
       break;
-    case DSP_FT_raw:
+    case DSP::e::FileType::FT_raw:
     default:
       sprintf(input_info, "Unsupported input file format");
       break;
@@ -1842,7 +1832,7 @@ T_FILEinput::T_FILEinput(char *filename, char *filedir,
   //! \bug this is max buffer size check if it is not used as buffer size
   raw_buffer_size = input_file->GetRawBufferSize(GetOutputSegmentSize(-2));
   raw_buffer = new uint8_t[raw_buffer_size];
-  //cplx_buffer = new DSP_complex[buffer_size];
+  //cplx_buffer = new DSP::Complex[buffer_size];
 }
 
 T_FILEinput::~T_FILEinput(void)
@@ -1896,16 +1886,16 @@ bool T_FILEinput::Process(E_processing_DIR processing_DIR)
 {
   unsigned int BytesRead, samples_read;
   unsigned int current_segment_ind;
-  DSP_complex_ptr cplx_buffer;
+  DSP::Complex_vector *cplx_buffer;
   long long no_to_skip, no_of_skipped;
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // check if samples need to be skipped
   // lock segment again
-  cplx_buffer = LockCurrentSegment<DSP_complex>(processing_DIR);
+  cplx_buffer = LockCurrentSegment<DSP::Complex_vector>(processing_DIR);
   if (cplx_buffer == NULL)
   {
-    DSPf_ErrorMessage("T_FILEinput::Process", "output buffer lock failure");
+    DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process"<< DSP::e::LogMode::second <<"output buffer lock failure"<< std::endl;
     return false; // stop processing
   }
 
@@ -1915,21 +1905,21 @@ bool T_FILEinput::Process(E_processing_DIR processing_DIR)
     no_of_skipped = input_file->SkipSamples(no_to_skip);
 
     // zero próbek wczytanych do bufora
-    current_segment_ind = UnlockCurrentSegment<DSP_complex>(0);
+    current_segment_ind = UnlockCurrentSegment<DSP::Complex>(0);
 
     if (no_of_skipped != no_to_skip)
     {
-      DSPf_ErrorMessage("T_FILEinput::Process", "samples skip failed");
+      DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process"<< DSP::e::LogMode::second << "samples skip failed"<< std::endl;
       return false;
     }
     input_discrete_time[(current_segment_ind+1) % no_of_output_segments]
                         = input_discrete_time[current_segment_ind] + no_to_skip;
 
     //! Lock segment again
-    cplx_buffer = LockCurrentSegment<DSP_complex>(processing_DIR);
+    cplx_buffer = LockCurrentSegment<DSP::Complex_vector>(processing_DIR);
     if (cplx_buffer == NULL)
     {
-      DSPf_ErrorMessage("T_FILEinput::Process", "output buffer lock failure");
+      DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process"<< DSP::e::LogMode::second << "output buffer lock failure"<< std::endl;
       return false; // stop processing
     }
   }
@@ -1937,9 +1927,9 @@ bool T_FILEinput::Process(E_processing_DIR processing_DIR)
     if (no_to_skip == -1)
     {
       // unlock segment with zero samples read
-      current_segment_ind = UnlockCurrentSegment<DSP_complex>(0);
+      current_segment_ind = UnlockCurrentSegment<DSP::Complex>(0);
 
-      DSPf_InfoMessage("T_FILEinput::Process", "segment processing has ended");
+      DSP::log << "T_FILEinput::Process"<< DSP::e::LogMode::second << "segment processing has ended"<< std::endl;
       return false;
     }
   // +++++++++++++++++++++++++++++++++++++++++++++++++++ //
@@ -1954,12 +1944,16 @@ bool T_FILEinput::Process(E_processing_DIR processing_DIR)
    */
   //! \bug ProcessOutputElements must also be modified for full start/end support
 
-
+DSP::Float_vector float_vector(GetMaxInputSegmentSize() * 2); // Allocate space for real and imaginary parts
+for (int i = 0; i < GetMaxInputSegmentSize(); i++) {
+  float_vector[i*2] = cplx_buffer->at(i).re;
+  float_vector[i*2 + 1] = cplx_buffer->at(i).im;
+}
   BytesRead = input_file->ReadSegmentToBuffer(
      //GetOutputSegmentSize(-1) == 0, // buffer_size in samples
-     GetMaxInputSegmentSize(),
-     raw_buffer, // raw_buffer_size == buffer_size * sample_size / 8
-     DSP_float_ptr(cplx_buffer), // size == buffer_size * no_of_channels
+     //GetMaxInputSegmentSize(),
+     //raw_buffer, // raw_buffer_size == buffer_size * sample_size / 8
+     float_vector, // size == buffer_size * no_of_channels
      (input_file_is_mono == true) ? 1 : 0
      );
 
@@ -1968,7 +1962,7 @@ bool T_FILEinput::Process(E_processing_DIR processing_DIR)
   {
     // if last read sample is not complete, delete it too
     //memset(cplx_buffer+samples_read, 0x00, (GetOutputSegmentSize(-1) - samples_read)*sizeof(DSP_complex));
-    memset(cplx_buffer+samples_read, 0x00, (GetMaxInputSegmentSize() - samples_read)*sizeof(DSP_complex));
+    memset(cplx_buffer+samples_read, 0x00, (GetMaxInputSegmentSize() - samples_read)*sizeof(DSP::Complex));
   }
 
   //// test
@@ -1977,7 +1971,7 @@ bool T_FILEinput::Process(E_processing_DIR processing_DIR)
   //  cplx_buffer[ind].re = 1.0;
   //  cplx_buffer[ind].im = 0.0;
   //}
-  current_segment_ind = UnlockCurrentSegment<DSP_complex>(samples_read);
+  current_segment_ind = UnlockCurrentSegment<DSP::Complex>(samples_read);
 
   switch (processing_DIR)
   {
@@ -1994,12 +1988,12 @@ bool T_FILEinput::Process(E_processing_DIR processing_DIR)
            - samples_read;
       break;
     default:
-      DSPf_ErrorMessage("T_FILEinput::Process","Unsupported processing dir");
+      DSP::log << DSP::e::LogMode::Error <<"T_FILEinput::Process" << DSP::e::LogMode::second <<"Unsupported processing dir"<< std::endl;
       break;
   }
 
   // output no 0
-  if (ProcessOutputElements<DSP_complex>(processing_DIR, current_segment_ind)
+  if (ProcessOutputElements<DSP::Complex>(processing_DIR, current_segment_ind)
       == false)
   {
     //! \bug implement skipping to the next timing range sample
@@ -2023,21 +2017,21 @@ T_FILEoutput::T_FILEoutput(const char *filename, unsigned int sampling_rate, boo
     SetName("T_FILEoutput(mono)", false);
 
     //! \todo determine file type on the basis of filename extension
-    output_file = new DSPu_FILEoutput(filename,
-        DSP_ST_short, 1, DSP_FT_wav, sampling_rate);
+    output_file = new DSP::u::FileOutput(filename,
+        DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, sampling_rate);
   }
   else
   {
     SetName("T_FILEoutput(cplx)", false);
 
     //! \todo determine file type on the basis of filename extension
-    output_file = new DSPu_FILEoutput(filename,
-        DSP_ST_short, 2, DSP_FT_wav, sampling_rate);
+    output_file = new DSP::u::FileOutput(filename,
+        DSP::e::SampleType::ST_short, 2, DSP::e::FileType::FT_wav, sampling_rate);
   }
 
   raw_buffer_size = 0;
   raw_buffer = NULL;
-  //cplx_buffer = new DSP_complex[buffer_size];
+  //cplx_buffer = new DSP::Complex[buffer_size];
 }
 
 T_FILEoutput::~T_FILEoutput(void)
@@ -2069,10 +2063,10 @@ unsigned int T_FILEoutput::MaxNumberOfProtectedSamples(void)
 }
 
 unsigned int T_FILEoutput::Process_cplx(E_processing_DIR processing_DIR,
-      unsigned int NoOfSamples, DSP_complex_ptr InputData)
+      unsigned int NoOfSamples, DSP::Complex_ptr InputData)
 {
   unsigned int temp_size, BytesWritten;
-  //DSP_complex *cplx_buffer; // we don't use output buffer
+  //DSP::Complex *cplx_buffer; // we don't use output buffer
 
   temp_size = output_file->GetRawBufferSize(NoOfSamples);
   if (raw_buffer_size < temp_size)
@@ -2082,11 +2076,15 @@ unsigned int T_FILEoutput::Process_cplx(E_processing_DIR processing_DIR,
     raw_buffer_size = temp_size;
     raw_buffer = new uint8_t[raw_buffer_size];
   }
-
+DSP::Float_vector float_vector(GetMaxInputSegmentSize() * 2); // Allocate space for real and imaginary parts
+for (int i = 0; i < GetMaxInputSegmentSize(); i++) {
+  float_vector[i*2] = (InputData)->re;
+  float_vector[i*2 + 1] = (InputData)->im;
+}
   BytesWritten = output_file->WriteSegmentFromBuffer(
-     NoOfSamples, // buffer_size in samples
-     raw_buffer, // raw_buffer_size == buffer_size * sample_size / 8
-     DSP_float_ptr(InputData), // size == buffer_size * no_of_channels
+     //NoOfSamples, // buffer_size in samples
+     //raw_buffer, // raw_buffer_size == buffer_size * sample_size / 8
+     float_vector, // size == buffer_size * no_of_channels
      (write_mono==true) ? 1:0  // skip imaginary part for mono output file
      );
 
@@ -2114,7 +2112,7 @@ unsigned int T_DDS::log2_ceil(unsigned int L)
     //if (((temp_L&1U) != 0) && (temp_L > 1))
     if ((temp_L&1U) != 0)
     {
-      DSPf_ErrorMessage("T_DDS", "L is not the power of 2");
+      DSP::log << DSP::e::LogMode::Error <<"T_DDS"<< DSP::e::LogMode::second << "L is not the power of 2"<< std::endl;
       korekta = 1;
     }
 
@@ -2130,15 +2128,15 @@ unsigned int T_DDS::LUT_size = 0;
 unsigned int T_DDS::LUT_k = 0;
 unsigned int T_DDS::LUT_index_mask = 0;
 // one period (LUT_size) of complex sinusoid
-DSP_complex *T_DDS::LUT = NULL;
+DSP::Complex *T_DDS::LUT = NULL;
 // ----------------------------------------- //
 unsigned int T_DDS::LUT2_size = 0;
 unsigned int T_DDS::LUT2_k = 0;
 unsigned int T_DDS::LUT2_index_mask = 0;
 // sin(dw)
-DSP_float *T_DDS::LUT2a = NULL;
+DSP::Float *T_DDS::LUT2a = NULL;
 // sin(dw/2)
-DSP_float *T_DDS::LUT2b = NULL;
+DSP::Float *T_DDS::LUT2b = NULL;
 
 /* Initializes class
  *
@@ -2177,12 +2175,12 @@ void T_DDS::LockLUTtables(unsigned int LUT_size_in, unsigned int LUT2_size_in)
   if ((LUT != NULL) && (LUT2a != NULL) && (LUT2b != NULL))
   { // just increase the lock index
     if ((LUT_size != LUT_size_in) || (LUT2_size != LUT2_size_in))
-      DSPf_ErrorMessage("T_DDS::LockLUTtables", "LUT tables already locked for different table sizes");
+      DSP::log << DSP::e::LogMode::Error <<"T_DDS::LockLUTtables"<< DSP::e::LogMode::second <<"LUT tables already locked for different table sizes"<< std::endl;
     LUT_lock_index++;
 
     //char text[1024];
     //sprintf(text, "LUT_lock_index=%i", LUT_lock_index);
-    //DSPf_ErrorMessage("T_DDS::LockLUTtables", text);
+    //DSP::log << DSP::e::LogMode::Error <<"T_DDS::LockLUTtables", text);
     CS_DDS.Leave();
     return;
   }
@@ -2211,11 +2209,11 @@ void T_DDS::LockLUTtables(unsigned int LUT_size_in, unsigned int LUT2_size_in)
   LUT_size = (1 << LUT_k);
   LUT_index_mask = (1U << LUT_k)-1;
 
-  LUT = new DSP_complex[LUT_size];
+  LUT = new DSP::Complex[LUT_size];
   for (ind = 0; ind < LUT_size; ind++)
   {
-    LUT[ind].re = COS((DSP_M_PIx2/LUT_size) * ind);
-    LUT[ind].im = SIN((DSP_M_PIx2/LUT_size) * ind);
+    LUT[ind].re = COS((DSP::M_PIx2/LUT_size) * ind);
+    LUT[ind].im = SIN((DSP::M_PIx2/LUT_size) * ind);
   }
 
   // ----------------------------------------- //
@@ -2224,19 +2222,19 @@ void T_DDS::LockLUTtables(unsigned int LUT_size_in, unsigned int LUT2_size_in)
   LUT2_size = (1 << LUT2_k);
   LUT2_index_mask = (1U << LUT2_k)-1;
 
-  LUT2a = new DSP_float[LUT2_size];
-  LUT2b = new DSP_float[LUT2_size];
+  LUT2a = new DSP::Float[LUT2_size];
+  LUT2b = new DSP::Float[LUT2_size];
   for (ind = 0; ind < LUT2_size; ind++)
   {
-    LUT2a[ind] = SIN(((DSP_M_PIx2/LUT2_size) * ind) / LUT_size);
-    LUT2b[ind] = SIN(((DSP_M_PIx1/LUT2_size) * ind) / LUT_size);
+    LUT2a[ind] = SIN(((DSP::M_PIx2/LUT2_size) * ind) / LUT_size);
+    LUT2b[ind] = SIN(((DSP::M_PIx1/LUT2_size) * ind) / LUT_size);
   }
 
   LUT_lock_index++;
 
   //char text[1024];
   //sprintf(text, "LUT_lock_index=%i", LUT_lock_index);
-  //DSPf_ErrorMessage("T_DDS::LockLUTtables", text);
+  //DSP::log << DSP::e::LogMode::Error <<"T_DDS::LockLUTtables", text);
   // ++++++++++++++++++++++++++++++++++++++++++ //
   CS_DDS.Leave();
 }
@@ -2247,7 +2245,7 @@ void T_DDS::ReleaseLUTtables(void)
 
   if (LUT_lock_index <= 0)
   {
-    DSPf_ErrorMessage("T_DDS::ReleaseLUTtables", "cannot release: already fully unlocked");
+    DSP::log << DSP::e::LogMode::Error <<"T_DDS::ReleaseLUTtables"<< DSP::e::LogMode::second << "cannot release: already fully unlocked"<< std::endl;
     CS_DDS.Leave();
     return;
   }
@@ -2295,7 +2293,7 @@ void T_DDS::SetFreq(double Fo, long double Fs)
 
   char tekst[1024];
   sprintf(tekst, "fo=%f, k=%i, dfo=%f, ko=%i, Fo_err=%f", fo, k, dfo, ko, Fo_err);
-  DSPf_InfoMessage(tekst);
+  DSP::log << tekst<< std::endl;
 }
 
 
@@ -2313,19 +2311,19 @@ unsigned int T_DDS::MaxNumberOfProtectedSamples(void)
 }
 
 unsigned int T_DDS::Process_cplx(E_processing_DIR processing_DIR,
-    unsigned int NoOfSamples, DSP_complex_ptr InputData)
+    unsigned int NoOfSamples, DSP::Complex_ptr InputData)
 {
   unsigned int current_segment_ind;
   unsigned int ind; //, size;
-  DSP_complex_ptr cplx_buffer;
-  DSP_float sin_corr, sin_half_corr;
-  DSP_complex_ptr phasor, tmp_input;
-  DSP_float temp_re, temp_im;
+  DSP::Complex_ptr cplx_buffer;
+  DSP::Float sin_corr, sin_half_corr;
+  DSP::Complex_ptr phasor, tmp_input;
+  DSP::Float temp_re, temp_im;
 
-  cplx_buffer = LockCurrentSegment<DSP_complex>(processing_DIR);
+  cplx_buffer = LockCurrentSegment<DSP::Complex>(processing_DIR);
   if (cplx_buffer == NULL)
   {
-    DSPf_ErrorMessage("T_Test::Process", "output buffer lock failure");
+    DSP::log << DSP::e::LogMode::Error <<"T_Test::Process"<< DSP::e::LogMode::second <<"output buffer lock failure"<< std::endl;
     return 0; // not processed but we'd better simulated that all has been done
   }
 
@@ -2366,9 +2364,9 @@ unsigned int T_DDS::Process_cplx(E_processing_DIR processing_DIR,
 
   //user processing end
 
-  current_segment_ind = UnlockCurrentSegment<DSP_complex>(NoOfSamples);
+  current_segment_ind = UnlockCurrentSegment<DSP::Complex>(NoOfSamples);
 
-  ProcessOutputElements<DSP_complex>(processing_DIR, current_segment_ind); // output no 0
+  ProcessOutputElements<DSP::Complex>(processing_DIR, current_segment_ind); // output no 0
 
   return 0; // processed all input samples
 }
@@ -2389,28 +2387,23 @@ T_QD2_BPF::T_QD2_BPF(double B, double Fo, long double Fs)
 
   if (N_FIR == 0)
     N_FIR = 1;
-  h_LPF = new DSP_float[N_FIR];
-  DSPf_LPF_LS (N_FIR, DSP_float(fp), DSP_float(fs), h_LPF, 1.0);
+  h_LPF = DSP::Float_vector(N_FIR);
+  DSP::f::LPF_LS (N_FIR, DSP::Float(fp), DSP::Float(fs), h_LPF, 1.0);
 
   char tekst[1024];
-  h_BPF = new DSP_complex[N_FIR];
+  h_BPF = new DSP::Complex[N_FIR];
   for (n = 0; n < N_FIR; n++)
   {
-    h_BPF[n] = DSP_complex(COS(DSP_M_PIx2*fo*n), SIN(DSP_M_PIx2*fo*n));
+    h_BPF[n] = DSP::Complex(COS(DSP::M_PIx2*fo*n), SIN(DSP::M_PIx2*fo*n));
     h_BPF[n].multiply_by(h_LPF[n]);
 
     sprintf(tekst, "h(%i) = %.10f + j*%.10f", n+1, h_BPF[n].re, h_BPF[n].im);
-    DSPf_InfoMessage(tekst);
+    DSP::log << tekst<< std::endl;
   }
 }
 
 T_QD2_BPF::~T_QD2_BPF(void)
 {
-  if (h_LPF != NULL)
-  {
-    delete [] h_LPF;
-    h_LPF = NULL;
-  }
   if (h_BPF != NULL)
   {
     delete [] h_BPF;
@@ -2464,8 +2457,7 @@ unsigned int T_QD2_BPF::ElementOutputSegmentSize(unsigned int input_segment_size
 {
   if ((input_segment_size % 2) == 1)
   {
-    DSPf_ErrorMessage("T_QDD2::ElementOutputSegmentSize",
-        "input segment size must be even");
+    DSP::log << DSP::e::LogMode::Error <<"T_QDD2::ElementOutputSegmentSize"<< DSP::e::LogMode::second <<"input segment size must be even"<< std::endl;
   }
   return (input_segment_size >> 1); // no segment size change during processing
 }
@@ -2480,18 +2472,18 @@ unsigned int T_QD2_BPF::ElementInputSubsegmentSize(void)
 }
 
 unsigned int T_QD2_BPF::Process_cplx(E_processing_DIR processing_DIR,
-    unsigned int NoOfSamples, DSP_complex_ptr InputData)
+    unsigned int NoOfSamples, DSP::Complex_ptr InputData)
 {
   unsigned int current_segment_ind, no_of_output_samples;
   unsigned int ind, n;
-  DSP_complex_ptr temp_input, cplx_buffer;
+  DSP::Complex_ptr temp_input, cplx_buffer;
 
-  cplx_buffer = LockCurrentSegment<DSP_complex>(processing_DIR);
+  cplx_buffer = LockCurrentSegment<DSP::Complex>(processing_DIR);
 
   //no_output_of_samples = GetOutputSegmentSize(-1);
   no_of_output_samples = NoOfSamples >> 1;
   if ((no_of_output_samples << 1) != NoOfSamples )
-    DSPf_ErrorMessage("T_QD2_BPF::Process", "NoOfSamples must be even");
+    DSP::log << DSP::e::LogMode::Error <<"T_QD2_BPF::Process"<< DSP::e::LogMode::second << "NoOfSamples must be even"<< std::endl;
   temp_input = InputData;
 
   for (ind = 0; ind < no_of_output_samples; ind++)
@@ -2505,9 +2497,9 @@ unsigned int T_QD2_BPF::Process_cplx(E_processing_DIR processing_DIR,
     cplx_buffer++;
   }
 
-  current_segment_ind = UnlockCurrentSegment<DSP_complex>(no_of_output_samples);
+  current_segment_ind = UnlockCurrentSegment<DSP::Complex>(no_of_output_samples);
 
-  ProcessOutputElements<DSP_complex>(processing_DIR, current_segment_ind); // output no 0
+  ProcessOutputElements<DSP::Complex>(processing_DIR, current_segment_ind); // output no 0
 
   return (NoOfSamples - (no_of_output_samples << 1)); // not always all input samples are processed
 }
@@ -2547,24 +2539,19 @@ void T_QD2_LPF::Init(long double b)
 
   if (N_FIR == 0)
     N_FIR = 1;
-  h_LPF = new DSP_float[N_FIR];
-  DSPf_LPF_LS (N_FIR, DSP_float(fp), DSP_float(fs), h_LPF, 1.0);
+  h_LPF = DSP::Float_vector(N_FIR);
+  DSP::f::LPF_LS (N_FIR, DSP::Float(fp), DSP::Float(fs), h_LPF, 1.0);
 
   char tekst[1024];
   for (n = 0; n < N_FIR; n++)
   {
     sprintf(tekst, "h(%i) = %.10f", n+1, h_LPF[n]);
-    DSPf_InfoMessage(tekst);
+    DSP::log << tekst<< std::endl;
   }
 }
 
 T_QD2_LPF::~T_QD2_LPF(void)
 {
-  if (h_LPF != NULL)
-  {
-    delete [] h_LPF;
-    h_LPF = NULL;
-  }
   N_FIR = 0;
 }
 
@@ -2608,8 +2595,7 @@ unsigned int T_QD2_LPF::ElementOutputSegmentSize(unsigned int input_segment_size
 {
   if ((input_segment_size % 2) == 1)
   {
-    DSPf_ErrorMessage("T_QDD2::ElementOutputSegmentSize",
-        "input segment size must be even");
+    DSP::log << DSP::e::LogMode::Error <<"T_QDD2::ElementOutputSegmentSize"<<DSP::e::LogMode::second<<"input segment size must be even"<< std::endl;
   }
   return (input_segment_size >> 1); // no segment size change during processing
 }
@@ -2624,18 +2610,18 @@ unsigned int T_QD2_LPF::ElementInputSubsegmentSize(void)
 }
 
 unsigned int T_QD2_LPF::Process_cplx(E_processing_DIR processing_DIR,
-    unsigned int NoOfSamples, DSP_complex_ptr InputData)
+    unsigned int NoOfSamples, DSP::Complex_ptr InputData)
 {
   unsigned int current_segment_ind, no_of_output_samples;
   unsigned int ind, n;
-  DSP_complex_ptr temp_input, cplx_buffer;
+  DSP::Complex_ptr temp_input, cplx_buffer;
 
-  cplx_buffer = LockCurrentSegment<DSP_complex>(processing_DIR);
+  cplx_buffer = LockCurrentSegment<DSP::Complex>(processing_DIR);
 
   //no_output_of_samples = GetOutputSegmentSize(-1);
   no_of_output_samples = NoOfSamples >> 1;
   if ((no_of_output_samples << 1) != NoOfSamples )
-    DSPf_ErrorMessage("T_QD2_BPF::Process", "NoOfSamples must be even");
+    DSP::log << DSP::e::LogMode::Error <<"T_QD2_BPF::Process"<< DSP::e::LogMode::second << "NoOfSamples must be even"<< std::endl;
   temp_input = InputData;
 
   for (ind = 0; ind < no_of_output_samples; ind++)
@@ -2649,9 +2635,9 @@ unsigned int T_QD2_LPF::Process_cplx(E_processing_DIR processing_DIR,
     cplx_buffer++;
   }
 
-  current_segment_ind = UnlockCurrentSegment<DSP_complex>(no_of_output_samples);
+  current_segment_ind = UnlockCurrentSegment<DSP::Complex>(no_of_output_samples);
 
-  ProcessOutputElements<DSP_complex>(processing_DIR, current_segment_ind); // output no 0
+  ProcessOutputElements<DSP::Complex>(processing_DIR, current_segment_ind); // output no 0
 
   return (NoOfSamples - (no_of_output_samples << 1)); // not always all input samples are processed
 }
@@ -2681,32 +2667,34 @@ T_Spectrogram::T_Spectrogram(E_window window_type_in,
   NoOfOverlappedPSDs = NoOfOverlappedPSDs_in;
 
   // derived parameters
-  Overlap = DSP_float(100.0 - 100.0/NoOfOverlappedPSDs);
+  Overlap = DSP::Float(100.0 - 100.0/NoOfOverlappedPSDs);
   overlap_step = window_size / NoOfOverlappedPSDs;
 
   //SpecgramFFT.resize(FFT_size); <= private function
   SpecgramFFT.FFTshiftON(true);
 
-  time_window = new DSP_float[window_size];
+  time_window = new DSP::Float[window_size];
   switch (window_type)
   {
     case EW_blackman:
-      DSPf_Blackman(window_size, time_window);
+      DSP::f::Blackman(window_size, time_window);
       break;
     case EW_rectangular:
     default:
-      DSPf_Rectangular(window_size, time_window);
+      DSP::f::Rectangular(window_size, time_window);
       break;
   }
 
-  FFT_input = new DSP_complex[FFT_size];
+  FFT_input = DSP::Complex_vector(FFT_size);
   /*! NO (FFT_input is overwritten during FFT calculation)):
    *  filling with zeros also deals with zeropadding,
    *  no need to do it during processing. <== so must
    *  be done during processing
    */
-  memset(FFT_input, 0x00, FFT_size * sizeof(DSP_complex));
-  FFT_output = new DSP_float[FFT_size];
+  //memset(FFT_input, 0x00, FFT_size * sizeof(DSP::Complex));
+
+  FFT_input.assign(FFT_size, DSP::Complex(0.0, 0.0));
+  FFT_output = DSP::Float_vector(FFT_size);
 
   PSD_2_APSD_index = 0;
 }
@@ -2718,7 +2706,7 @@ T_Spectrogram::~T_Spectrogram(void)
     delete [] time_window;
     time_window = NULL;
   }
-  if (FFT_input != NULL)
+  /*if (FFT_input != NULL)
   {
     delete [] FFT_input;
     FFT_input = NULL;
@@ -2727,13 +2715,13 @@ T_Spectrogram::~T_Spectrogram(void)
   {
     delete [] FFT_output;
     FFT_output = NULL;
-  }
+  }*/
 }
 
 void T_Spectrogram::PreinitializeElement(unsigned int InputSegmentSize,
                                       unsigned int NoOfOutputSegments)
 {
-  DSPf_InfoMessage("T_Spectrogram::InitializeElement", GetName());
+  DSP::log << "T_Spectrogram::InitializeElement"<<DSP::e::LogMode::second<<GetName()<< std::endl;
 
   //! \todo Check if input arguments are correct
   PSD_per_segment = InputSegmentSize / window_size;
@@ -2772,9 +2760,9 @@ unsigned int T_Spectrogram::ElementOutputSegmentSize(unsigned int input_segment_
   //! spectrogram output buffer management
   /*! Output buffer should store PSDs.
    *   -# Number of stored PSDs == APSDs_per_segment.
-   *   -# FFT_size - number of samples per PSD (sample type: DSP_float)
+   *   -# FFT_size - number of samples per PSD (sample type: DSP::Float)
    *
-   *  DSP_float ==> FFT_size * APSDs_per_segment
+   *  DSP::Float ==> FFT_size * APSDs_per_segment
    *
    *  \warning FFT_size in T_SpectrogramDraw depends on this value
    */
@@ -2792,20 +2780,20 @@ unsigned int T_Spectrogram::ElementInputSubsegmentSize(void)
 /*! Complex input data, real output data
  */
 unsigned int T_Spectrogram::Process_cplx(E_processing_DIR processing_DIR,
-    unsigned int NoOfSamples, DSP_complex_ptr InputData)
+    unsigned int NoOfSamples, DSP::Complex_ptr InputData)
 {
   unsigned int ind1, ind2, ind3, ind4;
   unsigned int current_segment_ind;
   unsigned int no_of_unprocessed_samples, no_of_output_samples;
   unsigned int no_of_protected_samples;
-  DSP_float_ptr real_buffer;
-  DSP_complex_ptr segment_start;
-  DSP_float_ptr current_APSD;
+  DSP::Float_ptr real_buffer;
+  DSP::Complex_ptr segment_start;
+  DSP::Float_ptr current_APSD;
 
-  real_buffer = LockCurrentSegment<DSP_float>(processing_DIR);
+  real_buffer = LockCurrentSegment<DSP::Float>(processing_DIR);
   if (real_buffer == NULL)
   {
-    DSPf_ErrorMessage("T_Spectrogram::Process", "output buffer lock failure");
+    DSP::log << DSP::e::LogMode::Error <<"T_Spectrogram::Process"<< DSP::e::LogMode::second << "output buffer lock failure"<< std::endl;
     return 0; // nothing done but simulate that all has been done
   }
   // GetSegmentSize()
@@ -2822,8 +2810,10 @@ unsigned int T_Spectrogram::Process_cplx(E_processing_DIR processing_DIR,
       if (no_of_unprocessed_samples < overlap_step)
         break;
 
-      memcpy(FFT_input, segment_start, window_size*sizeof(DSP_complex));
-      memset(FFT_input+window_size, 0x00, (FFT_size-window_size)*sizeof(DSP_complex));
+      //memcpy(FFT_input, segment_start, window_size*sizeof(DSP::Complex));
+      std::copy(segment_start, segment_start + window_size, FFT_input.begin());
+      //memset(FFT_input+window_size, 0x00, (FFT_size-window_size)*sizeof(DSP::Complex));
+      std::fill(FFT_input.begin() + window_size, FFT_input.end(), DSP::Complex(0.0f, 0.0f));
       for (ind3=0; ind3 < window_size; ind3++)
         FFT_input[ind3].multiply_by(time_window[ind3]);
 
@@ -2835,8 +2825,8 @@ unsigned int T_Spectrogram::Process_cplx(E_processing_DIR processing_DIR,
       // evaluate Averaged PSD (APSD)
       if (PSD_2_APSD_index == 0)
       { // initialize current APSD
-        memcpy(current_APSD, FFT_output, FFT_size*sizeof(DSP_float));
-
+        //memcpy(current_APSD, FFT_output, FFT_size*sizeof(DSP::Float));
+        std::copy(FFT_output.begin(), FFT_output.end(), current_APSD);
         PSD_2_APSD_index++;
         no_of_protected_samples += FFT_size;
       }
@@ -2880,9 +2870,9 @@ unsigned int T_Spectrogram::Process_cplx(E_processing_DIR processing_DIR,
       break;
   }
 
-  current_segment_ind = UnlockCurrentSegment<DSP_float>(no_of_output_samples, no_of_protected_samples);
+  current_segment_ind = UnlockCurrentSegment<DSP::Float>(no_of_output_samples, no_of_protected_samples);
 
-  ProcessOutputElements<DSP_float>(processing_DIR, current_segment_ind); // output no 0
+  ProcessOutputElements<DSP::Float>(processing_DIR, current_segment_ind); // output no 0
 
   // not always all input samples are processed
   return (no_of_unprocessed_samples); //(NoOfSamples % overlap_step);
@@ -2900,7 +2890,7 @@ T_SpectrogramDraw::T_SpectrogramDraw(
      long double CenterFrequency_in,
      T_time_base recording_time_in,
      long long time_offset,
-     DSP_float min_in, DSP_float max_in, bool Use_dB_in)
+     DSP::Float min_in, DSP::Float max_in, bool Use_dB_in)
 : T_OutputStackElement(E_OBT_complex, 0, 0) // no outputs
 {
   SetName("T_SpectrogramDraw", false);
@@ -2937,25 +2927,25 @@ T_SpectrogramDraw::T_SpectrogramDraw(
 
 T_SpectrogramDraw::~T_SpectrogramDraw(void)
 {
-  DSPf_InfoMessage("T_SpectrogramDraw::~T_SpectrogramDraw", "start");
+  DSP::log << "T_SpectrogramDraw::~T_SpectrogramDraw"<< DSP::e::LogMode::second << "start"<< std::endl;
   GLcanvas->SpecDraw = NULL;
   if (SpectrogramStack != NULL)
   {
     delete SpectrogramStack;
     SpectrogramStack = NULL;
   }
-  DSPf_InfoMessage("T_SpectrogramDraw::~T_SpectrogramDraw", "end");
+  DSP::log << "T_SpectrogramDraw::~T_SpectrogramDraw"<< DSP::e::LogMode::second << "end"<< std::endl;
 }
 
 /*
 void T_SpectrogramDraw::PreinitializeElement(unsigned int InputSegmentSize,
                                           unsigned int NoOfOutputSegments)
 {
-  DSPf_InfoMessage("T_Spectrogram::InitializeElement", (char *)GetName());
+  DSP::log << "T_Spectrogram::InitializeElement", (char *)GetName());
 
   //! \todo check if InputSegmentSize is the multiple of APSD_per_segment
-  // input segment size is for DSP_complex
-  // but we use it as DSP_float
+  // input segment size is for DSP::Complex
+  // but we use it as DSP::Float
   //FFT_size = (2*InputSegmentSize) / APSD_per_segment;
   FFT_size = InputSegmentSize / APSD_per_segment;
 
@@ -2988,11 +2978,11 @@ unsigned int T_SpectrogramDraw::ElementInputSubsegmentSize(void)
 /*! \todo Implement user defined x, y and colour limits
  */
 unsigned int T_SpectrogramDraw::Process_real(E_processing_DIR processing_DIR,
-    unsigned int NoOfSamples, DSP_float_ptr InputData)
+    unsigned int NoOfSamples, DSP::Float_ptr InputData)
 {
   unsigned int ind2;
-  DSP_float_ptr input_segment;
-  DSP_float_ptr temp_slot;
+  DSP::Float_ptr input_segment;
+  DSP::Float_ptr temp_slot;
   unsigned int no_of_unprocessed_samples;
   long double slot_time;
 
@@ -3052,7 +3042,7 @@ unsigned int T_SpectrogramDraw::Process_real(E_processing_DIR processing_DIR,
   //! Drawing data updated so unlock it
   GLcanvas->UnlockDrawingData(GLcanvasIndex);
 
-  //DSPf_InfoMessage("T_SpectrogramDraw::Process", "LockGUI");
+  //DSP::log << "T_SpectrogramDraw::Process"<< DSP::e::LogMode::second << "LockGUI"<< std::endl;
 //  if (no_of_output_segments > 0)
   if (no_of_output_segments > 5) // draw every 15 slots
   {
@@ -3237,9 +3227,9 @@ T_HB_SRC_Farrow::T_HB_SRC_Farrow(long double Fs1_in, long double Fs2_in)
 
   N_FSD = Farrow_coefs_half_band_N_FSD;
   FarrowOrder = Farrow_coefs_half_band_Farrow_order;
-  p_i_n = new DSP_float_ptr[FarrowOrder+1];
+  p_i_n = new DSP::Float_ptr[FarrowOrder+1];
   for (ind = 0; ind <= FarrowOrder; ind++)
-    p_i_n[ind] = const_cast<DSP_float_ptr>(Farrow_coefs_half_band[ind]);
+    p_i_n[ind] = const_cast<DSP::Float_ptr>(Farrow_coefs_half_band[ind]);
 }
 
 T_HB_SRC_Farrow::~T_HB_SRC_Farrow(void)
@@ -3273,18 +3263,18 @@ unsigned int T_HB_SRC_Farrow::MaxNumberOfProtectedSamples(void)
 /*! \todo test if the resampling is done correctly
  */
 unsigned int T_HB_SRC_Farrow::Process_cplx(E_processing_DIR processing_DIR,
-    unsigned int NoOfSamples, DSP_complex_ptr InputData)
+    unsigned int NoOfSamples, DSP::Complex_ptr InputData)
 {
   unsigned int current_segment_ind, no_of_output_samples;
   unsigned int ind_1, ind_2;
   double old_eps_m;
-  DSP_complex out_value;
-  DSP_complex_ptr input_buffer, input_buffer_end;
-  DSP_complex_ptr cplx_buffer;
+  DSP::Complex out_value;
+  DSP::Complex_ptr input_buffer, input_buffer_end;
+  DSP::Complex_ptr cplx_buffer;
 
   input_buffer = InputData;
   input_buffer_end = InputData + NoOfSamples;
-  cplx_buffer = LockCurrentSegment<DSP_complex>(processing_DIR);
+  cplx_buffer = LockCurrentSegment<DSP::Complex>(processing_DIR);
 
   no_of_output_samples = 0;
   while (input_buffer < input_buffer_end)
@@ -3336,10 +3326,10 @@ unsigned int T_HB_SRC_Farrow::Process_cplx(E_processing_DIR processing_DIR,
     }
   }
 
-  current_segment_ind = UnlockCurrentSegment<DSP_complex>(no_of_output_samples);
+  current_segment_ind = UnlockCurrentSegment<DSP::Complex>(no_of_output_samples);
 
   // process output blocks
-  ProcessOutputElements<DSP_complex>(processing_DIR, current_segment_ind); // output no 0
+  ProcessOutputElements<DSP::Complex>(processing_DIR, current_segment_ind); // output no 0
 
   return 0; // this function should always process all input samples
 }
@@ -3374,17 +3364,17 @@ T_FIR::T_FIR(double Fp, double Fs, double Fo, long double Fs_rate)
   if (N_FIR == 0)
     N_FIR = 1;
 
-  h_LPF = NULL; h_BPF = NULL;
+  h_BPF = NULL;
 
   // design lowpass prototype
-  h_LPF = new DSP_float[N_FIR];
-  DSPf_LPF_LS (N_FIR, fp, fs, h_LPF, 1.0);
+  h_LPF = DSP::Float_vector(N_FIR);
+  DSP::f::LPF_LS (N_FIR, fp, fs, h_LPF, 1.0);
   if (Is_LPF == false)
   { // convert LPF to BPF
-    h_BPF = new DSP_complex[N_FIR];
+    h_BPF = new DSP::Complex[N_FIR];
     for (n = 0; n < N_FIR; n++)
     {
-      h_BPF[n] = DSP_complex(COS(DSP_M_PIx2*fo*n), SIN(DSP_M_PIx2*fo*n));
+      h_BPF[n] = DSP::Complex(COS(DSP::M_PIx2*fo*n), SIN(DSP::M_PIx2*fo*n));
       h_BPF[n].multiply_by(h_LPF[n]);
     }
   }
@@ -3393,11 +3383,6 @@ T_FIR::T_FIR(double Fp, double Fs, double Fo, long double Fs_rate)
 
 T_FIR::~T_FIR(void)
 {
-  if (h_LPF != NULL)
-  {
-    delete [] h_LPF;
-    h_LPF = NULL;
-  }
   if (h_BPF != NULL)
   {
     delete [] h_BPF;
@@ -3452,13 +3437,13 @@ unsigned int T_FIR::MaxNumberOfProtectedSamples(void)
 
 
 unsigned int T_FIR::Process_cplx(E_processing_DIR processing_DIR,
-    unsigned int NoOfSamples, DSP_complex_ptr InputData)
+    unsigned int NoOfSamples, DSP::Complex_ptr InputData)
 {
   unsigned int current_segment_ind;
   unsigned int ind, n;
-  DSP_complex_ptr temp_input, cplx_buffer;
+  DSP::Complex_ptr temp_input, cplx_buffer;
 
-  cplx_buffer = LockCurrentSegment<DSP_complex>(processing_DIR);
+  cplx_buffer = LockCurrentSegment<DSP::Complex>(processing_DIR);
 
   temp_input = InputData;
 
@@ -3489,9 +3474,9 @@ unsigned int T_FIR::Process_cplx(E_processing_DIR processing_DIR,
     }
   }
 
-  current_segment_ind = UnlockCurrentSegment<DSP_complex>(NoOfSamples);
+  current_segment_ind = UnlockCurrentSegment<DSP::Complex>(NoOfSamples);
 
-  ProcessOutputElements<DSP_complex>(processing_DIR, current_segment_ind); // output no 0
+  ProcessOutputElements<DSP::Complex>(processing_DIR, current_segment_ind); // output no 0
 
   // always all input samples are processed
   return 0;

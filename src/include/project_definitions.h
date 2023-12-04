@@ -8,7 +8,7 @@
 #ifndef PROJECT_DEFINITIONS_H_
 #define PROJECT_DEFINITIONS_H_
 
-#define MyBranchParent MyFrame
+#define MyBranchParent MainFrame
 //#define MyBranchParent MyChild
 
 #endif /* PROJECT_DEFINITIONS_H_ */

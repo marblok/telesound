@@ -11,11 +11,11 @@
 //#define __DOUBLE_CHANNEL_FILTER__
 #define __TEST_CHANNEL_FILTER__
 
-#include <DSPsockets.h>
+#include <DSP_sockets.h>
 #include <DSP_lib.h>
 #include <DSP.h>
 #include <wxAddons.h>
-#include <DSPmodules_misc.h>
+#include <DSP_modules_misc.h>
 #include "MorseDecoder.h"
 
 #include "Misc.h"
@@ -24,7 +24,119 @@
 extern wxCriticalSection CS_OnDraw;
 extern wxCriticalSection CS_UserData;
 
-typedef float sos_matrix[no_of_sos_segments][3];
+//typedef float sos_matrix[no_of_sos_segments][3];
+typedef std::vector<std::vector<float>> sos_matrix;
+
+class Modulator{
+  
+  private:
+    unsigned int L1, M1, L2 , M2;
+    DSP::e::ModulationType mod_type;
+    unsigned int bits_per_symbol;
+    std::string coef_name_stage1, coef_name_stage2;    
+    DSP::Float_vector h_LPF_stage1, h_LPF_stage2;
+    std::unique_ptr <DSP::u::Const> Const;
+    float CarrierFreq;
+    DSP::Clock_ptr BitClock, SymbolClock, Interpol1Clock, Interpol2Clock;
+    std::unique_ptr <DSP::u::BinRand> ModBits;
+    std::unique_ptr <DSP::u::Serial2Parallel> ModS2P;
+    std::unique_ptr <DSP::u::SymbolMapper> ModMapper;
+    std::unique_ptr <DSP::u::Const> ModZero;
+    std::unique_ptr <DSP::u::Zeroinserter> ModZeroInserter;
+    std::unique_ptr <DSP::u::FIR> ModFIR;
+    std::unique_ptr <DSP::u::SamplingRateConversion> ModConverter;
+    std::unique_ptr <DSP::u::DDScos> ModDDS;
+    std::unique_ptr <DSP::u::Multiplication> ModMul;
+    std::unique_ptr <DSP::u::Amplifier> ModAmp;
+    std::unique_ptr <DSP::u::Vacuum> ModVac;
+    long Fp;
+  public:
+  void create_branch (DSP::Clock_ptr Clock_in, long Fp, DSP::input &Output_signal, E_ModulatorTypes Modulator_type, float Carrier_freq, unsigned short variant = 1, bool Enable_output = false);
+  void clear_branch(void);
+  DSP::Complex_vector get_constellation(){
+    DSP::Complex_vector tmp_constellation;
+    tmp_constellation.resize(0);
+    bool is_real=false;
+    if(ModMapper){
+      getConstellation(tmp_constellation,(DSP::e::ModulationType)mod_type,0,bits_per_symbol, is_real);
+    }
+    return tmp_constellation;
+    }
+
+  void enableOutput(bool enable){
+    if(ModAmp){
+      ModAmp->SetGain((enable)?1.0f:0.0f);
+    }
+  }
+  DSP::Clock_ptr getSymbolClock(void){
+    return SymbolClock;
+  }
+    DSP::Clock_ptr getInterpol1Clock(void){
+    return Interpol1Clock;
+  }
+  void setCarrierFrequency(float New_frequency){
+   if (ModDDS)
+   {
+      ModDDS->SetAngularFrequency(DSP::M_PIx2*New_frequency);
+      CarrierFreq =New_frequency;
+  }
+  }
+  friend class Demodulator;
+};
+class Demodulator{
+  private:
+    DSP::Clock_ptr  SymbolClock, Interpol1Clock, Interpol2Clock;
+    
+    std::unique_ptr <DSP::u::Amplifier> DemodAmp, CarrierOffset, SymbolsAmp;
+    std::unique_ptr <DSP::u::AdjustableDelay> DemodDelay;
+    std::unique_ptr <DSP::u::DDScos> DemodDDS;
+    std::unique_ptr <DSP::u::Multiplication> DemodMul;
+    std::unique_ptr <DSP::u::Switch> DemodSwitch;
+    std::unique_ptr <DSP::u::SamplingRateConversion> DemodConverter;
+    std::unique_ptr <DSP::u::FIR> DemodFIR;
+    std::unique_ptr <DSP::u::RawDecimator> DemodDecimator;
+
+  public:
+  void create_branch(DSP::Clock_ptr Clock_in, DSP::input &Constellation, DSP::input &Eyediagram, DSP::output &Input_signal, Modulator &modulator, float carrier_freq, int carrier_offset, unsigned int input_delay, float symbol_gain, bool enable);
+  void clear_branch(void);
+
+  void enableInput(bool enable){
+    if(DemodAmp){
+      DemodAmp->SetGain((enable)?1.0f:0.0f);
+    }
+  }
+  
+  void setBufferInput(unsigned int input_no=0U){//Output no - 0 = channel output, 1 - filtered 
+    if(DemodSwitch)
+    DemodSwitch->Select(input_no,0U);
+  }
+
+  void setInputDelay(int delay){
+    if(DemodDelay){
+      DemodDelay->SetDelay(delay);
+    }
+  } 
+
+  void setOutputGain(float gain){
+    if(SymbolsAmp){
+      SymbolsAmp->SetGain(gain);
+    }
+  } 
+
+  void setCarrierFrequency(float New_frequency){
+   if (DemodDDS)
+      DemodDDS->SetAngularFrequency(-DSP::M_PIx2*New_frequency);
+  }
+  void setCarrierPhaseOffset(int New_offset) // -180 to 180 (-pi to +pi)
+  {
+    if (CarrierOffset)
+    {
+      float t = -1.0f * New_offset * (DSP::M_PIx1 / 180.0f); // e^−jt=cos(t)−jsin(t)
+      DSP::Complex j(cos(t), -sin(t));
+      CarrierOffset->SetGain(j);
+    }
+  }
+};
 
 class T_DSPlib_processing : public T_InputElement
 {
@@ -32,81 +144,104 @@ class T_DSPlib_processing : public T_InputElement
   friend class T_TaskElement;
 
   private:
-    DSP_clock_ptr MasterClock;
+    DSP::Clock_ptr MasterClock;
     unsigned int cycles_per_segment;
 
     bool GraphInitialized;
-
+    bool reloadModulator = false;
+    bool reloadDelay = false;
     long Fp;
     //! sampling rate of wave source files
     long Fp_wave_in;
     //! interpolation and decimation factors for wave_in files
     int L, M;
     int resample_LPF_order;
-    DSP_float_ptr wave_in_resample_LPF_b;
-    sos_matrix *wave_in_resample_LPF_sos_b;
-    DSP_float_ptr wave_in_resample_LPF_a;
-    sos_matrix *wave_in_resample_LPF_sos_a;
+    DSP::Float_vector wave_in_resample_LPF_b;
+    sos_matrix wave_in_resample_LPF_sos_b;
+    DSP::Float_vector wave_in_resample_LPF_a;
+    sos_matrix wave_in_resample_LPF_sos_a;
     //! if != E_US_none processing state must be updated
     E_UpdateState UpdateState;
 
-    DSPu_AudioInput *AudioIn;
-    DSPu_Amplifier *AudioInGain;
-    DSPu_IIR *DC_notcher;
+    DSP::u::AudioInput *AudioIn;
+    DSP::u::Amplifier *AudioInGain;
+    DSP::u::IIR *DC_notcher;
     bool AudioInOff;
     float local_signal_gain;
 
-    DSPu_DDScos *CarrierIn;
+    DSP::u::DDScos *CarrierIn;
     int WPM;
-    string ascii_text;
-    DSPu_MORSEkey *MorseKey;
-    DSPu_RealMultiplication *MorseMul;
+    std::string ascii_text;
+    DSP::u::MORSEkey *MorseKey;
+    DSP::u::RealMultiplication *MorseMul;
 
-    //DSPu_WaveInput *WaveIn;
-    DSPu_FILEinput *WaveIn;
-    string wav_filename;
-    DSPu_Zeroinserter *Zeroinserter;
-    DSPu_IIR *WaveIn_LPF, *WaveIn_sos_LPF[6];
-    DSPu_RawDecimator *Decimator;
+    //DSP::u::WaveInput *WaveIn;
+    DSP::u::FileInput *WaveIn;
+    std::string wav_filename;
+    DSP::u::Zeroinserter *Zeroinserter;
+    DSP::u::IIR *WaveIn_LPF, *WaveIn_sos_LPF[6];
+    DSP::u::RawDecimator *Decimator;
 
-    DSPu_Addition *DigitalSignalsAdd;
-    DSPu_Addition *AllSignalsAdd;
-    DSPu_SOCKEToutput *out_socket;
+    DSP::u::Addition *DigitalSignalsAdd;
+    DSP::u::Addition *AllSignalsAdd;
+    DSP::u::SocketOutput *out_socket;
 
 
-    DSPu_SOCKETinput *in_socket;
+    DSP::u::SocketInput *in_socket;
 
-    DSPu_Amplifier *LocalSignalGain;
-    DSPu_Addition *LocalSignalAdd;
+    DSP::u::Amplifier *LocalSignalGain;
+    DSP::u::Addition *LocalSignalAdd;
 
-    DSPu_IIR *ChannelFilter_LPF;
-    DSPu_IIR *ChannelFilter_LPF2;
-    DSPu_IIR *ChannelFilter_HPF;
-    DSPu_IIR *ChannelFilter_HPF2;
+    DSP::u::IIR *ChannelFilter_LPF;
+    DSP::u::IIR *ChannelFilter_LPF2;
+    DSP::u::IIR *ChannelFilter_HPF;
+    DSP::u::IIR *ChannelFilter_HPF2;
+
+
+    // DSP::u::Splitter *OutSplitter;
     bool ChannelFilterON;
     float ChannelFd, ChannelFg;
-    DSP_float_ptr LPF_new_coefs_b, LPF_new_coefs_a;
+    DSP::Float_vector LPF_new_coefs_b, LPF_new_coefs_a;
     int LPF_new_Na, LPF_new_Nb;
-    DSP_float_ptr HPF_new_coefs_b, HPF_new_coefs_a;
+    DSP::Float_vector HPF_new_coefs_b, HPF_new_coefs_a;
     int HPF_new_Na, HPF_new_Nb;
-    DSPu_InputBuffer *NoiseBuffer;
-    DSPu_Amplifier *NoiseGain;
-    DSPu_Amplifier *SignalGain;
+    DSP::u::InputBuffer *NoiseBuffer;
+    DSP::u::Amplifier *NoiseGain;
+    DSP::u::Amplifier *SignalGain;
     float SNR_dB, alfa_n, alfa_s;
-    DSPu_Addition *NoiseAdd;
-    DSPu_AudioOutput *AudioOut;
-    //DSP_component *AudioOut;
+    DSP::u::Addition *NoiseAdd;
+    DSP::u::AudioOutput *AudioOut;
+    //DSP::Component *AudioOut;
+    
+    //        Modulator components           //
 
-    DSPu_OutputBuffer *analysis_buffer;
+    Modulator modulator;
+    Demodulator demodulator;
+    bool ModulatorState;
+    E_ModulatorTypes ModulatorType;
+    unsigned short ModulatorVariant;
+    float CarrierFreq;
+    DSP::Complex_vector current_constellation;
+    bool DemodulatorState;
+    float DemodulatorCarrierFreq, DemodulatorGain;
+    int DemodulatorDelay, DemodulatorCarrierOffset;
+    unsigned int EyebufferSource;
+
+    //**************************************//
+    DSP::u::OutputBuffer *analysis_buffer;
+    std::unique_ptr<DSP::u::OutputBuffer> constellation_buffer, eyediagram_buffer;
+    const unsigned int constellation_buffer_size = 80;
+    const unsigned int eyediagram_buffer_size = 2500;
     TOptions *MorseDecoder_options;
     bool MorseReceiverState;
+  
     T_MorseDecoder *MorseDecoder;
     TE_LockState LastLockState;
-    DSP_float *morse_decoder_slot;
+    DSP::Float *morse_decoder_slot;
     int morse_decoder_slot_ind;
     int no_of_morse_decoder_slots;
     char morse_text_buffer[2048];
-    DSP_Fourier FFT_block;
+    DSP::Fourier FFT_block;
     int FFT_size;
     int zeropadding_factor;
     //! number of spectrogram APSD slots
@@ -139,17 +274,20 @@ class T_DSPlib_processing : public T_InputElement
     int SignalMapSize;
     //! number of slots in signal map
     int NoOfSignalMAPslots;
-    DSP_float_ptr tmp_FFT_buffer;
+    DSP::Float_vector tmp_FFT_buffer;
+    DSP::Float_vector tmp_constellation_buffer, tmp_eyediagram_buffer;
+
     unsigned int PSDs_counter;
     bool standard_PSD_scaling;
     float PSD_scaling_factor;
-    DSP_float_ptr window;
+    DSP::Float_ptr window;
     //! temporary buffer for APSD evaluation - stores PSD before final APSD is ready
-    DSP_float_ptr tmp_FFT_out_buffer;
-    DSP_float_ptr tmp_FFT_out_buffer2;
+    DSP::Float_vector tmp_FFT_out_buffer;
+    DSP::Float_vector tmp_FFT_out_buffer2;
     static T_DSPlib_processing *CurrentObject;
-    static void AnalysisBufferCallback(DSP_component_ptr Caller, unsigned int UserDefinedIdentifier);
-
+    static void AnalysisBufferCallback(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier);
+    static void ConstellationBufferCallback(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier);
+    static void EyeDiagramBufferCallback(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier);
     //! przechowuje kolejne segmenty analizowanego sygnału
     T_PlotsStack *SignalSegments;
     //! przechowuje mapy kolejnych segmentów analizowanego sygnału
@@ -167,10 +305,13 @@ class T_DSPlib_processing : public T_InputElement
     int PSD_high_size;
     //! plots stack for high resolution spectrogram
     T_PlotsStack *high_res_PSDs;
+    T_PlotsStack *constellation;
+    T_PlotsStack *eyediagrams;
 
     //! created processing algorithm based on DSPlib
-    void CreateAlgorithm(bool run_as_server, string address,
-        long SamplingRate, DSPe_SampleType sockets_sample_type = DSP_ST_short);
+    void CreateAlgorithm(bool run_as_server, std::string address,
+        long SamplingRate, DSP::e::SampleType sockets_sample_type = DSP::e::SampleType::ST_short);
+    void recreateBuffers(DSP::Clock_ptr symbolclock, DSP::Clock_ptr  interpol1clock);
     void DestroyAlgorithm(void);
 
   public:

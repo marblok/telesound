@@ -170,7 +170,7 @@ void T_PlotsStack::SetBackgroundColor(float R, float G, float B)
 
 void T_PlotsStack::DrawSpecgram(float C_skala, const CLR_map_type map_type)
 {
-  DSP_float *y;
+  DSP::Float *y;
   //float dx, dy;
   int Ny_tmp, ind_x, ind_y;
 
@@ -186,7 +186,7 @@ void T_PlotsStack::DrawSpecgram(float C_skala, const CLR_map_type map_type)
   glNewList(GL_list_index, GL_COMPILE_AND_EXECUTE);
 
   //sprintf(tekst, "%i, %i", Nx, Ny);
-  //DSPf_InfoMessage("DrawSpecgram", tekst);
+  //DSP::log << "DrawSpecgram"<<DSP::e::LogMode::second<< tekst<< std::endl;
   for (ind_x = 0; ind_x < NoOfSlots; ind_x++)
   {
     y = GetSlot(ind_x);
@@ -243,7 +243,7 @@ void T_PlotsStack::InitialiseSpectrogram(long double F_min_in, long double F_max
   {
     if ((K % 2) != 0)
     {
-      DSPf_ErrorMessage("T_PlotsStack::InitialiseSpectrogram", "WARNING: odd length FFT not supported");
+      DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::InitialiseSpectrogram"<< DSP::e::LogMode::second << "WARNING: odd length FFT not supported"<< std::endl;
       return;
     }
 
@@ -348,7 +348,7 @@ void T_PlotsStack::InitialiseSpectrogram(long double F_min_in, long double F_max
 
 void T_PlotsStack::DrawSpecgram2_dB(float dB_max, float dB_range, const CLR_map_type map_type)
 {
-  DSP_float *y;
+  DSP::Float *y;
   int Ny_tmp, ind_x, ind_y;
   int counter;
   float C_scale, C_offset;
@@ -368,7 +368,7 @@ void T_PlotsStack::DrawSpecgram2_dB(float dB_max, float dB_range, const CLR_map_
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSPf_ErrorMessage("T_PlotsStack::DrawSpecgram2_lin", "Spectrogram not initialised");
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<< std::endl;
     return;
   }
 
@@ -442,7 +442,7 @@ void T_PlotsStack::DrawSpecgram2_dB(float dB_max, float dB_range, const CLR_map_
 
 void T_PlotsStack::DrawSpecgram2_lin(float C_scale, const CLR_map_type map_type)
 {
-  DSP_float *y;
+  DSP::Float *y;
   int Ny_tmp, ind_x, ind_y;
   int counter;
 
@@ -457,7 +457,7 @@ void T_PlotsStack::DrawSpecgram2_lin(float C_scale, const CLR_map_type map_type)
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSPf_ErrorMessage("T_PlotsStack::DrawSpecgram2_lin", "Spectrogram not initialised");
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<< std::endl;
     return;
   }
 
@@ -566,7 +566,7 @@ void T_PlotsStack::DrawSpecgram2_lin(float C_scale, const CLR_map_type map_type)
  */
 void T_PlotsStack::DrawSpecgram2_base(const CLR_map_type map_type)
 {
-  DSP_float *y;
+  DSP::Float *y;
   int Ny_tmp, ind_x, ind_y;
   int counter;
 
@@ -581,7 +581,7 @@ void T_PlotsStack::DrawSpecgram2_base(const CLR_map_type map_type)
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSPf_ErrorMessage("T_PlotsStack::DrawSpecgram2_base", "Spectrogram not initialised");
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_base"<< DSP::e::LogMode::second <<"Spectrogram not initialised"<< std::endl;
     return;
   }
 
@@ -653,9 +653,9 @@ void T_PlotsStack::DrawSpecgram2_base(const CLR_map_type map_type)
   //glColor3f(0,0,0); // ???
 }
 
-/*! \bug -# Dopasowaæ odpowiednie rozmiary textury
- *   -# obróciæ texturê i rozci¹gn¹æ na pe³ny axis
- *   -# podzieliæ texturê na segmenty i wyrysowywaæ
+/*! \bug -# Dopasowaï¿½ odpowiednie rozmiary textury
+ *   -# obrï¿½ciï¿½ texturï¿½ i rozciï¿½gnï¿½ï¿½ na peï¿½ny axis
+ *   -# podzieliï¿½ texturï¿½ na segmenty i wyrysowywaï¿½
  *   -# quad_strip
  *
  * @param dB_max
@@ -664,7 +664,7 @@ void T_PlotsStack::DrawSpecgram2_base(const CLR_map_type map_type)
  */
 void T_PlotsStack::DrawSpecgram3_dB(float dB_max, float dB_range, const CLR_map_type map_type)
 {
-  DSP_float *y;
+  DSP::Float *y;
   int Ny_tmp, ind_x, ind_y;
   //int counter;
   float C_scale, C_offset;
@@ -684,7 +684,7 @@ void T_PlotsStack::DrawSpecgram3_dB(float dB_max, float dB_range, const CLR_map_
 
   if ((VertexTable == NULL) || (ColorTable == NULL))
   {
-    DSPf_ErrorMessage("T_PlotsStack::DrawSpecgram2_lin", "Spectrogram not initialised");
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawSpecgram2_lin"<< DSP::e::LogMode::second << "Spectrogram not initialised"<< std::endl;
     return;
   }
 
@@ -765,6 +765,156 @@ void T_PlotsStack::DrawSpecgram3_dB(float dB_max, float dB_range, const CLR_map_
   //  glDisableClientState(GL_VERTEX_ARRAY);
   //  glDisableClientState(GL_COLOR_ARRAY);
   glDeleteTextures( 1, &texture );
+}
+void T_PlotsStack::DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Complex_vector constellation, float skala, float size, bool demodulator_state)
+{
+  // if (!demodulator_state) // draw demodulator status
+  //   return;
+  
+  float x, y;
+  int ind;
+  glColor3f(1.0, 0.0, 0.0);
+  glPointSize(size+3);
+  glBegin(GL_POINTS);
+  for (auto &element : constellation)
+  {  
+    glVertex2f(element.re/(skala*2),element.im/(skala*2));
+  }
+  glEnd();
+  // Line antialiasing is controlled by calling glEnable and glDisable with argument GL_LINE_SMOOTH
+  // axis
+  glLineWidth(1.0);
+  glColor3f(0.5, 0.5, 0.5);
+  glLineStipple(1, 0x0FF0);
+  glEnable(GL_LINE_STIPPLE);
+  glBegin(GL_LINES);
+
+  glVertex2f(-1.0, 0.0);
+  glVertex2f(+1.0, 0.0);
+  glVertex2f(0.0, -1.0);
+  glVertex2f(0.0, +1.0);
+  
+  glColor3f(0.8, 0.8, 0.8);
+  glVertex2f(-1.0,+1.0);
+  glVertex2f(+1.0,-1.0);
+  glVertex2f(-1.0,-1.0);
+  glVertex2f(+1.0,+1.0);
+  glEnd();
+  glDisable(GL_LINE_STIPPLE);
+
+  glColor3f(1.0, 1.0, 1.0);
+
+  glBegin(GL_POLYGON);
+  glColor3f(0.0, 0.0, 0.5);
+  glVertex2f(0.0, 0.90);
+  glVertex2f(0.0, 0.97);
+  glEnd();
+
+  glBegin(GL_POLYGON);
+  glColor3f(0.0, 0.3, 0.0);
+
+  glVertex2f(0.0, 0.91);
+  glVertex2f(0.0, 0.98);
+  glEnd();
+
+  glColor3f(0.0, 0.0, 1.0);
+  glPointSize(size);
+  glBegin(GL_POINTS);
+  for (ind=0; ind<SegmentSize; ind+=2)
+  {
+    x=XYdata[ind]*skala;
+    y=XYdata[ind+1]*skala;
+    glVertex2f(x, y);
+  }
+  glEnd();
+}
+void T_PlotsStack::DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, int samplesPerSymbol, int symbolsPerTrace, float skala_x, float skala_y, bool input_complex, bool demodulator_state)
+{
+  if (!demodulator_state) // draw demodulator status
+    return; 
+
+  
+  glPointSize(2);
+  int numSamples;
+  float reBaseLine, imBaseLine;
+  std::vector<float> x_values;
+
+  if (input_complex)
+  {
+    numSamples = samples.size() / 2;
+    reBaseLine = 0.5;
+    imBaseLine = -0.5;
+  }
+  else
+  {
+    numSamples = samples.size();
+  }
+
+  int samplesPerTrace = samplesPerSymbol * symbolsPerTrace;
+  int numTraces = numSamples / samplesPerTrace;
+  float color_tick = 1.0f / numTraces;
+  float x_tick = (2 * skala_x) / samplesPerTrace;
+  // float y_limit = 0; 
+
+  // glColor3f(.7f,.7f,.7f);
+  // glLineWidth(3);
+  // glBegin(GL_LINES);
+  // glVertex2f(-1,0);
+  // glVertex2f(1, 0);
+  // glEnd();
+
+  for (float i = -skala_x; i < skala_x; i += x_tick)
+  { // prepare x values;
+    x_values.push_back(i);
+  }
+  x_values.push_back(skala_x);
+  unsigned int x_size = x_values.size();
+  int offset = 0;
+  float color = 0;
+
+  glLineWidth(1);
+ // glEnable(GL_LINE_SMOOTH);
+  if (input_complex)
+  {
+    for (int i = 0; i < numTraces; i++)
+    {
+  glBegin(GL_LINES);
+      for (int j = 0; j < x_size - 2; j+=2)
+      {
+        glColor3f(color + color_tick, color + color_tick, 0.0);
+        if(samples[j+offset]*skala_y>0.45f || samples[j+offset]*skala_y<-0.45f)//auto scale to prevent overlapping 
+        {skala_y = (skala_y/4)*3;}
+        glVertex2f(x_values[j], reBaseLine+samples[j + offset] * skala_y);//re
+        glVertex2f(x_values[j + 2], reBaseLine+samples[j + 2 + offset] * skala_y);//re
+        
+        glColor3f(0.0, color + color_tick, color + color_tick);
+        glVertex2f(x_values[j], imBaseLine+samples[j + 1 + offset] * skala_y);//im
+        glVertex2f(x_values[j + 2], imBaseLine+samples[j + 3 + offset] * skala_y);//im
+      }
+      glEnd();
+      offset += samplesPerTrace;
+      color += color_tick;
+    }
+
+  }
+  else
+  {
+    for (int i = 0; i < numTraces; i++)
+    {
+      glBegin(GL_LINES);
+      // glBegin(GL_POINTS);
+      for (int j = 1; j < x_size - 1; j++)
+      {
+        glColor3f(color + color_tick, color + color_tick, 0.0);
+        glVertex2d(x_values[j], samples[j + offset] * skala_y);
+        glVertex2d(x_values[j + 1], samples[j + 1 + offset] * skala_y);
+      }
+      glEnd();
+      offset += samplesPerTrace;
+      color += color_tick;
+    }
+  }
+   // glDisable(GL_LINE_SMOOTH);
 }
 
 void T_PlotsStack::DrawSignal(float skala, DS_type type, float width)
@@ -1033,9 +1183,9 @@ void T_PlotsStack::FreeSlots(void)
     for (ind=0; ind < NoOfSlots; ind++)
     {
       //sprintf(tekst, "%i/%i %p", ind+1, NoOfSlots, Slots[ind]);
-      //DSPf_InfoMessage("T_PlotsStack::FreeSlots", tekst);
+      //DSP::log << "T_PlotsStack::FreeSlots", tekst);
       //sprintf(tekst, "test%i.log", ind+1);
-      //DSPf_SetLogFileName (tekst);
+      //DSP::f::SetLogFileName (tekst);
       if (Slots[ind] != NULL)
         delete [] Slots[ind];
     }
@@ -1069,7 +1219,7 @@ void T_PlotsStack::Reset(int new_K, int New_NoOfSlots)
     NoOfSlots = New_NoOfSlots;
 
     K=new_K;
-    Slots        = new DSP_float_ptr[NoOfSlots];
+    Slots        = new DSP::Float_ptr[NoOfSlots];
     SlotDataSize = new int[NoOfSlots];
     ColorIndex   = new int[NoOfSlots];
     SlotTime     = new long double[NoOfSlots];
@@ -1077,13 +1227,13 @@ void T_PlotsStack::Reset(int new_K, int New_NoOfSlots)
     for (ind=0; ind < NoOfSlots; ind++)
     {
       if (K > 0)
-        Slots[ind] = new DSP_float[K];
+        Slots[ind] = new DSP::Float[K];
       else
         Slots[ind] = NULL;
 
       //char tekst[1024];
       //sprintf(tekst, "%i/%i %p", ind+1, NoOfSlots, Slots[ind]);
-      //DSPf_InfoMessage("T_PlotsStack::Reset", tekst);
+      //DSP::log << "T_PlotsStack::Reset", tekst);
 
       SlotDataSize[ind] = 0;
       SlotTime[ind] = 0.0;
@@ -1139,7 +1289,7 @@ int T_PlotsStack::Get_NoOfSlots(void)
   return NoOfSlots;
 }
 
-DSP_float_ptr T_PlotsStack::GetSlot(bool PushIfLast)
+DSP::Float_ptr T_PlotsStack::GetSlot(bool PushIfLast)
 {
   if (currentSlot >= NoOfSlots)
   {
@@ -1147,7 +1297,7 @@ DSP_float_ptr T_PlotsStack::GetSlot(bool PushIfLast)
     {
       if (Slots != NULL)
       {
-        DSP_float_ptr tempSlot;
+        DSP::Float_ptr tempSlot;
         //int tempSize;
         int tempColor;
 
@@ -1174,7 +1324,7 @@ DSP_float_ptr T_PlotsStack::GetSlot(bool PushIfLast)
   return Slots[currentSlot];
 }
 
-DSP_float_ptr T_PlotsStack::GetSlot(int No)
+DSP::Float_ptr T_PlotsStack::GetSlot(int No)
 {
   if (No == -1)
     No = currentSlot;
@@ -1200,7 +1350,7 @@ void T_PlotsStack::Set_SlotDataSize(int new_DataSize, int No)
   if (new_DataSize > K)
   {
     new_DataSize = K;
-    DSPf_ErrorMessage("T_PlotsStack::Set_SlotDataSize", "New data size exceeds allocated memory");
+    DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::Set_SlotDataSize"<< DSP::e::LogMode::second << "New data size exceeds allocated memory"<< std::endl;
   }
   SlotDataSize[No]=new_DataSize;
 }
@@ -1504,7 +1654,7 @@ void TestAudioMixer(wxTextCtrl *Lines, TAudioMixer *Mixer)
       cConnections=MixerLine.cConnections;
       Destination=MixerLine.dwDestination;
 
-      //Okreslamy wlasciwosci kontrolek dla bie¿¹cej linii
+      //Okreslamy wlasciwosci kontrolek dla bieï¿½ï¿½cej linii
       MixerControls=new MIXERCONTROL [cControls];
       MixerLineControls.cbStruct=sizeof(MIXERLINECONTROLS);
       MixerLineControls.dwLineID=LineID;
@@ -1758,7 +1908,7 @@ void TestAudioMixer(wxTextCtrl *Lines, TAudioMixer *Mixer)
 
 
       // **************************************** //
-      //Okreslamy wlasciwosci przylaczy dla bie¿¹cej linii // WAVEIN
+      //Okreslamy wlasciwosci przylaczy dla bieï¿½ï¿½cej linii // WAVEIN
       for (ind_1=0; ind_1<cConnections; ind_1++)
       {
         //Okreslamy wlasciwosci linii dla kolejnych przylaczy linii WAVEIN
@@ -2214,7 +2364,7 @@ void T_PlotsStack::DrawString(GLfloat x, GLfloat y, char *text,
   glPushMatrix();
 
   //char text[1024];
-  //text[0] = 0xc4;  text[1] = 0x85; // ¹ UTF8
+  //text[0] = 0xc4;  text[1] = 0x85; // ï¿½ UTF8
   //strcpy(text+2, "Proba mikrofonu");
 
   switch (mode & DS_method_mask)
@@ -2302,12 +2452,12 @@ void T_PlotsStack::DrawString(GLfloat x, GLfloat y, char *text,
       if (m_bmf != NULL)
         m_bmf->DrawStringAt(x_norm, y_norm, 0.0, text);
       else
-        DSPf_ErrorMessage("T_PlotsStack::DrawString", "WGL bitmap font not set");
+        DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawString" << DSP::e::LogMode::second <<"WGL bitmap font not set"<< std::endl;
 
       break;
 
     default:
-      DSPf_ErrorMessage("T_PlotsStack::DrawString", "Unsupported drawing mode");
+      DSP::log << DSP::e::LogMode::Error <<"T_PlotsStack::DrawString"<< DSP::e::LogMode::second <<"Unsupported drawing mode"<< std::endl;
       break;
   }
 
@@ -2319,7 +2469,7 @@ void T_PlotsStack::DrawString(GLfloat x, GLfloat y, char *text,
 
 /*! \todo make use of arrays like in DrawSpecgram2
  */
-void T_PlotsStack::DrawSignal(int SegmentSize, DSP_float *Ydata, float skala,
+void T_PlotsStack::DrawSignal(int SegmentSize, DSP::Float *Ydata, float skala,
                               DS_type type, float width)
 {
   float x_offset;
@@ -2378,7 +2528,7 @@ void T_PlotsStack::DrawSignal(int SegmentSize, DSP_float *Ydata, float skala,
  */
 }
 
-void T_PlotsStack::DrawSignal_dB(int SegmentSize, DSP_float *Ydata,
+void T_PlotsStack::DrawSignal_dB(int SegmentSize, DSP::Float *Ydata,
                                  float dB_max, float dB_range, float width)
 {
   float x_offset;
@@ -2387,7 +2537,7 @@ void T_PlotsStack::DrawSignal_dB(int SegmentSize, DSP_float *Ydata,
   int ind;
   float Y_scale, Y_offset;
 
-  // konwertuj na przedzia³ [-1, +1]
+  // konwertuj na przedziaï¿½ [-1, +1]
   Y_scale = 2/dB_range;
   Y_offset = dB_max-dB_range/2; // max ==> dB_range/2
 
@@ -2428,7 +2578,7 @@ void T_PlotsStack::SubPlot(int Rows, int Cols, int index, int WindowW, int Windo
 
     //char text[1024];
     //sprintf(text, "client_W = %i, client_H = %i", client_W, client_H);
-    //DSPf_InfoMessage("T_PlotsStack::SubPlot", text);
+    //DSP::log << "T_PlotsStack::SubPlot", text);
 
     axis_dx = 20; axis_dy = 20;
     axis_dw = 10 + axis_dx; axis_dh = 10 + axis_dy;
@@ -2993,7 +3143,7 @@ void T_PlotsStack::PlotAxis(double to, double Fo, bool use_XOR)
     // draw main ticks
     y = int((dFm + ind0) * y_pixels_per_unit);
 
-    /*! \bug w okolicy linii œrodkowej zmienia siê offset pixela o 1
+    /*! \bug w okolicy linii ï¿½rodkowej zmienia siï¿½ offset pixela o 1
     glRasterPos2i(x0, y0+y-1);
     glDrawPixels(9, //GLsizei width,
                  3, //GLsizei height,
@@ -3157,603 +3307,8 @@ void MoveImage_Left(float move_factor)
   glCopyPixels(MW, y, W-MW, H, GL_COLOR);
 }
 
-void DrawScatterPlot(int SegmentSize, DSP_float *XYdata, float skala, float size,
-                     T_ChannelParams *ChannelInfo)
-{
-//  float BPSKmark, QPSKmark;
-  float x, y;
-  int ind;
-
-//  BPSKmark=1.0; QPSKmark=4.5;
-//  BPSKmark=fabs(XYdata[0])*5; QPSKmark=fabs(XYdata[12])*5;
-  //glColor3f(0.0, 1.0, 1.0);
-  // Line antialiasing is controlled by calling glEnable and glDisable with argument GL_LINE_SMOOTH
-
-  // axis
-  glLineWidth(1.0);
-  glColor3f(1.0, 1.0, 1.0);
-  glLineStipple(1, 0x0FF0);
-  glEnable(GL_LINE_STIPPLE);
-  glBegin(GL_LINES);
-
-  glVertex2f(-1.0, 0.0);
-  glVertex2f(+1.0, 0.0);
-
-  glVertex2f(0.0, -1.0);
-  glVertex2f(0.0, +1.0);
-  glEnd();
-  glDisable(GL_LINE_STIPPLE);
-
-  glBegin(GL_LINE_LOOP);
-  glVertex2f(-1.0, -1.0);
-  glVertex2f(-1.0, +1.0);
-  glVertex2f(+1.0, +1.0);
-  glVertex2f(+1.0, -1.0);
-  glEnd();
 
 
-
-  // SER indicator
-  float temp_SER;
-  if (ChannelInfo->BPSK_mark > ChannelInfo->QPSK_mark)
-  {
-    //BPSK modulation
-    temp_SER = ChannelInfo->BPSK_SER_log;
-  }
-  else
-  {
-    //QPSK modulation
-    temp_SER = ChannelInfo->QPSK_SER_log;
-  }
-  temp_SER -= 1;
-  if (temp_SER < 0)
-    temp_SER = 0;
-  if (temp_SER > 20)
-    temp_SER = 20;
-  temp_SER /= 20;
-
-  //indicator background
-  glBegin(GL_POLYGON);
-  glColor3f(0.0, 0.0, 0.5);
-  glVertex2f(0.91, -1.0);
-  glVertex2f(0.97, -1.0);
-  glVertex2f(0.97, +1.0);
-  glVertex2f(0.91, +1.0);
-  glEnd();
-
-  //indicator itself
-  glBegin(GL_POLYGON);
-  glColor3f(1.0, 0.0, 0.0);
-  glVertex2f(0.91, -1.0);
-  glVertex2f(0.97, -1.0);
-
-  glColor3f(0.5+temp_SER/2, temp_SER, temp_SER);
-  temp_SER *= 2; temp_SER -= 1;
-  glVertex2f(0.97, temp_SER);
-  glVertex2f(0.91, temp_SER);
-  glEnd();
-
-  //indicator axis
-  glColor3f(1.0, 1.0, 1.0);
-  glBegin(GL_LINE_LOOP);
-  glVertex2f(0.91, -1.0);
-  glVertex2f(0.97, -1.0);
-  glVertex2f(0.97, +1.0);
-  glVertex2f(0.91, +1.0);
-  glEnd();
-
-  glBegin(GL_LINES);
-  for (ind=1; ind<20; ind++)
-  {
-    glVertex2f(0.89, -1.0+ind*2.0/20);
-    glVertex2f(0.99, -1.0+ind*2.0/20);
-  }
-  glEnd();
-
-
-  // modulation indicators
-  // BPSK
-  glBegin(GL_POLYGON);
-//  glColor3f(0.0, 1.0, 1.0);
-  glColor3f(0.0, ChannelInfo->BPSK_mark/5.0, 0.5+ChannelInfo->BPSK_mark/10.0);
-  glVertex2f(-0.94*ChannelInfo->BPSK_mark/5.0, 0.97);
-  glVertex2f(-0.94*ChannelInfo->BPSK_mark/5.0, 0.97-0.07*ChannelInfo->BPSK_mark/5.0);
-  glColor3f(0.0, 0.0, 0.5);
-  glVertex2f(0.0, 0.90);
-  glVertex2f(0.0, 0.97);
-  glEnd();
-
-  // QPSK
-  glBegin(GL_POLYGON);
-  glColor3f(0.5*ChannelInfo->QPSK_mark/5.0, 0.3+0.7*ChannelInfo->QPSK_mark/5.0, 0.5*ChannelInfo->QPSK_mark/5.0);
-//  glColor3f(0.5+ChannelInfo->QPSK_mark/10.0, 0.7*ChannelInfo->QPSK_mark/5.0, 0.7*ChannelInfo->QPSK_mark/5.0);
-  glVertex2f(+0.95*ChannelInfo->QPSK_mark/5.0, 0.98);
-  glVertex2f(+0.95*ChannelInfo->QPSK_mark/5.0, 0.98-0.07*ChannelInfo->QPSK_mark/5.0);
-  glColor3f(0.0, 0.3, 0.0);
-//  glColor3f(0.5, 0.0, 0.0);
-  glVertex2f(0.0, 0.91);
-  glVertex2f(0.0, 0.98);
-  glEnd();
-
-  //Scatter points
-  glPointSize(size);
-  glBegin(GL_POINTS);
-
-  for (ind=0; ind<2*SegmentSize; ind+=2)
-  {
-    x=XYdata[ind]*skala;
-    y=XYdata[ind+1]*skala;
-
-    if ((ChannelInfo->BPSK_mark < 1.0) && (ChannelInfo->QPSK_mark < 1.0))
-    {
-      glColor3f(1.0, 1.0, 1.0);
-    }
-    else
-    {
-      if (ChannelInfo->BPSK_mark > ChannelInfo->QPSK_mark)
-      {
-        //BPSK modulation
-        if (x<0)
-          glColor3f(0.0, 0.0, 1.0);
-        else
-          glColor3f(1.0, 0.5, 0.5);
-      }
-      else
-      {
-        //QPSK modulation
-        if (x<0)
-        {
-          if (y<0)
-            glColor3f(0.2, 0.8, 1.0);
-          else
-            glColor3f(1.0, 0.8, 0.2);
-        }
-        else
-        {
-          if (y<0)
-            glColor3f(0.0, 1.0, 0.0);
-          else
-            glColor3f(1.0, 0.5, 0.5);
-        }
-      }
-    }
-    glVertex2f(x, y);
-  }
-
-  glEnd();
-
-}
-
-void DrawEyeDiagram(int SegmentSize, DSP_float *Xdata, DSP_float *Ydata,
-                    bool IsDataComplex, int SymbolPeriod,
-                    float skala_x, float skala_y,
-                    T_ChannelParams *ChannelInfo)
-{
-//  float BPSKmark, QPSKmark;
-  float x, y, previous_x;
-  int ind;
-  int NoOfParts;
-
-  // axis
-  glLineWidth(1.0);
-  glColor3f(1.0, 1.0, 1.0);
-  glLineStipple(1, 0x0FF0);
-  glEnable(GL_LINE_STIPPLE);
-  glBegin(GL_LINES);
-
-  glVertex2f(-1.0, 0.0);
-  glVertex2f(+1.0, 0.0);
-
-  glVertex2f(0.0, -1.0);
-  glVertex2f(0.0, +1.0);
-  glEnd();
-  glDisable(GL_LINE_STIPPLE);
-
-  glBegin(GL_LINE_LOOP);
-  glVertex2f(-1.0, -1.0);
-  glVertex2f(-1.0, +1.0);
-  glVertex2f(+1.0, +1.0);
-  glVertex2f(+1.0, -1.0);
-  glEnd();
-
-
-
-  // SER indicator
-  float temp_SER;
-  if (ChannelInfo->BPSK_mark > ChannelInfo->QPSK_mark)
-  {
-    //BPSK modulation
-    temp_SER = ChannelInfo->BPSK_SER_log;
-  }
-  else
-  {
-    //QPSK modulation
-    temp_SER = ChannelInfo->QPSK_SER_log;
-  }
-  temp_SER -= 1;
-  if (temp_SER < 0)
-    temp_SER = 0;
-  if (temp_SER > 20)
-    temp_SER = 20;
-  temp_SER /= 20;
-
-  //indicator background
-  glBegin(GL_POLYGON);
-  glColor3f(0.0, 0.0, 0.5);
-  glVertex2f(0.91, -1.0);
-  glVertex2f(0.97, -1.0);
-  glVertex2f(0.97, +1.0);
-  glVertex2f(0.91, +1.0);
-  glEnd();
-
-  //indicator itself
-  glBegin(GL_POLYGON);
-  glColor3f(1.0, 0.0, 0.0);
-  glVertex2f(0.91, -1.0);
-  glVertex2f(0.97, -1.0);
-
-  glColor3f(0.5+temp_SER/2, temp_SER, temp_SER);
-  temp_SER *= 2; temp_SER -= 1;
-  glVertex2f(0.97, temp_SER);
-  glVertex2f(0.91, temp_SER);
-  glEnd();
-
-  //indicator axis
-  glColor3f(1.0, 1.0, 1.0);
-  glBegin(GL_LINE_LOOP);
-  glVertex2f(0.91, -1.0);
-  glVertex2f(0.97, -1.0);
-  glVertex2f(0.97, +1.0);
-  glVertex2f(0.91, +1.0);
-  glEnd();
-
-  glBegin(GL_LINES);
-  for (ind=1; ind<20; ind++)
-  {
-    glVertex2f(0.89, -1.0+ind*2.0/20);
-    glVertex2f(0.99, -1.0+ind*2.0/20);
-  }
-  glEnd();
-
-
-  // modulation indicators
-  // BPSK
-  glBegin(GL_POLYGON);
-//  glColor3f(0.0, 1.0, 1.0);
-  glColor3f(0.0, ChannelInfo->BPSK_mark/5.0, 0.5+ChannelInfo->BPSK_mark/10.0);
-  glVertex2f(-0.94*ChannelInfo->BPSK_mark/5.0, 0.97);
-  glVertex2f(-0.94*ChannelInfo->BPSK_mark/5.0, 0.97-0.07*ChannelInfo->BPSK_mark/5.0);
-  glColor3f(0.0, 0.0, 0.5);
-  glVertex2f(0.0, 0.90);
-  glVertex2f(0.0, 0.97);
-  glEnd();
-
-  // QPSK
-  glBegin(GL_POLYGON);
-  glColor3f(0.5*ChannelInfo->QPSK_mark/5.0, 0.3+0.7*ChannelInfo->QPSK_mark/5.0, 0.5*ChannelInfo->QPSK_mark/5.0);
-//  glColor3f(0.5+ChannelInfo->QPSK_mark/10.0, 0.7*ChannelInfo->QPSK_mark/5.0, 0.7*ChannelInfo->QPSK_mark/5.0);
-  glVertex2f(+0.95*ChannelInfo->QPSK_mark/5.0, 0.98);
-  glVertex2f(+0.95*ChannelInfo->QPSK_mark/5.0, 0.98-0.07*ChannelInfo->QPSK_mark/5.0);
-  glColor3f(0.0, 0.3, 0.0);
-//  glColor3f(0.5, 0.0, 0.0);
-  glVertex2f(0.0, 0.91);
-  glVertex2f(0.0, 0.98);
-  glEnd();
-
-
-  if (IsDataComplex)
-  {
-    NoOfParts = 2;
-
-    if (SymbolPeriod > 0)
-    {
-      DSP_complex_ptr current, next;
-      current = DSP_complex_ptr(Ydata);
-      next = current + SymbolPeriod;
-
-      for (ind = 0; ind<(SegmentSize - SymbolPeriod); ind++)
-        current[ind].multiply_by_conj(next[ind]);
-    }
-  }
-  else
-    NoOfParts = 1;
-
-  for (int offset = 0; offset < 2; offset++)
-  {
-    //Line
-    // glPointSize(size);
-    glLineWidth(1.0);
-    glBegin(GL_LINE_STRIP);
-
-//  if ((ChannelInfo->BPSK_mark < 1.0) && (ChannelInfo->QPSK_mark < 1.0))
-//  {
-//    glColor3f(1.0, 1.0, 1.0);
-//  }
-//  else
-//  {
-    if (offset == 0)
-      glColor3f(0.0, 0.0, 1.0);
-    else
-      glColor3f(1.0, 0.5, 0.5);
-//  }
-
-
-    previous_x = -5000.0;
-    for (ind = 0; ind<(SegmentSize - SymbolPeriod); ind++)
-    {
-      x=Xdata[ind]*skala_x;
-      y=Ydata[offset+2*ind]*skala_y;
-
-      if (previous_x > x)
-      {
-        //! \todo this should be solved differently
-        if (SymbolPeriod > 0)
-          glVertex2f(x+SymbolPeriod, y);
-        glEnd();
-        glBegin(GL_LINE_STRIP);
-        glVertex2f(x-1, Ydata[offset+2*(ind-1)]*skala_y);
-      }
-      glVertex2f(x, y);
-      previous_x = x;
-    }
-
-    glEnd();
-  }
-
-}
-
-/*
-/ *! Input values are given as -log10(x), where x is actual value
- *
- *  SER 10.0*10E-03 should be printed as 1.00*10E-02
- *
- *  Corrected processing +/-INF values
- *   - +inf => 0
- *   - -inf => +inf
- * /
-void GetSER_info(char *tekst,
-                 DSP_float_ptr MeanBPSK_SERs_in, DSP_float_ptr MeanQPSK_SERs_in,
-                 long NoOfMarkSegments,
-                 DSP_float TotalBPSK_Mark_in, DSP_float TotalQPSK_Mark_in)
-{
-  DSP_float TotalBPSK_Mark_tmp, TotalQPSK_Mark_tmp;
-  DSP_float MeanBPSK_SERs_tmp[12], MeanQPSK_SERs_tmp[12];
-  char *tmp_tekst;
-
-  // +++++++++++++++++++++++++++++++++++++++++++ //
-  DSP_float MeanBPSK_SER=0.0, MeanQPSK_SER=0.0;
-  for (int ind_ = 0; ind_ < 12; ind_++)
-  {
-    MeanBPSK_SERs_tmp[ind_] = MeanBPSK_SERs_in[ind_];
-    MeanQPSK_SERs_tmp[ind_] = MeanQPSK_SERs_in[ind_];
-  }
-
-  for (int ind_ = 0; ind_ < 12; ind_++)
-  {
-    MeanBPSK_SERs_tmp[ind_] /= NoOfMarkSegments;
-    MeanBPSK_SER += MeanBPSK_SERs_tmp[ind_];
-
-    MeanQPSK_SERs_tmp[ind_] /= NoOfMarkSegments;
-    MeanQPSK_SER += MeanQPSK_SERs_tmp[ind_];
-  }
-  MeanBPSK_SER /= 12;
-  MeanQPSK_SER /= 12;
-  TotalBPSK_Mark_tmp = TotalBPSK_Mark_in/NoOfMarkSegments;
-  TotalQPSK_Mark_tmp = TotalQPSK_Mark_in/NoOfMarkSegments;
-
-  tmp_tekst = tekst;
-  sprintf(tmp_tekst, "Average BPSK modulation mark = %4.2f; ", TotalBPSK_Mark_tmp);
-  tmp_tekst += strlen(tmp_tekst);
-  sprintf(tmp_tekst, "Average QPSK modulation mark = %4.2f", TotalQPSK_Mark_tmp);
-  tmp_tekst += strlen(tmp_tekst);
-  sprintf(tmp_tekst, "\n");
-  tmp_tekst += strlen(tmp_tekst);
-
-//// for arythmetic average
-//  fprintf(tmpFILE, "Average BPSK SER = 10.^(%.2f)\n", log10(MeanBPSK_SER));
-//  fprintf(tmpFILE, "Average QPSK SER = 10.^(%.2f)\n", log10(MeanQPSK_SER));
-// for geometric average
-  DSP_float BPSK_factor, QPSK_factor;
-  int BPSK_order, QPSK_order;
-  if (_finite(MeanBPSK_SER))
-  {
-    if (MeanBPSK_SER == 0.0)
-    {
-      BPSK_factor = 0.0;
-      BPSK_order = 0;
-    }
-    else
-    {
-      BPSK_factor = pow(10, ceil(MeanBPSK_SER)-MeanBPSK_SER);
-      BPSK_order = (int)ceil(MeanBPSK_SER);
-    }
-  }
-  else
-  {
-    BPSK_factor = -1.0;
-    BPSK_order = (int)_copysign(1.0, MeanBPSK_SER);
-  }
-  if (_finite(MeanQPSK_SER))
-  {
-    if (MeanQPSK_SER == 0.0)
-    {
-      QPSK_factor = 0.0;
-      QPSK_order = 0;
-    }
-    else
-    {
-      QPSK_factor = pow(10, ceil(MeanQPSK_SER)-MeanQPSK_SER);
-      QPSK_order = (int)ceil(MeanQPSK_SER);
-    }
-  }
-  else
-  {
-    QPSK_factor = -1.0;
-    QPSK_order = (int)_copysign(1.0, MeanQPSK_SER);
-  }
-  if (BPSK_factor >= 0)
-  {
-    sprintf(tmp_tekst, "Average BPSK SER = %.2f*10E-%02i;      ", BPSK_factor, BPSK_order);
-    tmp_tekst += strlen(tmp_tekst);
-  }
-  else
-  {
-    if (_isnan(MeanBPSK_SER))
-    {
-      sprintf(tmp_tekst, "Average BPSK SER = NAN;            ");
-      tmp_tekst += strlen(tmp_tekst);
-    }
-    else
-    {
-      if (BPSK_order > 0)
-      { // -log10(0) => +INF thus actual value is 0
-//      sprintf(tmp_tekst, "Average BPSK SER = +INF       \n");
-        sprintf(tmp_tekst, "Average BPSK SER = 0;              ");
-        tmp_tekst += strlen(tmp_tekst);
-      }
-      else
-      { // -log10(+INF) => -INF thus actual value is +INF
-//      sprintf(tmp_tekst, "Average BPSK SER = -INF       \n");
-        sprintf(tmp_tekst, "Average BPSK SER = +INF;           ");
-        tmp_tekst += strlen(tmp_tekst);
-      }
-    }
-  }
-  if (QPSK_factor >= 0)
-  {
-    sprintf(tmp_tekst, "Average QPSK SER = %.2f*10E-%02i\n", QPSK_factor, QPSK_order);
-    tmp_tekst += strlen(tmp_tekst);
-  }
-  else
-  {
-    if (_isnan(MeanQPSK_SER))
-    {
-      sprintf(tmp_tekst, "Average QPSK SER = NAN\n");
-      tmp_tekst += strlen(tmp_tekst);
-    }
-    else
-    {
-      if (QPSK_order > 0)
-      { // -log10(0) => +INF thus actual value is 0
-//      sprintf(tmp_tekst, "Average QPSK SER = +INF       \n");
-       sprintf(tmp_tekst, "Average QPSK SER = 0;              ");
-        tmp_tekst += strlen(tmp_tekst);
-      }
-      else
-      { // -log10(+INF) => -INF thus actual value is +INF
-//      sprintf(tmp_tekst, "Average QPSK SER = -INF       \n");
-        sprintf(tmp_tekst, "Average QPSK SER = +INF;           ");
-        tmp_tekst += strlen(tmp_tekst);
-      }
-    }
-  }
-  sprintf(tmp_tekst, "\n");
-  tmp_tekst += strlen(tmp_tekst);
-
-  for (int ind_ = 0; ind_ < 12; ind_++)
-  {
-//    sprintf(tmpFILE, " ch%02i) average BPSK SER = 10.^(%.2f), average QPSK SER = 10.^(%.2f)\n",
-//                      ind_, log10(MeanBPSK_SERs[ind_]), log10(MeanQPSK_SERs[ind_]));
-//    sprintf(tmpFILE, " ch%02i) average BPSK SER = 10.^(%.2f), average QPSK SER = 10.^(%.2f)\n",
-//                      ind_, -MeanBPSK_SERs[ind_], -MeanQPSK_SERs[ind_]);
-    if (_finite(MeanBPSK_SERs_tmp[ind_]))
-    {
-      if (MeanBPSK_SERs_tmp[ind_] == 0.0)
-      {
-        BPSK_factor = 0.0;
-        BPSK_order = 0;
-      }
-      else
-      {
-        BPSK_factor = pow(10, ceil(MeanBPSK_SERs_tmp[ind_])-MeanBPSK_SERs_tmp[ind_]);
-        BPSK_order = (int)ceil(MeanBPSK_SERs_tmp[ind_]);
-      }
-    }
-    else
-    {
-      BPSK_factor = -1.0;
-      BPSK_order = (int)_copysign(1.0, MeanBPSK_SERs_tmp[ind_]);
-    }
-    if (_finite(MeanQPSK_SERs_tmp[ind_]))
-    {
-      if (MeanQPSK_SERs_tmp[ind_] == 0.0)
-      {
-        QPSK_factor = 0.0;
-        QPSK_order = 0;
-      }
-      else
-      {
-        QPSK_factor = pow(10, ceil(MeanQPSK_SERs_tmp[ind_])-MeanQPSK_SERs_tmp[ind_]);
-        QPSK_order = (int)ceil(MeanQPSK_SERs_tmp[ind_]);
-      }
-    }
-    else
-    {
-      QPSK_factor = -1.0;
-      QPSK_order = (int)_copysign(1.0, MeanQPSK_SERs_tmp[ind_]);
-    }
-    sprintf(tmp_tekst, " channel %02i) ", ind_);
-    tmp_tekst += strlen(tmp_tekst);
-    if (BPSK_factor >= 0)
-    {
-      sprintf(tmp_tekst, "average BPSK SER = %.2f*10E-%02i, ", BPSK_factor, BPSK_order);
-      tmp_tekst += strlen(tmp_tekst);
-    }
-    else
-    {
-      if (_isnan(MeanBPSK_SERs_tmp[ind_]))
-      {
-        sprintf(tmp_tekst, "average BPSK SER = NAN        , ");
-        tmp_tekst += strlen(tmp_tekst);
-      }
-      else
-      {
-        if (BPSK_order > 0)
-        { // -log10(0) => +INF thus actual value is 0
-//          sprintf(tmp_tekst, "average BPSK SER = +INF       \n");
-          sprintf(tmp_tekst, "average BPSK SER = 0          , ");
-          tmp_tekst += strlen(tmp_tekst);
-        }
-        else
-        { // -log10(+INF) => -INF thus actual value is +INF
-//          sprintf(tmp_tekst, "average BPSK SER = -INF       \n");
-          sprintf(tmp_tekst, "average BPSK SER = +INF       , ");
-          tmp_tekst += strlen(tmp_tekst);
-        }
-      }
-    }
-    if (QPSK_factor >= 0)
-    {
-      sprintf(tmp_tekst, "average QPSK SER = %.2f*10E-%02i\n", QPSK_factor, QPSK_order);
-      tmp_tekst += strlen(tmp_tekst);
-    }
-    else
-    {
-      if (_isnan(MeanQPSK_SERs_tmp[ind_]))
-      {
-        sprintf(tmp_tekst, "average QPSK SER = NAN        \n");
-        tmp_tekst += strlen(tmp_tekst);
-      }
-      else
-      {
-        if (QPSK_order > 0)
-        { // -log10(0) => +INF thus actual value is 0
-//          sprintf(tmp_tekst, "average QPSK SER = +INF       \n");
-          sprintf(tmp_tekst, "average QPSK SER = 0          \n");
-          tmp_tekst += strlen(tmp_tekst);
-        }
-        else
-        { // -log10(+INF) => -INF thus actual value is +INF
-//          sprintf(tmp_tekst, "average QPSK SER = -INF       \n");
-          sprintf(tmp_tekst, "average QPSK SER = +INF       \n");
-          tmp_tekst += strlen(tmp_tekst);
-        }
-      }
-    }
-  }
-  // +++++++++++++++++++++++++++++++++++++++++++ //
-}
-*/
 
 T_time_base::T_time_base(void)
 {
@@ -3945,7 +3500,7 @@ void T_time_base::SetOffsetDate(const wxDateTime &date_tmp)
   // Czas referencyjny
   dt.Set(day, wxDateTime::Month(wxDateTime::Jan+(month-1)), year,
          real_hours, real_minutes, real_seconds, 0);
-  // uwzglêdniamy time offset
+  // uwzglï¿½dniamy time offset
   dt.Add(wxTimeSpan((long int)hours, (long int)minutes, (long int)seconds, (long int)milliseconds));
 
   // wymieniamy date
@@ -3976,7 +3531,7 @@ void T_time_base::SetOffsetTime(const wxDateTime &date_tmp)
   // Czas referencyjny
   dt.Set(day, wxDateTime::Month(wxDateTime::Jan+(month-1)), year,
          real_hours, real_minutes, real_seconds, 0);
-  // uwzglêdniamy time offset
+  // uwzglï¿½dniamy time offset
   dt.Add(wxTimeSpan((long int)hours, (long int)minutes, (long int)seconds, (long int)milliseconds));
 
   // wymieniamy czas
@@ -4006,7 +3561,7 @@ void T_time_base::AddOffsetToReferenceTime(void)
   // Czas referencyjny
   dt.Set(day, wxDateTime::Month(wxDateTime::Jan+(month-1)), year,
          real_hours, real_minutes, real_seconds, 0);
-  // uwzglêdniamy time offset
+  // uwzglï¿½dniamy time offset
   dt.Add(wxTimeSpan((long int)hours, (long int)minutes, (long int)seconds, (long int)milliseconds));
 
   // zapisz nowy reference time

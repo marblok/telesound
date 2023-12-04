@@ -57,9 +57,8 @@
 
   enum DS_type {DS_unsigned, DS_signed};
 
-  void DrawScatterPlot(int SegmentSize, DSP_float *XYdata, float skala, float size,
-                       T_ChannelParams *ChannelInfo);
-  void DrawEyeDiagram(int SegmentSize, DSP_float *Xdata, DSP_float *Ydata,
+  void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, float skala, float size);
+  void DrawEyeDiagram(int SegmentSize, DSP::Float *Xdata, DSP::Float *Ydata,
                       bool IsDataComplex, int SymbolPeriod,
                       float skala_x, float skala_y,
                       T_ChannelParams *ChannelInfo);
@@ -119,7 +118,7 @@
      //! current allocated size for the slots
      int K;
 
-     DSP_float_ptr *Slots;
+     DSP::Float_ptr *Slots;
      int *SlotDataSize;
      int *ColorIndex;
      long double *SlotTime;
@@ -206,9 +205,9 @@
       *   - PushIfLast = false =>  return NULL
       *   .
       */
-     DSP_float_ptr GetSlot(bool PushIfLast);
+     DSP::Float_ptr GetSlot(bool PushIfLast);
      //! if No == -1 give current slot
-     DSP_float_ptr GetSlot(int No=-1);
+     DSP::Float_ptr GetSlot(int No=-1);
      //! if No == -1 for current slot
      void Set_SlotDataSize(int new_DataSize, int No=-1);
      //! if No == -1 for current slot
@@ -272,11 +271,14 @@
      void DrawSpecgram2_base(const CLR_map_type map_type = CLR_hot);
      //! \bug implement this texture based drawing
      void DrawSpecgram3_dB(float dB_max, float dB_range, const CLR_map_type map_type = CLR_hot);
-     void DrawSignal(int SegmentSize, DSP_float *Ydata, float skala,
+     void DrawSignal(int SegmentSize, DSP::Float *Ydata, float skala,
                      DS_type type, float width);
-     void DrawSignal_dB(int SegmentSize, DSP_float *Ydata,
+     void DrawSignal_dB(int SegmentSize, DSP::Float *Ydata,
                      float dB_max, float dB_range, float width);
      void DrawSignal(float skala, DS_type type, float width);
+     //void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Complex_vector constellation, float skala, float size);
+     void DrawScatterPlot(int SegmentSize, DSP::Float *XYdata, DSP::Complex_vector constellation, float skala, float size, bool demodulator_state = false);
+     void DrawEyeDiagram(int SamplingRate, DSP::Float_vector samples, int samplesPerSymbol, int symbolsPerTrace, float skala_x, float skala_y, bool input_complex=true, bool demodulator_state=false);
      //! sets sampling rate
      /*!
       * @param F_min_in

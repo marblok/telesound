@@ -12,7 +12,7 @@
 class T_SpectrogramDraw;
 class T_DSPlib_processing;
 
-class MyFrame;
+class MainFrame;
 
 class MyGLCanvas: public wxGLCanvas
 {
@@ -49,7 +49,7 @@ class MyGLCanvas: public wxGLCanvas
     void SetDrawMode(E_DrawModes draw_mode_in);
 
   public:
-    MyFrame *ParentFrame;
+    MainFrame *ParentFrame;
     wxGLContext *GLcontext;
 
     void LockDrawingData(unsigned int GLcanvas_index);
@@ -59,7 +59,7 @@ class MyGLCanvas: public wxGLCanvas
     wxSemaphore *DrawData_semaphore;
 
     MyGLCanvas(unsigned int CanvasIndex,
-        MyFrame *parent_in, wxWindowID id = wxID_ANY,
+        wxWindow *parent_in, wxWindowID id = wxID_ANY,
         int* attribList = 0,
         const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
         long style = 0, const wxString& name = _T("MyGLCanvas") );
@@ -74,6 +74,8 @@ class MyGLCanvas: public wxGLCanvas
     void DrawPSD(int width, int height);
     void DrawSpectrogram(int width, int height);
     void DrawSignal(int width, int height);
+    void DrawScatter(int width, int height);
+    void DrawEyeDiagram(int width, int height);
     void DrawHistogram(int width, int height);
 
     void OnPaint(wxPaintEvent& event);

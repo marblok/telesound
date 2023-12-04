@@ -4,29 +4,32 @@
             "name": "Windows-Release",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/../DSPE_lib_minGW/MinGW-W64_8.1.0/include/**"
+                "${workspaceFolder}/src_support/include",
+                "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include",
+                "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include/rls",
+                "${workspaceFolder}/wxWidgets-3.2.2/include",
+                "${workspaceFolder}/wxWidgets-3.2.2/lib/gcc1220_x64_dll"
             ],
             "defines": [
-                "WIN32",
-                "__DEBUG__=0"
+                "WIN32"
             ],
-            "compilerPath": "gcc.exe",
-            "cStandard": "c11",
-            "cppStandard": "c++11",
+            "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x64",
-            "configurationProvider": "ms-vscode.makefile-tools"
+            "configurationProvider": "ms-vscode.makefile-tools",
         },
         {
             "name": "Linux-Release",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/../DSPE_lib_minGW/MinGW-W64_8.1.0/include/**"
+                "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include/**",
+                "${workspaceFolder}/wxWidgets-3.2.2/include/**"
             ],
             "defines": [
-                "WIN32",
-                "__DEBUG__=0"
+                "WIN32"
             ],
-            "compilerPath": "gcc.exe",
+            "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-x64"
@@ -35,30 +38,36 @@
             "name": "Windows-Debug",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/../DSPE_lib_minGW/MinGW-W64_8.1.0/include/**"
+                "${workspaceFolder}/src_support/include",
+                "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include",
+                "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include/dbg",
+                "${workspaceFolder}/wxWidgets-3.2.2/include",
+                "${workspaceFolder}/wxWidgets-3.2.2/lib_dev/gcc1220_x64_dll/mswu"
             ],
             "defines": [
                 "WIN32",
-                "__DEBUG__=1"
+                "__DEBUG__"
             ],
-            "cStandard": "c11",
-            "cppStandard": "c++11",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x64",
-            "configurationProvider": "ms-vscode.makefile-tools"
+            "configurationProvider": "ms-vscode.makefile-tools",
+            "compilerPath": "C:/msys64/mingw64/bin/g++.exe"
         },
         {
             "name": "Linux-Debug",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/../DSPE_lib_minGW/MinGW-W64_8.1.0/include/**"
+                "${workspaceFolder}/DSPE_lib_minGW/x86_64-w64-mingw32-gcc_12.2.0/include/**",
+                "${workspaceFolder}/wxWidgets-3.2.2/include/**"
             ],
             "defines": [
                 "WIN32",
-                "__DEBUG__=1"
+                "__DEBUG__"
             ],
-            "compilerPath": "gcc.exe",
-            "cStandard": "c11",
-            "cppStandard": "c++11",
+            "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x64"
         }
     ],

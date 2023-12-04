@@ -1,0 +1,21 @@
+#ifndef   Icons
+#define   Icons
+#include "../../bitmaps/new.xpm"
+#include "../../bitmaps/play_2_16.xpm"
+#include "../../bitmaps/pause_2_16.xpm"
+#include "../../bitmaps/resume_16.xpm"
+#include "../../bitmaps/stop_2_16.xpm"
+#include "../../bitmaps/mike_off.xpm"
+#include "../../bitmaps/mike_on.xpm"
+#include "../../bitmaps/local_off.xpm"
+#include "../../bitmaps/local_on.xpm"
+#include "../../bitmaps/open.xpm"
+#include "../../bitmaps/save.xpm"
+#include "../../bitmaps/copy.xpm"
+#include "../../bitmaps/cut.xpm"
+#include "../../bitmaps/paste.xpm"
+#include "../../bitmaps/print.xpm"
+#include "../../bitmaps/help.xpm"
+#include "../../bitmaps/reset.xpm"
+#include "../../bitmaps/resize.xpm"
+#endif

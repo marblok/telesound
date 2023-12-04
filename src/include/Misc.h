@@ -9,8 +9,8 @@
 #define MISC_H_
 
 #include <DSP_lib.h>
-#include <DSPmodules_misc.h>
-
+#include <DSP_modules_misc.h>
+#include "IDs.h"
 #include <wxAddons.h>
 
 //! \todo implement other modes
@@ -20,7 +20,9 @@ enum E_DrawModes
   E_DM_signal = 1,
   E_DM_histogram = 2,
   E_DM_psd = 4,
-  E_DM_spectrogram = 8
+  E_DM_spectrogram = 8,
+  E_DM_scatterplot = 16,
+  E_DM_eyediagram = 32
 };
 
 enum E_UpdateState
@@ -35,7 +37,16 @@ enum E_UpdateState
   E_US_wav_file_open = 64,
   E_US_local_signal = 128,
   E_US_morse_receiver_state = 256,
-  E_US_high_res_psd = 512
+  E_US_high_res_psd = 512,
+  E_US_modulator_state = 1024,
+  E_US_carrier_freq = 2048,
+  E_US_modulator_type = 4096,
+  E_US_demod_carrier_freq = 8192,
+  E_US_demod_state=16384,
+  E_US_demod_delay= 32768,
+  E_US_demod_carrier_offset = 65536,
+  E_US_demod_gain  = 131072,
+  E_US_eyebuffer_source=262144
 };
 E_UpdateState& operator|= (E_UpdateState& left, const E_UpdateState& right);
 E_UpdateState& operator&= (E_UpdateState& left, const E_UpdateState& right);
@@ -63,11 +74,11 @@ class T_ProcessingSpec
   public:
     bool run_as_server;
 //    char IP_address[1024];
-    string IP_address;
+    std::string IP_address;
     long SamplingRate;
     float time_span;
 
-    string wav_filename;
+    std::string wav_filename;
 
     int no_of_psd_slots;
 
@@ -82,7 +93,14 @@ class T_ProcessingSpec
     float ChannelFg;
 
     bool morse_receiver_state;
-
+    bool modulator_state;
+    bool demodulator_state;
+    float demodulator_carrier_freq, demodulator_gain;
+    int demodulator_delay, demodulator_carrier_offset; 
+    E_ModulatorTypes modulator_type;
+    unsigned short modulator_variant;
+    float carrier_freq;
+    unsigned int eyebuffer_source;
     const E_DrawModes Get_draw_mode(void);
     void Set_draw_mode(E_DrawModes new_draw_mode);
 
@@ -155,10 +173,10 @@ class wxMorseValidator: public wxValidator
 
     /*! if morse_block == NULL remove connection to current morse key block
      */
-    void SetMorseKey(DSPu_MORSEkey *morse_block = NULL);
+    void SetMorseKey(DSP::u::MORSEkey *morse_block = NULL);
 
   protected:
-    DSPu_MORSEkey *current_morse_block;
+    DSP::u::MORSEkey *current_morse_block;
 
     bool CheckValidator() const
     {
